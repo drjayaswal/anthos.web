@@ -10,6 +10,7 @@ export interface Mail {
   createdAt: string;
   categories?: string[] | null;
   priority?: string[] | null;
+  summary?: string;
 }
 
 export interface CloudQueryOptions {

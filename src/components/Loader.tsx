@@ -7,6 +7,7 @@ import Image from 'next/image';
 export default function Loader({ onComplete }: { onComplete?: () => void }) {
   const [speedFactor, setSpeedFactor] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
     const startTime = Date.now();
@@ -22,6 +23,7 @@ export default function Loader({ onComplete }: { onComplete?: () => void }) {
         setTimeout(() => {
           setIsExiting(true);
           setTimeout(() => {
+            setHidden(true);
             if (onComplete) onComplete();
           }, 500);
         }, 500);
@@ -31,10 +33,12 @@ export default function Loader({ onComplete }: { onComplete?: () => void }) {
     return () => clearInterval(interval);
   }, [onComplete]);
 
+  if (hidden) return null;
+
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center">
       <motion.div
-        className="flex flex-col items-center gap-4 w-48"
+        className="flex flex-col items-center gap-4 w-48 animate-pulse"
         animate={isExiting ? { opacity: 0, y: 10 } : { opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
@@ -47,12 +51,6 @@ export default function Loader({ onComplete }: { onComplete?: () => void }) {
             style={{ width: '240px', height: 'auto' }}
             priority
           />
-        <div className="h-0.5 w-full relative bg-black/10 rounded-sm overflow-hidden">
-          <motion.div
-            className="absolute inset-y-0 left-0 bg-accent rounded-sm z-10"
-            style={{ width: `${speedFactor * 100}%` }}
-          />
-        </div>
       </motion.div>
     </div>
   );

@@ -108,13 +108,17 @@ export async function analyzeMailsAction(
   }
 }
 
-export async function getCategoriesAction(): Promise<{ok:boolean,categories?:{name:string}[] ,error?:string}>{
+export async function getCategoriesAction(): Promise<{
+  ok: boolean;
+  categories?: { name: string; description?: string | null }[];
+  error?: string;
+}> {
   try {
     const res = await fetchInternalApi("/api/category/fetch", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     });
-    const data = (await res.json()) as { ok?: boolean; categories?: { name: string }[]; error?: string };
+    const data = (await res.json()) as { ok?: boolean; categories?: { name: string; description?: string | null }[]; error?: string };
     if (!res.ok || !data.ok) {
       return { ok: false, error: typeof data.error === "string" ? data.error : "Fetch failed" };
     }
@@ -142,5 +146,26 @@ export async function loadMailsFromDatabaseAction(options: LoadOptions): Promise
     return { ok: true, mails: data.mails ?? [] };
   } catch {
     return { ok: false, error: "Load failed" };
+  }
+}
+
+export async function performGroqMailAnalysisAction(mails: Mail[]): Promise<{
+  ok: boolean;
+  analyzedMails?: Mail[];
+  error?: string;
+}> {
+  try {
+    const res = await fetchInternalApi("/api/mail/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mails }),
+    });
+    const data = (await res.json()) as { ok?: boolean; analyzedMails?: Mail[]; error?: string };
+    if (!res.ok || !data.ok) {
+      return { ok: false, error: typeof data.error === "string" ? data.error : "Analysis failed" };
+    }
+    return { ok: true, analyzedMails: data.analyzedMails ?? [] };
+  } catch {
+    return { ok: false, error: "Analysis failed" };
   }
 }

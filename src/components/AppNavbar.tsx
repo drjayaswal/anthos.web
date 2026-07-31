@@ -1,174 +1,250 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import Image from 'next/image';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MenuIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import {
+  Inbox,
+  User,
+  ShieldCheck,
+  HelpCircle,
+  Shield,
+  FileText,
+  ChevronRight,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type NavItem = {
   href: string;
   label: string;
+  description: string;
   show: boolean;
+  icon: React.ElementType;
 };
 
-function pageLabel(pathname: string): string | null {
-  if (pathname.startsWith('/admin')) return 'Admin';
-  if (pathname.startsWith('/profile')) return 'Profile';
-  if (pathname.startsWith('/dashboard')) return 'Dashboard';
-  if (pathname === '/') return 'Firebox';
-  if (pathname.startsWith('/help')) return 'Help';
-  if (pathname.startsWith('/privacy-policy')) return 'Privacy';
-  if (pathname.startsWith('/terms-condition')) return 'Terms';
-  return null;
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkIsDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    checkIsDesktop();
+    window.addEventListener('resize', checkIsDesktop);
+    return () => window.removeEventListener('resize', checkIsDesktop);
+  }, []);
+
+  return isDesktop;
 }
 
 export default function AppNavbar({
   authenticated,
-  isAdmin
+  isAdmin,
 }: {
   authenticated: boolean;
   isAdmin: boolean;
 }) {
   const pathname = usePathname();
+
+  if (!authenticated) {
+    return null;
+  }
+
+  if (pathname === '/thank-you' || pathname?.startsWith('/thank-you')) {
+    return null;
+  }
+
   const [menuOpen, setMenuOpen] = useState(false);
+  const isDesktop = useIsDesktop();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    if (menuOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (menuOpen && !isDesktop) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [menuOpen, isDesktop]);
 
   const items = useMemo<NavItem[]>(
     () => [
-      { href: '/', label: 'Firebox', show: authenticated },
-      { href: '/profile', label: 'Profile', show: authenticated },
-      { href: '/dashboard', label: 'Dashboard', show: authenticated },
-      { href: '/admin', label: 'Admin', show: authenticated && isAdmin },
-      { href: '/help', label: 'Help', show: true },
-      { href: '/privacy-policy', label: 'Privacy', show: !authenticated },
-      { href: '/terms-condition', label: 'Terms', show: !authenticated },
+      {
+        href: '/',
+        label: 'Firebox',
+        description: 'Your intelligent AI email hub',
+        show: authenticated,
+        icon: Inbox,
+      },
+      {
+        href: '/profile',
+        label: 'Profile',
+        description: 'Account settings & preferences',
+        show: authenticated,
+        icon: User,
+      },
+      {
+        href: '/admin',
+        label: 'Admin',
+        description: 'System administration & controls',
+        show: authenticated && isAdmin,
+        icon: ShieldCheck,
+      },
+      {
+        href: '/help',
+        label: 'Help',
+        description: 'Guides, FAQs & assistance',
+        show: true,
+        icon: HelpCircle,
+      },
+      {
+        href: '/privacy-policy',
+        label: 'Privacy Policy',
+        description: 'Our data protection practices',
+        show: true,
+        icon: Shield,
+      },
+      {
+        href: '/terms-condition',
+        label: 'Terms & Conditions',
+        description: 'Terms and conditions of use (TnM)',
+        show: true,
+        icon: FileText,
+      },
     ],
     [authenticated, isAdmin],
   );
 
   const visibleItems = items.filter((item) => item.show);
-  const contextLabel = pageLabel(pathname);
 
   const closeMenu = () => setMenuOpen(false);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.05,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: isDesktop ? 20 : 0, y: isDesktop ? 0 : -10 },
+    show: { opacity: 1, x: 0, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
+  } as const;
+
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white shadow-md">
-        <div className="mx-auto flex h-11 max-w-7xl items-center justify-between gap-2 px-3 sm:h-12 sm:px-6">
-          <Link
-            href={authenticated ? '/' : '/'}
-            className="flex min-w-0 items-center gap-2"
-            onClick={closeMenu}
+      <header className="fixed top-2 left-12 -translate-x-1/2 z-40">
+        <button
+          type="button"
+          onClick={() => setMenuOpen((o) => !o)}
+          aria-expanded={menuOpen}
+          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          className={cn(
+            'group relative flex items-center justify-center gap-2 px-3 py-2 rounded-full transition-all duration-300 outline-none cursor-pointer shadow-xs hover:shadow-md',
+            'bg-white/90 backdrop-blur-md border-2 border-gray-200/50'
+          )}
           >
-            <Image
-              src="/firemail-opensource.svg"
-              alt="firemail"
-              width={100}
-              height={100}
-              quality={90}
-              style={{ width: '150px', height: 'auto' }}
-              priority
+          <div className="flex items-center gap-1">
+            <span className="text-xs font-semibold tracking-tight text-zinc-800 group-hover:text-[#ff3131] transition-colors">
+              Menu
+            </span>
+            <ChevronRight
+              className={cn(
+                'w-4 h-4 text-[#ff3131] transition-transform duration-300',
+                menuOpen ? 'rotate-90' : 'group-hover:translate-x-0.5'
+              )}
             />
-            <span className="truncate text-[10px] text-zinc-500 sm:text-xs">{contextLabel}</span>
-          </Link>
-
-          <nav className="hidden items-center gap-1 sm:flex" aria-label="Main">
-            {visibleItems.map((item) => {
-              const active =
-                item.href === '/'
-                  ? pathname === '/'
-                  : pathname === item.href || pathname.startsWith(`${item.href}/`);
-              return (
-                <Button
-                  key={item.href}
-                  variant={active ? 'accent' : 'light'}
-                  size="sm"
-                // asChild
-                >
-                  {
-                    item.href === '/' &&
-                    <Image
-                      src={active ? "/logo-nobg.svg" : "/logo.svg"}
-                      alt="Firemail"
-                      width={80}
-                      height={28}
-                      className="w-auto object-contain h-4"
-                      style={{ width: 'auto' }}
-                      priority
-                    />
-                  }
-                  <Link href={item.href}>{item.label}</Link>
-                </Button>
-              );
-            })}
-          </nav>
-
-          <Button
-            type="button"
-            variant="no_outline"
-            size="icon-sm"
-            className="h-8 w-8 sm:hidden text-black"
-            aria-expanded={menuOpen}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            onClick={() => setMenuOpen((o) => !o)}
-          >
-            <MenuIcon className="h-4 w-4" />
-          </Button>
-        </div>
+          </div>
+        </button>
       </header>
 
       <AnimatePresence>
-        {menuOpen ? (
+        {menuOpen && (
           <>
-            <motion.button
-              type="button"
-              aria-label="Close menu"
-              className="fixed inset-0 z-40 bg-gray-200/75 sm:hidden"
+            <motion.div
+              key="backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="fixed inset-0 z-60 bg-black/40"
               onClick={closeMenu}
             />
-            <motion.nav
-              aria-label="Mobile menu"
-              className="fixed left-0 right-0 top-0 z-50 max-h-[min(70vh,320px)] overflow-y-auto bg-white shadow-lg sm:hidden"
-              initial={{ y: '-100%', opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: '-100%', opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+
+            <motion.div
+              key="menu-drawer"
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+              className="fixed top-0 left-0 bottom-0 z-70 w-80 sm:w-80 bg-white shadow-2xl flex flex-col overflow-hidden"
             >
-              <ul className="flex flex-col gap-0.5 p-2">
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+                className="flex-1 overflow-y-auto p-3 space-y-1"
+              >
                 {visibleItems.map((item) => {
                   const active =
                     item.href === '/'
                       ? pathname === '/'
                       : pathname === item.href || pathname.startsWith(`${item.href}/`);
+                  const Icon = item.icon;
                   return (
-                    <li key={item.href}>
+                    <motion.div key={item.href} variants={itemVariants}>
                       <Link
                         href={item.href}
                         onClick={closeMenu}
                         className={cn(
-                          'flex h-10 items-center rounded-lg px-3 text-sm transition-colors',
-                          active
-                            ? 'font-medium text-accent'
-                            : 'text-zinc-700 hover:bg-zinc-50',
+                          'group flex items-center justify-between p-2 rounded-2xl transition-all duration-200'
                         )}
                       >
-                        {item.label}
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={cn(
+                              'p-2.5 rounded-2xl transition-colors',
+                              active
+                                ? 'bg-[#ff3131] text-white shadow-sm'
+                                : 'group-hover:bg-[#ff3131]/15 text-zinc-600 group-hover:text-[#ff3131] transition-colors'
+                            )}
+                          >
+                            <Icon className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="font-medium text-sm text-zinc-900 group-hover:text-[#ff3131] transition-colors">
+                              {item.label}
+                            </div>
+                            <div className="text-xs text-zinc-500 group-hover:text-[#ff3131] font-normal">
+                              {item.description}
+                            </div>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:translate-x-1 group-hover:text-[#ff3131] transition-all" />
                       </Link>
-                    </li>
+                    </motion.div>
                   );
                 })}
-              </ul>
-            </motion.nav>
+              </motion.div>
+            </motion.div>
           </>
-        ) : null}
+        )}
       </AnimatePresence>
     </>
   );
 }
+

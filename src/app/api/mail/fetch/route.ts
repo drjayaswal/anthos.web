@@ -19,7 +19,9 @@ export async function POST(req: Request): Promise<NextResponse<MailFetchResponse
   try {
     const mails = await getCustomMails({ ...options, store: false });
     return NextResponse.json({ ok: true, mails });
-  } catch {
-    return NextResponse.json({ ok: false, error: 'Could not load mail from Gmail' }, { status: 502 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Could not load mail from Gmail';
+    console.error('Fetch route error:', err);
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }

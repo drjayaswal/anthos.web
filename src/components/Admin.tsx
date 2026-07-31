@@ -5,7 +5,7 @@ import Loader from './Loader';
 import AdminCategories from './AdminCategory';
 
 export default function Admin() {
-  const [appLoading, setAppLoading] = useState(true);
+  const [appLoading, setAppLoading] = useState(false);
 
   if (appLoading) {
     return <Loader onComplete={() => setAppLoading(false)} />;

@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { getCategories } from '@/lib/action';
 
-export type CategoryFetchResponse = { ok: true; categories: { name: string }[] } | { ok: false; error: string };
+export type CategoryFetchResponse =
+  | { ok: true; categories: { name: string; description: string | null }[] }
+  | { ok: false; error: string };
 
 export async function POST(): Promise<NextResponse<CategoryFetchResponse>> {
   const session = await getSession();
@@ -13,6 +15,6 @@ export async function POST(): Promise<NextResponse<CategoryFetchResponse>> {
     const categories = await getCategories();
     return NextResponse.json({ ok: true, categories });
   } catch {
-    return NextResponse.json({ ok: false, error: 'Could not load mail from Gmail' }, { status: 502 });
+    return NextResponse.json({ ok: false, error: 'Could not fetch categories' }, { status: 500 });
   }
 }

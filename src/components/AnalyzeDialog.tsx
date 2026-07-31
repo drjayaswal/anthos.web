@@ -38,7 +38,11 @@ export default function AnalyzeDialog({ open, onOpenChange, selectedCount, onAna
           <DialogHeader>
             <DialogTitle className="text-xl tracking-tight text-black">Analyze selected</DialogTitle>
             <DialogDescription className="text-[10px] text-black/60">
-              {selectedCount} mail{selectedCount === 1 ? '' : 's'} · options derived from selection
+              {selectedCount > 2 ? (
+                <span className="text-red-500 font-semibold">Maximum 2 mails can be analyzed at a time</span>
+              ) : (
+                `${selectedCount} mail${selectedCount === 1 ? '' : 's'} selected (max 2)`
+              )}
             </DialogDescription>
           </DialogHeader>
           <div className="py-6">
@@ -65,7 +69,7 @@ export default function AnalyzeDialog({ open, onOpenChange, selectedCount, onAna
             <Button type="button" variant="no_outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant="accent" disabled={selectedCount === 0}>
+            <Button type="submit" variant="accent" disabled={selectedCount === 0 || selectedCount > 2}>
               <Wand2Icon />
               Analyze
             </Button>

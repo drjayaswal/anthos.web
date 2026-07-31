@@ -83,7 +83,7 @@ export async function getCustomMails(opts: AnalyzeOptions): Promise<Mail[]> {
     throw error;
   }
 }
-export async function getCategories(): Promise<{ name: string }[]> {
+export async function getCategories(): Promise<{ name: string; description: string | null }[]> {
   const session = await getSession();
   if (!session?.accessToken) {
     throw new Error('Unauthorized: No access token');
@@ -91,11 +91,10 @@ export async function getCategories(): Promise<{ name: string }[]> {
 
   try {
     const res = await db
-      .select({ name: categories.name })
-      .from(categories)
+      .select({ name: categories.name, description: categories.description })
+      .from(categories);
 
-    const names = res || [];
-    return names
+    return res || [];
   } catch (error: unknown) {
     const err = error as { code?: number };
     if (err.code === 401) {

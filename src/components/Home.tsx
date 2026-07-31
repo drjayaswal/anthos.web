@@ -1,13 +1,18 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { fetchMailsAction, analyzeMailsAction, syncEncryptedMailsToDb, loadMailsFromDatabaseAction } from '@/app/actions';
+import { useMemo, useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  fetchMailsAction,
+  syncEncryptedMailsToDb,
+  loadMailsFromDatabaseAction,
+  getCategoriesAction,
+  performGroqMailAnalysisAction,
+} from '@/app/actions';
 import { FetchOptions, LoadOptions, Mail } from '@/types';
 import { authClient } from '@/lib/auth-client';
-import { buildAnalyzePayload, mergeAnalyzedMails } from '@/lib/analyze-payload';
-import { deriveAnalyzeOptionsFromMails } from '@/lib/derive-analyze-options';
+import { mergeAnalyzedMails } from '@/lib/analyze-payload';
 import Header from './Header';
 import MailTable from './MailTable';
 import MailSheet from './MailSheet';
@@ -15,14 +20,12 @@ import MailInboxTabs, { type MailInboxTab } from './MailInboxTabs';
 import FetchDialog from './FetchDialog';
 import AnalyzeDialog from './AnalyzeDialog';
 import AnalyzedMailsPriorityGraph from './AnalyzedMailsPriorityGraph';
-import { apiRequest } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Loader from './Loader';
 import LoadDialog from './LoadDialog';
 import AccountDialog from './AccountDialog';
 import { useRouter } from 'next/navigation';
-
-type SystemStatus = 'Active' | 'Standby' | 'Processing' | 'Offline';
+import { RefreshCw } from 'lucide-react';
 
 export function toggleInSet(prev: Set<string>, id: string): Set<string> {
   const next = new Set(prev);
@@ -38,10 +41,11 @@ export default function Home({
   sessionUserEmail?: string | null;
   sessionUserId?: string | null;
 }) {
-  const [appLoading, setAppLoading] = useState(true);
+  const [appLoading, setAppLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<MailInboxTab>('fetched');
   const [fetchedMails, setFetchedMails] = useState<Mail[]>([]);
   const [analyzedMails, setAnalyzedMails] = useState<Mail[]>([]);
+  const [categories, setCategories] = useState<{ name: string }[]>([]);
   const [selectedFetchedIds, setSelectedFetchedIds] = useState<Set<string>>(new Set());
   const [selectedAnalyzedIds, setSelectedAnalyzedIds] = useState<Set<string>>(new Set());
   const [selectedEncryptedIds, setSelectedEncryptedIds] = useState<Set<string>>(new Set());
@@ -52,13 +56,27 @@ export default function Home({
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
   const [analyzeDialogOpen, setAnalyzeDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loadingText, setLoadingText] = useState<string>('');
   const [detailMail, setDetailMail] = useState<Mail | null>(null);
   const [encryptedMails, setEncryptedMails] = useState<Mail[]>([]);
-  const [orchestratorStatus, setOrchestratorStatus] = useState<SystemStatus>('Offline');
   const router = useRouter();
+
+  useEffect(() => {
+    (async () => {
+      const res = await getCategoriesAction();
+      if (res.ok && res.categories) {
+        setCategories(res.categories);
+      }
+    })();
+  }, []);
+
+  const hasCategories = categories.length > 0;
+
   const handleFetchFromCloud = (opts: FetchOptions) => {
     void (async () => {
       setLoading(true);
+      setLoadingText('Fetching latest emails from Gmail...');
+      setActiveTab('fetched');
       try {
         const result = await fetchMailsAction(opts);
         if (!result.ok || !result.mails) {
@@ -66,23 +84,25 @@ export default function Home({
           return;
         }
         setFetchedMails(result.mails);
-        setActiveTab('fetched');
         toast.success(`${result.mails.length > 0 ? result.mails.length : 'No'} Messages Fetched`);
       } finally {
         setLoading(false);
+        setLoadingText('');
       }
     })();
   };
 
   const handleSignOut = async () => {
     setLoading(true);
+    setLoadingText('Signing out...');
     setAnalyzing(true);
     await new Promise((r) => setTimeout(r, 400));
     await authClient.signOut();
     setLoading(false);
+    setLoadingText('');
     setAccountDialogOpen(false);
     setAnalyzing(false);
-    router.push("/thank-you")
+    router.push("/thank-you");
   };
 
   const selectedFetchedMails = useMemo(
@@ -91,6 +111,10 @@ export default function Home({
   );
 
   const openAnalyzeDialog = () => {
+    if (!hasCategories) {
+      toast.error('No categories found in database. Please add categories first.');
+      return;
+    }
     if (activeTab !== 'fetched') {
       setActiveTab('fetched');
     }
@@ -98,11 +122,18 @@ export default function Home({
       toast.error('Select fetched mails to analyze');
       return;
     }
+    if (selectedFetchedIds.size > 2) {
+      toast.error('You can analyze at most 2 mails at a time');
+      return;
+    }
     setAnalyzeDialogOpen(true);
   };
+
   const handleLoadFromDatabase = (opts: LoadOptions) => {
     void (async () => {
       setLoading(true);
+      setLoadingText('Loading saved mails from Database...');
+      setActiveTab('encrypted');
       try {
         const result = await loadMailsFromDatabaseAction(opts);
         if (!result.ok || !result.mails) {
@@ -110,13 +141,14 @@ export default function Home({
           return;
         }
         setEncryptedMails(result.mails);
-        setActiveTab('encrypted');
         toast.success(`${result.mails.length > 0 ? result.mails.length : 'No'} Messages Loaded`);
       } finally {
         setLoading(false);
+        setLoadingText('');
       }
     })();
-  }
+  };
+
   const handleAnalyzeSelected = (store: boolean) => {
     void (async () => {
       const selection = selectedFetchedMails;
@@ -124,45 +156,35 @@ export default function Home({
         toast.error('Select fetched mails to analyze');
         return;
       }
+      if (selection.length > 2) {
+        toast.error('You can analyze at most 2 mails at a time');
+        return;
+      }
       setAnalyzing(true);
-      setOrchestratorStatus('Processing');
+      setLoadingText('Analyzing selected mails with Groq AI...');
       try {
-        const data = await analyzeMailsAction(selection, store);
-        if (!data.ok) {
-          toast.error(data.error ?? 'Analyze failed');
+        const result = await performGroqMailAnalysisAction(selection);
+        if (!result.ok || !result.analyzedMails) {
+          toast.error(result.error ?? 'Groq analysis failed');
           return;
         }
-        const mails = data.missingInDb ?? [];
-        const options = data.options ?? deriveAnalyzeOptionsFromMails(selection, store);
-        const payload = buildAnalyzePayload(mails, options);
-        if (payload.mails.length === 0) {
-          toast.error('No mails in selection');
-          return;
-        }
-        const toastId = toast.loading('Analyzing');
-        const aiRes = await apiRequest<{ analyzedMails?: Mail[]; mails?: Mail[]; existingMails?: Mail[] }>(
-          '/analyze/mails',
-          { method: 'POST', body: payload },
-        );
-        toast.remove(toastId);
-        const merged = mergeAnalyzedMails(
-          [...payload.mails],
-          aiRes.analyzedMails ?? [...(aiRes.mails ?? []), ...(aiRes.existingMails ?? [])],
-        );
-        setAnalyzedMails((prev) => mergeAnalyzedMails(prev, merged));
+        const merged = mergeAnalyzedMails(analyzedMails, result.analyzedMails);
+        setAnalyzedMails(merged);
         setSelectedFetchedIds(new Set());
         setActiveTab('analyzed');
-        toast.success(`${merged.length} analyzed`);
+        toast.success(`${result.analyzedMails.length} mail(s) analyzed with Groq AI`);
+
         if (store) {
-          const syncResult = await syncEncryptedMailsToDb(merged);
-          if (syncResult.ok) toast.success(`${syncResult.count ?? merged.length} stored encrypted`);
+          const syncResult = await syncEncryptedMailsToDb(result.analyzedMails);
+          if (syncResult.ok) toast.success(`${result.analyzedMails.length} stored encrypted in DB`);
           else toast.error(syncResult.error ?? 'Store failed');
         }
-      } catch {
-        toast.error('Analyze failed');
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Analysis failed';
+        toast.error(msg);
       } finally {
-        setOrchestratorStatus('Offline');
         setAnalyzing(false);
+        setLoadingText('');
       }
     })();
   };
@@ -178,17 +200,26 @@ export default function Home({
       tabMails.filter(
         (m) =>
           m.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          m.sender.toLowerCase().includes(searchTerm.toLowerCase()),
+          m.sender.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          m.body.toLowerCase().includes(searchTerm.toLowerCase()),
       ),
     [tabMails, searchTerm],
   );
 
   const toggleAllFetched = () => {
-    setSelectedFetchedIds((prev) => {
-      if (filteredMails.every((m) => prev.has(m.id))) return new Set();
-      return new Set(filteredMails.map((m) => m.id));
-    });
+    if (activeTab !== 'fetched') return;
+    if (filteredMails.every((m) => selectedFetchedIds.has(m.id))) {
+      setSelectedFetchedIds(new Set());
+      return;
+    }
+    if (filteredMails.length > 2) {
+      toast.error('You can select at most 2 mails for analysis');
+      setSelectedFetchedIds(new Set(filteredMails.slice(0, 2).map((m) => m.id)));
+      return;
+    }
+    setSelectedFetchedIds(new Set(filteredMails.map((m) => m.id)));
   };
+
   const toggleAllEncrypted = () => {
     setSelectedEncryptedIds((prev) => {
       if (filteredMails.every((m) => prev.has(m.id))) return new Set();
@@ -204,17 +235,44 @@ export default function Home({
     });
   };
 
+  const handleStoreSingleEncrypted = (mail: Mail) => {
+    void (async () => {
+      setLoading(true);
+      setLoadingText('Encrypting & storing mail in database...');
+      try {
+        const res = await syncEncryptedMailsToDb([mail]);
+        if (res.ok) {
+          toast.success('Mail stored encrypted in database');
+        } else {
+          toast.error(res.error ?? 'Failed to store encrypted mail');
+        }
+      } catch {
+        toast.error('Failed to store encrypted mail');
+      } finally {
+        setLoading(false);
+        setLoadingText('');
+      }
+    })();
+  };
+
   if (appLoading) {
     return <Loader onComplete={() => setAppLoading(false)} />;
   }
 
   return (
-    <div className="min-h-0 p-3">
+    <div className="min-h-[calc(100vh-3.5rem)] w-full flex flex-col justify-center items-center py-4 sm:py-4 px-2 sm:px-6 md:px-8">
+      <MailInboxTabs
+        active={activeTab}
+        fetchedCount={fetchedMails.length}
+        analyzedCount={analyzedMails.length}
+        encryptedCount={encryptedMails.length}
+        onChange={setActiveTab}
+      />
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="mx-auto min-w-0 max-w-7xl space-y-4 text-black"
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="w-full max-w-6xl mx-auto space-y-4 text-black mt-8 sm:mt-10"
       >
         <Header
           searchTerm={searchTerm}
@@ -223,49 +281,72 @@ export default function Home({
           loading={loading}
           onAccount={() => setAccountDialogOpen(true)}
           onAnalyze={openAnalyzeDialog}
-          analyzeDisabled={selectedFetchedIds.size === 0}
+          analyzeDisabled={selectedFetchedIds.size === 0 || selectedFetchedIds.size > 2}
           onFetch={() => setFetchDialogOpen(true)}
           onLoadDataFromDatabase={() => setLoadDialogOpen(true)}
           sessionUserEmail={sessionUserEmail}
+          hasCategories={hasCategories}
         />
-        <Card className="min-w-0 bg-white border-gray-200/75 shadow-md m-0! overflow-hidden">
-          <CardHeader className="flex min-w-0 flex-col gap-4 border-gray-200/75 sm:flex-row sm:items-center sm:justify-between">
-            <MailInboxTabs
-              active={activeTab}
-              currentStatus={orchestratorStatus}
-              fetchedCount={fetchedMails.length}
-              analyzedCount={analyzedMails.length}
-              encryptedCount={encryptedMails.length}
-              onChange={setActiveTab}
-            />
-          </CardHeader>
-          <CardContent className="min-w-0 border-gray-200/75 px-3 sm:px-4">
+        <AnimatePresence>
+          {(loading || analyzing) && (
+            <motion.div
+              initial={{ opacity: 0, y: -8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-center justify-center gap-2.5 text-black text-xs font-medium"
+            >
+              <RefreshCw className="w-4 h-4 animate-spin text-[#ff3131] shrink-0" />
+              <span className="text-zinc-800 font-semibold">{loadingText || 'Processing request...'}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <Card className="w-full bg-transparent border-0 min-w-0 m-0! overflow-hidden">
+          <CardContent className="min-w-0 px-2 sm:px-4 py-3 border-none">
             <MailTable
               mails={filteredMails}
-              loading={loading && (activeTab === 'fetched' || activeTab === 'encrypted')}
+              loading={loading || analyzing}
               onMailClick={setDetailMail}
               selectable
               selectedIds={activeTab === 'fetched' ? selectedFetchedIds : activeTab === 'encrypted' ? selectedEncryptedIds : selectedAnalyzedIds}
-              onToggleSelect={(id) =>
-                activeTab === 'fetched'
-                  ? setSelectedFetchedIds((p) => toggleInSet(p, id))
-                  : activeTab === 'encrypted'
-                    ? setSelectedEncryptedIds((p) => toggleInSet(p, id))
-                    : setSelectedAnalyzedIds((p) => toggleInSet(p, id))
-              }
+              onToggleSelect={(id) => {
+                if (activeTab === 'fetched') {
+                  if (!selectedFetchedIds.has(id) && selectedFetchedIds.size >= 2) {
+                    toast.error('You can analyze at most 2 mails at a time');
+                    return;
+                  }
+                  setSelectedFetchedIds((p) => toggleInSet(p, id));
+                } else if (activeTab === 'encrypted') {
+                  setSelectedEncryptedIds((p) => toggleInSet(p, id));
+                } else {
+                  setSelectedAnalyzedIds((p) => toggleInSet(p, id));
+                }
+              }}
               onToggleAll={activeTab === 'fetched' ? toggleAllFetched : activeTab === 'encrypted' ? toggleAllEncrypted : toggleAllAnalyzed}
-              onRowHoldSelect={(mail) =>
-                activeTab === 'fetched'
-                  ? setSelectedFetchedIds((p) => toggleInSet(p, mail.id))
-                  : activeTab === 'encrypted'
-                    ? setSelectedEncryptedIds((p) => toggleInSet(p, mail.id))
-                    : setSelectedAnalyzedIds((p) => toggleInSet(p, mail.id))
-              }
+              onRowHoldSelect={(mail) => {
+                if (activeTab === 'fetched') {
+                  if (!selectedFetchedIds.has(mail.id) && selectedFetchedIds.size >= 2) {
+                    toast.error('You can analyze at most 2 mails at a time');
+                    return;
+                  }
+                  setSelectedFetchedIds((p) => toggleInSet(p, mail.id));
+                } else if (activeTab === 'encrypted') {
+                  setSelectedEncryptedIds((p) => toggleInSet(p, mail.id));
+                } else {
+                  setSelectedAnalyzedIds((p) => toggleInSet(p, mail.id));
+                }
+              }}
+              onStoreEncryptedMail={handleStoreSingleEncrypted}
+              hasCategories={hasCategories}
             />
           </CardContent>
         </Card>
-        {activeTab === 'encrypted' && encryptedMails.length > 0 ? (
-          <AnalyzedMailsPriorityGraph mails={encryptedMails} onOpenDetail={setDetailMail} />
+        {(activeTab === 'analyzed' && analyzedMails.length > 0) || (activeTab === 'encrypted' && encryptedMails.length > 0) ? (
+          <AnalyzedMailsPriorityGraph
+            mails={activeTab === 'analyzed' ? analyzedMails : encryptedMails}
+            categories={categories}
+            onOpenDetail={setDetailMail}
+          />
         ) : null}
       </motion.div>
       <MailSheet mail={detailMail} onClose={() => setDetailMail(null)} />

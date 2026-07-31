@@ -1,26 +1,24 @@
 'use client';
 
-import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
 
 export type MailInboxTab = 'fetched' | 'analyzed' | 'encrypted';
-
-const statusConfig = {
-  Active: { color: 'bg-green-600' },
-  Standby: { color: 'bg-amber-600' },
-  Processing: { color: 'bg-blue-600 animate-pulse' },
-  Offline: { color: 'bg-red-600' },
-} as const;
 
 type Props = {
   active: MailInboxTab;
   fetchedCount: number;
   analyzedCount: number;
   encryptedCount: number;
-  currentStatus?: 'Active' | 'Standby' | 'Processing' | 'Offline';
   onChange: (tab: MailInboxTab) => void;
 };
 
-export default function MailInboxTabs({ active, fetchedCount, analyzedCount, encryptedCount, currentStatus = 'Active', onChange }: Props) {
+export default function MailInboxTabs({
+  active,
+  fetchedCount,
+  analyzedCount,
+  encryptedCount,
+  onChange,
+}: Props) {
   const tabs: { id: MailInboxTab; label: string; count: number }[] = [
     { id: 'fetched', label: 'Fetched', count: fetchedCount },
     { id: 'analyzed', label: 'Analyzed', count: analyzedCount },
@@ -28,42 +26,34 @@ export default function MailInboxTabs({ active, fetchedCount, analyzedCount, enc
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-4">
-      <div className="flex flex-wrap gap-2">
-        {tabs.map((tab) => {
-          const isActive = active === tab.id;
+    <div className="fixed sm:top-3 top-13 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1.5 rounded-full bg-white/90 backdrop-blur-2xl border border-gray-200/80 shadow-xl ring-1 ring-black/5 transition-all duration-300">
+      {tabs.map((tab) => {
+        const isActive = active === tab.id;
 
-          return (
-            <Button
-              key={tab.id}
-              type="button"
-              variant={isActive ? "accent" : "light"}
-              onClick={() => onChange(tab.id)}
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => onChange(tab.id)}
+            className={cn(
+              'relative flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer outline-none select-none',
+              isActive
+                ? 'bg-[#ff3131] text-white shadow-sm shadow-[#ff3131]/30'
+                : 'text-zinc-700 hover:text-[#ff3131] hover:bg-zinc-100/80'
+            )}
+          >
+            <span>{tab.label}</span>
+            {tab.count > 0 && <span
+              className={cn(
+                'px-1.5 py-0.5 text-[10px] font-bold rounded-full transition-colors',
+                isActive ? 'bg-white/25 text-white' : 'bg-zinc-200/80 text-zinc-700'
+              )}
             >
-              <span className="relative z-10">
-                {tab.label}
-                {tab.count === 0 || <span className="absolute -top-2.5 -right-3.5 p-1 rounded-full bg-green-600" />}
-              </span>
-            </Button>
-          );
-        })}
-      </div>
-
-      <div className="flex items-center gap-1 sm:border-l sm:border-gray-200/75 pl-2 h-6">
-        {(['Active', 'Standby', 'Processing', 'Offline'] as const).map((s) => {
-          const isCurrent = currentStatus === s;
-          return (
-            <div
-              key={s}
-              className={`flex items-center gap-2 px-2 py-1 select-none transition-opacity ${isCurrent ? 'opacity-100 font-medium text-black' : 'opacity-40 text-gray-500'
-                }`}
-            >
-              <div className={`h-2 w-2 rounded-full ${statusConfig[s].color}`} />
-              <span className="sm:text-xs text-[9px]">{s}</span>
-            </div>
-          );
-        })}
-      </div>
+              {tab.count}
+            </span>}
+          </button>
+        );
+      })}
     </div>
   );
 }

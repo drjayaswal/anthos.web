@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { Loader2Icon, CircleQuestionMarkIcon } from 'lucide-react';
+import { Loader2Icon } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { Button } from './ui/button';
 import { toast } from '@/lib/toast';
@@ -51,19 +50,7 @@ export default function Auth() {
 
   return (
     <div className="min-h-[94.28vh] flex flex-col items-center justify-center">
-      <div className="w-full sm:max-w-sm max-w-68 border bg-white border-gray-200/75 shadow-xl sm:p-4 py-4 rounded-2xl space-y-4 flex flex-col items-center">
-        <div className="flex items-center gap-2 divide-x space-x-4 divide-gray-200/75">
-          <div className="sm:inline hidden px-2">
-            <Image
-              src="/about-our-team.svg"
-              alt="firemail"
-              width={100}
-              height={100}
-              quality={90}
-              style={{ width: 'auto', height: 'auto' }}
-              priority
-            />
-          </div>
+        <div className="flex items-center">
           <div className="flex flex-col gap-4 items-center justify-center">
             <Image
               src="/firemail-opensource.svg"
@@ -77,7 +64,7 @@ export default function Auth() {
           <Button
             type="button"
             size="xl"
-            variant="light"
+            variant="shadow"
             disabled={loading}
             className='px-4'
             onClick={handleGoogleSignIn}
@@ -97,7 +84,6 @@ export default function Auth() {
           </Button>
         </div>
         </div>
-      </div>
     </div>
   );
 }

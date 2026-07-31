@@ -61,7 +61,7 @@ export default function HelpCenter() {
   ];
 
   return (
-    <div className=" min-h-[94.15vh] p-7 flex justify-center">
+    <div className="min-h-[94.15vh] p-7 flex justify-center">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -69,7 +69,7 @@ export default function HelpCenter() {
         className="max-w-4xl w-full"
       >
         <div className="mb-12">
-          <h1 className="text-3xl font-semibold tracking-tight text-black mb-3">Documentation & Help</h1>
+          <h1 className="text-3xl font-semibold tracking-tight text-black mt-6">Documentation & Help</h1>
           <p className="text-black/75 text-sm">Learn how to securely fetch, analyze, and manage your intelligence with Firemail.</p>
         </div>
 
@@ -80,7 +80,7 @@ export default function HelpCenter() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: idx * 0.1 }}
-              className="bg-white p-6"
+              className="p-6"
             >
               <div className="flex items-center gap-3 mb-4">
                 {feature.icon}

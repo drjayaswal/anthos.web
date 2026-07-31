@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { BadgeCheckIcon, BarChart2Icon, BrainIcon, MessageSquareIcon, ShieldIcon, UserIcon } from "lucide-react";
+import { BadgeCheckIcon, ShieldIcon, UserIcon } from "lucide-react";
 import type { UserProfile } from "@/app/api/_db/profile";
 import { parseUserAgent } from "@/lib/utils";
 
@@ -18,11 +18,6 @@ type ExtendedSession = {
 type ExtendedUserProfile = UserProfile & {
   accessToken?: string;
   sessions?: ExtendedSession[];
-  conversations: {
-    totalConversations: number;
-    totalMessages: number;
-    avgMessagesPerConv: number;
-  };
 };
 
 function formatDate(val: string | Date | null): string {
@@ -124,56 +119,6 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
             />
           </dl>
         </section>
-        {profile.conversationAnalytics && (
-          <>
-            <section className="mt-3 overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm sm:mt-4">
-              <div className="border-b border-black/10 px-3 py-2 sm:px-4 sm:py-2.5">
-                <h2 className="flex items-center gap-1.5 text-xs font-medium sm:text-sm">
-                  <BarChart2Icon className="h-3.5 w-3.5 text-zinc-400" />
-                  Message Analytics
-                </h2>
-              </div>
-              <dl className="grid grid-cols-1 sm:grid-cols-3  px-3 sm:px-4 py-2">
-                <Field
-                  label="Response Time"
-                  value={`${profile.conversationAnalytics.avgResponseLatencySeconds}s`}
-                />
-                <Field
-                  label="Tokens/Query"
-                  value={`${profile.conversationAnalytics.avgUserMsgLength} tokens`}
-                />
-                <Field
-                  label="Tokens/Response"
-                  value={`${profile.conversationAnalytics.avgAssistantMsgLength} tokens`}
-                />
-              </dl>
-            </section>
-            {profile.conversationAnalytics.thinkingUsageCount > 0 && (
-              <section className="mt-3 overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm sm:mt-4">
-                <div className="border-b border-black/10 px-3 py-2 sm:px-4 sm:py-2.5">
-                  <h2 className="flex items-center gap-1.5 text-xs font-medium sm:text-sm">
-                    <BrainIcon className="h-3.5 w-3.5 text-zinc-400" />
-                    Extended Thinking
-                  </h2>
-                </div>
-                <dl className="grid grid-cols-1 sm:grid-cols-3  px-3 sm:px-4 py-2">
-                  <Field
-                    label="Replies with Thinking"
-                    value={`${profile.conversationAnalytics.thinkingUsageCount} of ${profile.conversationAnalytics.assistantCount}`}
-                  />
-                  <Field
-                    label="Thinking Tokens"
-                    value={`${profile.conversationAnalytics.avgThinkingLength} tokens`}
-                  />
-                  <Field
-                    label="Thinking Used"
-                    value={`${profile.conversationAnalytics.thinkingUsageCount} replies (${profile.conversationAnalytics.thinkingUsagePct}%)`}
-                  />
-                </dl>
-              </section>
-            )}
-          </>
-        )}
 
         <section className="mt-3 overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm sm:mt-4">
           <div className="border-b border-black/10 px-3 py-2 sm:px-4 sm:py-2.5">

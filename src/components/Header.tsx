@@ -1,15 +1,17 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import {
-  Search,
-  DeleteIcon,
   RefreshCw,
   User,
   DatabaseBackupIcon,
   CloudDownloadIcon,
+  Sparkles,
+  ChevronsLeft,
+  X,
 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { AnimatePresence, motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface HeaderProps {
   searchTerm: string;
@@ -22,11 +24,10 @@ interface HeaderProps {
   onFetch: () => void;
   onAccount: () => void;
   sessionUserEmail?: string | null;
+  hasCategories?: boolean;
 }
 
 export default function Header({
-  searchTerm,
-  setSearchTerm,
   analyzing,
   loading,
   onAnalyze,
@@ -35,93 +36,187 @@ export default function Header({
   onAccount,
   onFetch,
   sessionUserEmail,
+  hasCategories = true,
 }: HeaderProps) {
+  const [optionsOpen, setOptionsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOptionsOpen(false);
+    };
+    if (optionsOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [optionsOpen]);
+
+  useEffect(() => {
+    if (optionsOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [optionsOpen]);
+
+  const closeOptions = () => setOptionsOpen(false);
+
   return (
-    <header className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-      <div className="relative w-full sm:max-w-[240px] lg:max-w-[300px]">
-        <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors focus-within:text-foreground" />
-        <Input
-          placeholder="Search Firebox..."
-          className="w-full pl-8 pr-8 sm:h-8 text-sm"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        {searchTerm && (
-          <button
-            type="button"
-            onClick={() => setSearchTerm('')}
-            className="absolute right-1 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center cursor-pointer justify-center text-muted-foreground transition-colors hover:text-red-600 sm:h-6 sm:w-6"
-            aria-label="Clear search"
-          >
-            <DeleteIcon className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
-          </button>
-        )}
-      </div>
-
-      <div className="flex items-center gap-2 sm:w-auto">
-        <Button
-          type="button"
-          variant="accent"
-          size="sm"
-          onClick={onAnalyze}
-          disabled={analyzing || analyzeDisabled}
-          className="flex-1 gap-2 sm:flex-none"
-          title="Analyze"
-        >
-          <span>Analyze</span>
-        </Button>
-
-        <Button
-          type="button"
-          variant="light"
-          size="sm"
-          onClick={onFetch}
-          disabled={loading}
-          title="Fetch from Gmail"
-        >
-          {loading ? (
-            <RefreshCw className="h-4 w-4 shrink-0 animate-spin" />
-          ) : (
-            <CloudDownloadIcon className="h-4 w-4 shrink-0" />
-          )}
-          <span className="hidden sm:inline-block">
-            {loading ? '...' : 'Fetch'}
-          </span>
-        </Button>
-
-        <Button
-          type="button"
-          variant="light"
-          size="sm"
-          onClick={onLoadDataFromDatabase}
-          disabled={loading}
-          title="Load from database"
-        >
-          <DatabaseBackupIcon
-            className={`h-4 w-4 shrink-0 ${loading ? 'animate-pulse' : ''}`}
-          />
-          <span className="hidden sm:inline-block">
-            {loading ? '...' : 'Load'}
-          </span>
-        </Button>
-
-        {sessionUserEmail && (
-          <div className="ml-auto flex shrink-0 sm:ml-0">
-            <Button
+    <>
+      <header className="flex w-full items-center justify-between gap-3">
+        {!optionsOpen && (
+          <div className="fixed top-2 right-2 z-40">
+            <button
               type="button"
-              variant="light"
-              size="sm"
-              onClick={onAccount}
-              title={sessionUserEmail}
+              onClick={() => setOptionsOpen(true)}
+              aria-expanded={optionsOpen}
+              aria-label="Open options menu"
+              className={cn(
+                'group relative flex items-center justify-center gap-2 px-3 py-2 rounded-full transition-all duration-300 outline-none cursor-pointer shadow-xs hover:shadow-md',
+                'bg-white/90 backdrop-blur-md border-2 border-gray-200/50'
+              )}
             >
-              <User className="h-4 w-4 shrink-0 text-black" />
-              <span className="hidden max-w-[140px] truncate sm:inline-block">
-                Account
-              </span>
-            </Button>
+              <div className="flex items-center gap-1">
+                <ChevronsLeft className="w-4 h-4 text-[#ff3131] transition-transform duration-300 group-hover:-translate-x-0.5" />
+                <span className="text-xs font-semibold tracking-tight text-zinc-800 group-hover:text-[#ff3131] transition-colors">
+                  Options
+                </span>
+              </div>
+            </button>
           </div>
         )}
-      </div>
-    </header>
+      </header>
+
+      <AnimatePresence>
+        {optionsOpen && (
+          <>
+            <motion.div
+              key="options-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-xs"
+              onClick={closeOptions}
+            />
+
+            <motion.div
+              key="options-dock"
+              initial={{ opacity: 0, scale: 0.8, x: 20 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.8, x: 20 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+              className="fixed top-2 right-2 z-50 flex items-center gap-2 p-2 rounded-full bg-white/90 backdrop-blur-2xl border border-gray-200/80 shadow-2xl ring-1 ring-black/5"
+            >
+              {hasCategories && (
+                <div className="relative group/dock">
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.2, y: -2 }}
+                    whileTap={{ scale: 0.92 }}
+                    onClick={() => {
+                      onAnalyze();
+                      closeOptions();
+                    }}
+                    disabled={analyzing || analyzeDisabled}
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-[#ff3131] to-red-500 text-white shadow-md shadow-red-500/25 cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-shadow hover:shadow-lg hover:shadow-red-500/40"
+                    aria-label="Analyze Mails"
+                  >
+                    <Sparkles className="w-5 h-5" />
+                  </motion.button>
+                  <div className="absolute top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover/dock:opacity-100 transition-all duration-200 pointer-events-none z-60 whitespace-nowrap bg-zinc-900 text-white text-[11px] font-medium px-2.5 py-1 rounded-md shadow-md">
+                    Analyze Mails
+                  </div>
+                </div>
+              )}
+
+              <div className="relative group/dock">
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.2, y: -2 }}
+                  whileTap={{ scale: 0.92 }}
+                  onClick={() => {
+                    onFetch();
+                    closeOptions();
+                  }}
+                  disabled={loading}
+                  className="flex items-center justify-center w-10 h-10 cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                  aria-label="Fetch from Gmail"
+                >
+                  {loading ? (
+                    <RefreshCw className="w-5 h-5 animate-spin text-[#ff3131]" />
+                  ) : (
+                    <CloudDownloadIcon className="w-5 h-5" />
+                  )}
+                </motion.button>
+                <div className="absolute top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover/dock:opacity-100 transition-all duration-200 pointer-events-none z-60 whitespace-nowrap bg-zinc-900 text-white text-[11px] font-medium px-2.5 py-1 rounded-md shadow-md">
+                  {loading ? 'Fetching...' : 'Fetch from Gmail'}
+                </div>
+              </div>
+
+              <div className="relative group/dock">
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.2, y: -2 }}
+                  whileTap={{ scale: 0.92 }}
+                  onClick={() => {
+                    onLoadDataFromDatabase();
+                    closeOptions();
+                  }}
+                  disabled={loading}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-zinc-100 text-zinc-700 hover:text-[#ff3131] hover:bg-[#ff3131]/10 border border-zinc-200/60 cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                  aria-label="Load from Database"
+                >
+                  <DatabaseBackupIcon className={`w-5 h-5 ${loading ? 'animate-pulse' : ''}`} />
+                </motion.button>
+                <div className="absolute top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover/dock:opacity-100 transition-all duration-200 pointer-events-none z-60 whitespace-nowrap bg-zinc-900 text-white text-[11px] font-medium px-2.5 py-1 rounded-md shadow-md">
+                  {loading ? 'Loading...' : 'Load Database'}
+                </div>
+              </div>
+
+              {sessionUserEmail && (
+                <div className="relative group/dock">
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.2, y: -2 }}
+                    whileTap={{ scale: 0.92 }}
+                    onClick={() => {
+                      onAccount();
+                      closeOptions();
+                    }}
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-zinc-100 text-zinc-700 hover:text-[#ff3131] hover:bg-[#ff3131]/10 border border-zinc-200/60 cursor-pointer transition-colors"
+                    aria-label="Account Settings"
+                  >
+                    <User className="w-5 h-5" />
+                  </motion.button>
+                  <div className="absolute top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover/dock:opacity-100 transition-all duration-200 pointer-events-none z-60 whitespace-nowrap bg-zinc-900 text-white text-[11px] font-medium px-2.5 py-1 rounded-md shadow-md">
+                    Account
+                  </div>
+                </div>
+              )}
+              <div className="w-px h-6 bg-zinc-200 mx-0.5" />
+
+              <div className="relative group/dock">
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={closeOptions}
+                  className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-200/70 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-300/80 cursor-pointer transition-colors"
+                  aria-label="Close dock"
+                >
+                  <X className="w-4 h-4" />
+                </motion.button>
+                <div className="absolute top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover/dock:opacity-100 transition-all duration-200 pointer-events-none z-60 whitespace-nowrap bg-zinc-900 text-white text-[11px] font-medium px-2 py-1 rounded-md shadow-md">
+                  Close
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

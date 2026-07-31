@@ -14,6 +14,7 @@ import { getCategoriesAction } from '@/app/actions';
 type Props = {
   mails: Mail[];
   onOpenDetail: (mail: Mail) => void;
+  categories?: { name: string; description?: string | null }[];
 };
 
 function hashSpreadY(id: string): number {
@@ -21,6 +22,7 @@ function hashSpreadY(id: string): number {
   for (let i = 0; i < id.length; i++) h = Math.imul(31, h) + id.charCodeAt(i);
   return ((h >>> 0) % 10_000 / 9_999) * 2 - 1;
 }
+
 function PriorityLegend() {
   const legendItems = [
     { label: "Archive", color: "bg-emerald-600" },
@@ -43,14 +45,20 @@ function PriorityLegend() {
     </div>
   );
 }
-function getPriorityForCategory(mail: Mail, catName: string): string | null {
+
+function getPriorityForCategory(mail: Mail, catName: string): any {
   const cats = mail.categories;
   const pris = mail.priority;
   if (!cats || !pris) return null;
-  const idx = cats.indexOf(catName);
-  if (idx === -1) return null;
-  const val = Array.isArray(pris) ? pris[idx] : idx === 0 ? pris ?? null : null;
-  return val ?? null;
+  if (Array.isArray(cats)) {
+    const idx = cats.indexOf(catName);
+    if (idx === -1) return null;
+    return Array.isArray(pris) ? pris[idx] : pris;
+  }
+  if ((cats as unknown as string) === catName) {
+    return Array.isArray(pris) ? pris[0] : pris;
+  }
+  return null;
 }
 
 function toPlotPercent(priorityNorm: number, yNorm: number): { left: number; top: number } {
@@ -108,10 +116,10 @@ function getPriorityStyles(pri: number) {
   };
 }
 
-export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail }: Props) {
+export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, categories: initialCategories }: Props) {
   const [activeTab, setActiveTab] = useState(0);
   const [preview, setPreview] = useState<Mail | null>(null);
-  const [fetchedCategories, setFetchedCategories] = useState<{ name: string }[]>([]);
+  const [fetchedCategories, setFetchedCategories] = useState<{ name: string; description?: string | null }[]>([]);
   const [svgSize, setSvgSize] = useState({ w: 0, h: 0 });
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -123,11 +131,19 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail }: Prop
     })();
   }, []);
 
+  const allCategories = useMemo(() => {
+    return initialCategories && initialCategories.length > 0 ? initialCategories : fetchedCategories;
+  }, [initialCategories, fetchedCategories]);
+
   const validCategories = useMemo(() =>
-    fetchedCategories.filter((cat) =>
-      mails.some((m) => m.categories?.includes(cat.name))
+    allCategories.filter((cat) =>
+      mails.some((m) => {
+        if (!m.categories) return false;
+        if (Array.isArray(m.categories)) return m.categories.includes(cat.name);
+        return (m.categories as unknown as string) === cat.name;
+      })
     ),
-    [fetchedCategories, mails]
+    [allCategories, mails]
   );
 
   useEffect(() => {
@@ -140,7 +156,11 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail }: Prop
 
   const filteredMails = useMemo(() =>
     activeCat
-      ? mails.filter((m) => m.categories?.includes(activeCat))
+      ? mails.filter((m) => {
+          if (!m.categories) return false;
+          if (Array.isArray(m.categories)) return m.categories.includes(activeCat);
+          return (m.categories as unknown as string) === activeCat;
+        })
       : [],
     [mails, activeCat]
   );

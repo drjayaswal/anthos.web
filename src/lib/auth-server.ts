@@ -74,12 +74,16 @@ export async function syncAppUserFromAuthAccount(
 
 async function refreshGoogleAccessToken(refreshToken: string): Promise<{
   accessToken?: string;
+  refreshToken?: string;
   expiresAt?: Date;
   error?: string;
 }> {
   try {
     const response = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
       body: new URLSearchParams({
         client_id: process.env.AUTH_GOOGLE_ID!,
         client_secret: process.env.AUTH_GOOGLE_SECRET!,
@@ -88,13 +92,21 @@ async function refreshGoogleAccessToken(refreshToken: string): Promise<{
       }),
     });
 
-    const tokens: { access_token?: string; expires_in?: number; error?: string } =
+    const tokens: { access_token?: string; refresh_token?: string; expires_in?: number; error?: string } =
       await response.json();
-    if (!response.ok) throw tokens;
+    if (!response.ok) {
+      console.error("Google OAuth refresh error response:", tokens);
+      throw tokens;
+    }
 
     const expiresAt = new Date(Date.now() + (tokens.expires_in ?? 3600) * 1000);
-    return { accessToken: tokens.access_token, expiresAt };
-  } catch {
+    return {
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+      expiresAt,
+    };
+  } catch (err: unknown) {
+    console.error("Google token refresh exception:", err);
     return { error: "RefreshAccessTokenError" };
   }
 }
@@ -131,10 +143,13 @@ export async function resolveGoogleAccessToken(userId: string): Promise<{
     return { error: refreshed.error ?? "RefreshAccessTokenError" };
   }
 
+  const updatedRefreshToken = refreshed.refreshToken || account.refreshToken;
+
   await db
     .update(accountTable)
     .set({
       accessToken: refreshed.accessToken,
+      refreshToken: updatedRefreshToken,
       accessTokenExpiresAt: refreshed.expiresAt,
       updatedAt: new Date(),
     })
@@ -143,6 +158,7 @@ export async function resolveGoogleAccessToken(userId: string): Promise<{
   await syncAppUserFromAuthAccount({
     ...account,
     accessToken: refreshed.accessToken,
+    refreshToken: updatedRefreshToken,
     accessTokenExpiresAt: refreshed.expiresAt ?? account.accessTokenExpiresAt,
   });
 

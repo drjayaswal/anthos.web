@@ -8,15 +8,12 @@ import {
   session,
   account,
   verification,
-  deviceCode,
 } from "@/app/db/schema";
 import {
   syncAppUserFromAuthAccount,
   resolveGoogleAccessToken,
   type AppSession,
 } from "@/lib/auth-server";
-
-import { deviceAuthorization } from "better-auth/plugins";
 
 function authBaseUrl(): string {
   const url = process.env.BETTER_AUTH_URL ?? process.env.NEXTAUTH_URL;
@@ -45,7 +42,6 @@ export const auth = createBetterAuth({
       session: session,
       account: account,
       verification: verification,
-      deviceCode: deviceCode,
     },
   }),
   user: {
@@ -53,6 +49,8 @@ export const auth = createBetterAuth({
   },
   session: {
     modelName: "session",
+    expiresIn: 60 * 60 * 24 * 7,
+    updateAge: 60 * 60 * 24,
   },
   account: {
     modelName: "account",
@@ -65,6 +63,7 @@ export const auth = createBetterAuth({
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
       accessType: "offline",
+      prompt: "consent",
       scope: [
         "openid",
         "email",
@@ -89,14 +88,6 @@ export const auth = createBetterAuth({
   },
   plugins: [
     nextCookies(),
-    deviceAuthorization({ 
-      verificationUri: "/device", 
-      userCodeLength: 6,
-      schema: {},
-      validateClient: async (clientId) => {
-        return clientId === process.env.AUTH_CLIENT_ID;
-      },
-    }),
   ],
 });
 

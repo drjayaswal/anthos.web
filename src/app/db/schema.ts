@@ -6,24 +6,11 @@ import {
   index,
   uniqueIndex,
   decimal,
-  integer,
   jsonb,
   boolean,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-export const deviceCode = pgTable("device_code", {
-  id: text("id").primaryKey(),
-  deviceCode: text("device_code").notNull().unique(),
-  userCode: text("user_code").notNull().unique(),
-  userId: text("user_id"),
-  clientId: text("client_id"),
-  scope: text("scope"),
-  status: text("status").notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
-  lastPolledAt: timestamp("last_polled_at"),
-  pollingInterval: integer("polling_interval"),
-});
 export const encryptedMail = pgTable("encrypted_mail", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: text("userId").notNull().references(() => user.id, { onDelete: "cascade" }),
@@ -50,7 +37,6 @@ export const encryptedMailRelations = relations(encryptedMail, ({ one }) => ({
   user: one(user, { fields: [encryptedMail.userId], references: [user.id] }),
 }));
 
-
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -72,20 +58,6 @@ export const session = pgTable("session", {
   userId: text("userId").notNull().references(() => user.id, { onDelete: "cascade" })
 },
   (table) => [index("session_userId_idx").on(table.userId)],
-);
-
-export const conversations = pgTable("conversations", {
-  id: text("id").primaryKey(),
-  title: text("title").notNull(),
-  messages: jsonb("messages").notNull().default([]),
-  userId: text("userId").notNull().references(() => user.id, { onDelete: "cascade" }),
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-},
-  (table) => [
-    index("conversations_user_idx").on(table.userId),
-    index("conversations_created_idx").on(table.createdAt),
-  ],
 );
 
 export const account = pgTable("account", {

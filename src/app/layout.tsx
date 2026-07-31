@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import Loading from "./loading";
 import "./globals.css";
 import { Toaster } from "@/components/Toaster";
 
@@ -57,7 +56,7 @@ export default function RootLayout({
     <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <body className="bg-gray-50 flex flex-col select-none">
         <Toaster />
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={null}>
           <main className="flex-1">
             {children}
           </main>
