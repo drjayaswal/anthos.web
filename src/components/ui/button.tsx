@@ -9,7 +9,6 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        shadow:"border active:border-gray-200/50 active:bg-gray-100/50 active:shadow-inner text-black rounded-xl",
         light:"border border-gray-200/75 bg-white hover:-translate-y-px active:translate-y-px hover:shadow-sm text-black rounded-xl",
         classic: "bg-white hover:opacity-85 text-black active:scale-98 active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0",
         classic_accent: "bg-white hover:bg-accent hover:text-black text-black active:scale-98 active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0",

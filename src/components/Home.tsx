@@ -260,7 +260,7 @@ export default function Home({
   }
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] w-full flex flex-col justify-center items-center py-4 sm:py-4 px-2 sm:px-6 md:px-8">
+    <div className="min-h-[calc(100vh-3.5rem)] w-full flex flex-col justify-start items-center py-4 sm:py-6 px-2 sm:px-6 md:px-8">
       <MailInboxTabs
         active={activeTab}
         fetchedCount={fetchedMails.length}
@@ -272,7 +272,7 @@ export default function Home({
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="w-full max-w-6xl mx-auto space-y-4 text-black mt-8 sm:mt-10"
+        className="w-full max-w-6xl mx-auto space-y-4 text-black mt-4 sm:mt-6"
       >
         <Header
           searchTerm={searchTerm}
@@ -294,9 +294,9 @@ export default function Home({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
               transition={{ duration: 0.2 }}
-              className="flex items-center justify-center gap-2.5 text-black text-xs font-medium"
+              className="flex items-center justify-center gap-2.5 text-black text-xs sm:text-sm font-medium mt-4 mb-2 sm:mt-6 sm:mb-3 py-2"
             >
-              <RefreshCw className="w-4 h-4 animate-spin text-[#ff3131] shrink-0" />
+              <RefreshCw className="w-4 h-4 sm:w-4.5 sm:h-4.5 animate-spin text-[#ff3131] shrink-0" />
               <span className="text-zinc-800 font-semibold">{loadingText || 'Processing request...'}</span>
             </motion.div>
           )}

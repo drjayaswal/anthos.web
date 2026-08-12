@@ -83,7 +83,6 @@ Output MUST be a valid JSON object matching this schema strictly:
         parsed = { category: categoryNames[0], priority: 0.5, summary: mail.subject };
       }
 
-      // Map to EXACTLY ONE primary category
       const assignedCategory = typeof parsed.category === 'string' && categoryNames.includes(parsed.category)
         ? parsed.category
         : (Array.isArray(parsed.categories) && parsed.categories.find((c) => categoryNames.includes(c))) || categoryNames[0];

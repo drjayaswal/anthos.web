@@ -65,7 +65,7 @@ export default function MailTable({
       window.removeEventListener('scroll', handleClick, true);
     };
   }, [contextMenu]);
-
+console.log(mails)
   const clearHold = () => {
     if (holdTimer.current) {
       clearTimeout(holdTimer.current);
@@ -84,24 +84,24 @@ export default function MailTable({
   };
 
   return (
-    <div className="overflow-x-auto no-scrollbar">
-      <Table>
+    <div className="w-full sm:m-0 mt-10 overflow-x-auto no-scrollbar">
+      <Table className="w-full min-w-125 sm:min-w-full table-fixed">
         <TableHeader>
-          <TableRow>
+          <TableRow className="border-b border-black/5 hover:bg-transparent">
             {selectable ? (
-              <TableHead className="w-10">
-                {selectedIds?.size || allSelected ?
+              <TableHead className="w-10 sm:w-12 px-2 sm:px-3 text-center">
+                <div className="flex items-center justify-center">
                   <Checkbox checked={allSelected} onCheckedChange={() => onToggleAll?.()} aria-label="Select all" />
-                  : null}
+                </div>
               </TableHead>
             ) : null}
             {mails.length !== 0 && 
             <>
-            <TableHead className="text-[10px] uppercase tracking-wider text-muted-foreground sm:text-[12px] sm:tracking-widest">Status</TableHead>
-            <TableHead className="text-[10px] uppercase tracking-wider text-muted-foreground sm:text-[12px] sm:tracking-widest">Origin</TableHead>
-            <TableHead className="text-[10px] uppercase tracking-wider text-muted-foreground sm:text-[12px] sm:tracking-widest">Subject</TableHead>
-            <TableHead className="hidden text-[10px] uppercase tracking-wider text-muted-foreground md:table-cell sm:text-[12px] sm:tracking-widest">Body</TableHead>
-            <TableHead className="hidden text-[10px] uppercase tracking-wider text-muted-foreground sm:table-cell sm:text-[12px] sm:tracking-widest">Time</TableHead>
+            <TableHead className="w-20 sm:w-24 px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-muted-foreground font-semibold">Status</TableHead>
+            <TableHead className="w-[30%] sm:w-[24%] md:w-[18%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-muted-foreground font-semibold">Origin</TableHead>
+            <TableHead className="w-[50%] sm:w-[56%] md:w-[32%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-muted-foreground font-semibold">Subject</TableHead>
+            <TableHead className="hidden md:table-cell md:w-[38%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-muted-foreground font-semibold">Body</TableHead>
+            <TableHead className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 text-right text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-muted-foreground font-semibold">Time</TableHead>
             </>
             }
           </TableRow>
@@ -110,26 +110,28 @@ export default function MailTable({
           <AnimatePresence mode="popLayout">
             {loading ? (
               Array.from({ length: 6 }).map((_, i) => (
-                <TableRow key={`skeleton-${i}`} className="">
+                <TableRow key={`skeleton-${i}`} className="border-b border-black/5">
                   {selectable ? (
-                    <TableCell>
-                      <Skeleton className="h-4 w-4 bg-white/5" />
+                    <TableCell className="w-10 sm:w-12 px-2 sm:px-3">
+                      <div className="flex items-center justify-center">
+                        <Skeleton className="h-4 w-4 bg-black/10 rounded" />
+                      </div>
                     </TableCell>
                   ) : null}
-                  <TableCell>
-                    <Skeleton className="h-4 w-16 bg-white/5" />
+                  <TableCell className="w-20 sm:w-24 px-2">
+                    <Skeleton className="h-4 w-14 sm:w-16 bg-black/10 rounded-full" />
                   </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-32 bg-white/5" />
+                  <TableCell className="w-[30%] sm:w-[24%] md:w-[18%] px-2">
+                    <Skeleton className="h-4 w-24 sm:w-32 bg-black/10 rounded" />
                   </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-32 bg-white/5" />
+                  <TableCell className="w-[50%] sm:w-[56%] md:w-[32%] px-2">
+                    <Skeleton className="h-4 w-32 sm:w-48 bg-black/10 rounded" />
                   </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-32 bg-white/5" />
+                  <TableCell className="hidden md:table-cell md:w-[38%] px-2">
+                    <Skeleton className="h-4 w-40 sm:w-64 bg-black/10 rounded" />
                   </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="ml-auto h-4 w-24 bg-white/5" />
+                  <TableCell className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 text-right">
+                    <Skeleton className="ml-auto h-4 w-16 sm:w-20 bg-black/10 rounded" />
                   </TableCell>
                 </TableRow>
               ))
@@ -152,7 +154,7 @@ export default function MailTable({
                     exit={{ opacity: 0, scale: 0.98 }}
                     key={mail.id}
                     className={cn(
-                      'group cursor-pointer rounded-xl transition-colors text-black hover:bg-black/3',
+                      'group cursor-pointer rounded-xl transition-colors text-black hover:bg-black/5',
                       selected && 'bg-accent/10 hover:bg-accent/10 text-black',
                     )}
                     onContextMenu={(e) => {
@@ -180,30 +182,32 @@ export default function MailTable({
                     }}
                   >
                     {selectable ? (
-                      <TableCell className="py-2 sm:py-4" onClick={(e) => e.stopPropagation()}>
-                        <Checkbox
-                          checked={selected}
-                          className='data-checked:bg-accent data-checked:border-accent'
-                          onCheckedChange={() => onToggleSelect?.(mail.id)}
-                          aria-label={`Select ${mail.subject}`}
-                        />
+                      <TableCell className="w-10 sm:w-12 px-2 sm:px-3 py-2.5 sm:py-3.5" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-center">
+                          <Checkbox
+                            checked={selected}
+                            className="data-checked:bg-accent data-checked:border-accent"
+                            onCheckedChange={() => onToggleSelect?.(mail.id)}
+                            aria-label={`Select ${mail.subject}`}
+                          />
+                        </div>
                       </TableCell>
                     ) : null}
-                    <TableCell className="py-2 sm:py-4">
-                      <Badge variant={mail.status === 'unread' ? 'failure_light' : 'success_light'} className="px-1.5 py-0 text-[9px] capitalize sm:px-2 sm:text-[10px]">
+                    <TableCell className="w-20 sm:w-24 px-2 py-2.5 sm:py-3.5">
+                      <Badge variant={mail.status === 'unread' ? 'failure_light' : 'success_light'} className="px-2 py-0.5 text-[9px] capitalize sm:px-2.5 sm:text-[10px] font-semibold shadow-xs">
                         {mail.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="max-w-[28vw] py-2 text-xs tracking-tight sm:max-w-none sm:py-4 sm:text-sm">
-                      <span className="block truncate sm:max-w-[280px]">{mail.sender.split('<')[0]}</span>
+                    <TableCell className="w-[30%] sm:w-[24%] md:w-[18%] px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden">
+                      <span className="block truncate font-semibold text-zinc-900">{mail.sender.split('<')[0]}</span>
                     </TableCell>
-                    <TableCell className="max-w-[36vw] py-2 text-xs tracking-tight sm:max-w-none sm:py-4 sm:text-sm">
-                      <span className="block truncate sm:max-w-[280px]">{mail.subject}</span>
+                    <TableCell className="w-[50%] sm:w-[56%] md:w-[32%] px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden">
+                      <span className="block truncate font-medium text-zinc-700">{mail.subject}</span>
                     </TableCell>
-                    <TableCell className="hidden max-w-[40vw] py-2 text-xs tracking-tight md:table-cell sm:py-4 sm:text-sm sm:max-w-none">
-                      <span className="block truncate sm:max-w-[280px]">{formatEmailContent(mail.body)}</span>
+                    <TableCell className="hidden md:table-cell md:w-[38%] px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden">
+                      <span className="block truncate text-zinc-500">{formatEmailContent(mail.body)}</span>
                     </TableCell>
-                    <TableCell className="hidden py-2 text-right text-[10px] text-muted-foreground sm:table-cell sm:py-4 sm:text-xs">
+                    <TableCell className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 py-2.5 text-right text-[10px] text-muted-foreground sm:py-3.5 sm:text-xs">
                       {new Date(mail.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                     </TableCell>
                   </motion.tr>
@@ -214,7 +218,6 @@ export default function MailTable({
         </TableBody>
       </Table>
 
-      {/* Right-Click Context Menu */}
       <AnimatePresence>
         {contextMenu && (
           <motion.div
@@ -230,7 +233,6 @@ export default function MailTable({
               {contextMenu.mail.subject || 'Mail Options'}
             </div>
 
-            {/* 1. Analyze (Disabled) */}
             {hasCategories && (
               <button
                 type="button"
@@ -245,7 +247,6 @@ export default function MailTable({
               </button>
             )}
 
-            {/* 2. Refresh Page */}
             <button
               type="button"
               onClick={() => {
@@ -258,7 +259,6 @@ export default function MailTable({
               <span>Refresh Page</span>
             </button>
 
-            {/* 3. Store Encrypted in DB */}
             <button
               type="button"
               onClick={() => {

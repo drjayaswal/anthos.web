@@ -14,5 +14,6 @@ export default async function AppNavbarShell() {
       authenticated={Boolean(session?.user?.id)}
       isAdmin={isAdminEmail(session?.user?.email)}
     />
+    
   );
 }

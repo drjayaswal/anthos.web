@@ -67,9 +67,7 @@ export async function syncAppUserFromAuthAccount(
         id_token: account.idToken,
       },
     });
-  } catch {
-    // keep auth flow resilient if app user sync fails
-  }
+  } catch {}
 }
 
 async function refreshGoogleAccessToken(refreshToken: string): Promise<{

@@ -55,21 +55,8 @@ export const Toaster = () => {
                 damping: 30,
                 mass: 1
               }}
-              className="pointer-events-auto flex items-center gap-3 overflow-hidden bg-white border border-black/10 px-2 py-1.5 rounded-3xl shadow-2xl min-w-[280px]"
+              className="pointer-events-auto flex items-center gap-3 overflow-hidden bg-white border border-black/10 pl-4 pr-3 py-2 rounded-xl shadow-2xl min-w-70"
             >
-              <div className="shrink-0">
-                 <Image 
-                    width={30} 
-                    height={30} 
-                    src={config.src}
-                    alt={t.type}
-                    className={cn(
-                      "object-cover pointer-events-none",
-                      t.type === 'loading' && "grayscale animate-pulse"
-                    )}
-                  />
-              </div>
-
               <p className="text-black text-sm tracking-tight z-10 flex-1">
                 {t.message}
               </p>

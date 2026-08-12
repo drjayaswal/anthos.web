@@ -61,27 +61,17 @@ export default function Auth() {
               style={{ width: '240px', height: 'auto' }}
               priority
             />
-          <Button
+          <button
             type="button"
-            size="xl"
-            variant="shadow"
             disabled={loading}
-            className='px-4'
+            className={`cursor-pointer active:bg-gray-200/30 active:shadow-inner text-black rounded-2xl px-4 py-2 ${loading && "bg-gray-200/30 shadow-inner flex justify-center items-center gap-2"}`}
             onClick={handleGoogleSignIn}
           >
-            {loading ? (
-              <Loader2Icon className="h-[18px] w-[18px] animate-spin" />
-            ) : (
-              <Image
-                src="/google.svg"
-                alt="Google"
-                width={18}
-                height={18}
-                className="bg-white p-0.5 rounded-sm"
-              />
+            {loading && (
+              <Loader2Icon className="h-4.5 w-4.5 animate-spin" />
             )}
             {loading ? 'Redirecting…' : 'Continue with Google'}
-          </Button>
+          </button>
         </div>
         </div>
     </div>

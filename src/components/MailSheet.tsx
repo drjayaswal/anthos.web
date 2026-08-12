@@ -48,7 +48,7 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-            className="fixed bottom-0 left-0 right-0 z-70 flex max-h-[88dvh] flex-col rounded-t-2xl border border-b-0 border-gray-200/75 bg-white shadow-2xl"
+            className="fixed bottom-0 left-0 right-0 z-70 flex max-h-[88dvh] flex-col rounded-t-[30px] mx-2 border border-b-0 border-gray-200/75 bg-white shadow-2xl"
           >
             <div className="flex shrink-0 justify-center pt-3 pb-1">
               <div className="h-1 w-8 rounded-full bg-gray-200/75" />
@@ -62,7 +62,7 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
 
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-semibold text-black truncate max-w-[160px] sm:max-w-xs">
+                      <p className="text-sm font-semibold text-black truncate max-w-40 sm:max-w-xs">
                         {mail.sender}
                       </p>
                       <Badge
@@ -82,7 +82,7 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="shrink-0 h-7 w-7 rounded-full flex items-center justify-center text-black/40 hover:text-black hover:bg-black/5 transition-colors"
+                  className="shrink-0 h-7 w-7 cursor-pointer rounded-full flex items-center justify-center text-black/40 hover:text-black hover:bg-black/5 transition-colors"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -95,7 +95,7 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
                 </div>
               )}
             </div>
-            <div className="shrink-0 px-4 sm:px-5 py-3 border-b border-black/10 bg-black/[0.02]">
+            <div className="shrink-0 px-4 sm:px-5 py-3 border-b border-black/10 bg-black/2">
               <h2 className="text-base sm:text-lg font-semibold leading-snug text-black wrap-break-word">
                 {mail.subject}
               </h2>

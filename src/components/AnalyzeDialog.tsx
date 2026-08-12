@@ -57,7 +57,7 @@ export default function AnalyzeDialog({ open, onOpenChange, selectedCount, onAna
                     <TooltipTrigger asChild>
                       <Info className="h-3 w-3 cursor-help text-blue-600" strokeWidth={3} />
                     </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-[250px] border-border bg-blue-600 text-[10px]">
+                    <TooltipContent side="top" className="max-w-62.5 border-border bg-blue-600 text-[10px]">
                       <p>Persist results encrypted in the Database</p>
                     </TooltipContent>
                   </Tooltip>

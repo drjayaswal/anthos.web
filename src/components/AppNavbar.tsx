@@ -12,6 +12,8 @@ import {
   Shield,
   FileText,
   ChevronRight,
+  SettingsIcon,
+  LockIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -101,6 +103,13 @@ export default function AppNavbar({
         icon: ShieldCheck,
       },
       {
+        href: '/settings',
+        label: 'Settings',
+        description: 'System & AI Settings',
+        show: authenticated,
+        icon: SettingsIcon,
+      },
+      {
         href: '/help',
         label: 'Help',
         description: 'Guides, FAQs & assistance',
@@ -112,12 +121,12 @@ export default function AppNavbar({
         label: 'Privacy Policy',
         description: 'Our data protection practices',
         show: true,
-        icon: Shield,
+        icon: LockIcon,
       },
       {
         href: '/terms-condition',
         label: 'Terms & Conditions',
-        description: 'Terms and conditions of use (TnM)',
+        description: 'Terms and conditions of use',
         show: true,
         icon: FileText,
       },
@@ -154,8 +163,8 @@ export default function AppNavbar({
           aria-expanded={menuOpen}
           aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
           className={cn(
-            'group relative flex items-center justify-center gap-2 px-3 py-2 rounded-full transition-all duration-300 outline-none cursor-pointer shadow-xs hover:shadow-md',
-            'bg-white/90 backdrop-blur-md border-2 border-gray-200/50'
+            'group relative flex items-center justify-center gap-2 px-3 py-2 rounded-full transition-all duration-300 outline-none cursor-pointer',
+            'backdrop-blur-md'
           )}
           >
           <div className="flex items-center gap-1">
@@ -164,8 +173,8 @@ export default function AppNavbar({
             </span>
             <ChevronRight
               className={cn(
-                'w-4 h-4 text-[#ff3131] transition-transform duration-300',
-                menuOpen ? 'rotate-90' : 'group-hover:translate-x-0.5'
+                'w-4 h-4 transition-transform duration-300',
+                menuOpen ? 'rotate-90' : 'text-black group-hover:text-[#ff3131] group-hover:translate-x-0.5'
               )}
             />
           </div>
@@ -219,8 +228,8 @@ export default function AppNavbar({
                             className={cn(
                               'p-2.5 rounded-2xl transition-colors',
                               active
-                                ? 'bg-[#ff3131] text-white shadow-sm'
-                                : 'group-hover:bg-[#ff3131]/15 text-zinc-600 group-hover:text-[#ff3131] transition-colors'
+                                ? 'text-[#ff3131]'
+                                : 'group-hover:text-[#ff3131] transition-colors'
                             )}
                           >
                             <Icon className="w-5 h-5" />
@@ -229,7 +238,7 @@ export default function AppNavbar({
                             <div className="font-medium text-sm text-zinc-900 group-hover:text-[#ff3131] transition-colors">
                               {item.label}
                             </div>
-                            <div className="text-xs text-zinc-500 group-hover:text-[#ff3131] font-normal">
+                            <div className="text-[9px] text-zinc-500 group-hover:text-[#ff3131] font-normal">
                               {item.description}
                             </div>
                           </div>

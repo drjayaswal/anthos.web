@@ -50,7 +50,7 @@ function FlagRow({
               <TooltipTrigger asChild>
                 <Info className="h-3 w-3 cursor-help text-blue-600" strokeWidth={3} />
               </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-[280px] border-border bg-blue-600 text-[10px]">
+              <TooltipContent side="top" className="max-w-70 border-border bg-blue-600 text-[10px]">
                 <p>{tip}</p>
               </TooltipContent>
             </Tooltip>
@@ -163,16 +163,16 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
     <div className="space-y-6">
       <div className="flex flex-col gap-4">
         <div className="space-y-2">
-          <Label className="text-[11px] text-gray-400">Emails Count</Label>
+          <Label className="text-[11px] text-black">Emails Count</Label>
           <Counter value={p.count} min={1} max={10} onChange={p.setCount} />
         </div>
         <div className="space-y-2">
-          <Label className="text-[11px] text-gray-400">Lookback Days</Label>
+          <Label className="text-[11px] text-black">Lookback Days</Label>
           <Counter value={p.days} min={1} max={7} onChange={p.setDays} />
         </div>
       </div>
       <div className="space-y-4">
-        <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Status & Flags</Label>
+        <Label className="text-[10px] uppercase tracking-wider text-black">Status & Flags</Label>
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-center space-x-2">
             <Checkbox id="unread" checked={p.unread} onCheckedChange={() => p.setUnread(true)} />

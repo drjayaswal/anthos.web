@@ -7,8 +7,6 @@ import {
   DatabaseBackupIcon,
   CloudDownloadIcon,
   Sparkles,
-  ChevronsLeft,
-  X,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -39,10 +37,11 @@ export default function Header({
   hasCategories = true,
 }: HeaderProps) {
   const [optionsOpen, setOptionsOpen] = useState(false);
+  const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOptionsOpen(false);
+      if (e.key === 'Escape') closeOptions();
     };
     if (optionsOpen) {
       window.addEventListener('keydown', handleKeyDown);
@@ -61,7 +60,10 @@ export default function Header({
     };
   }, [optionsOpen]);
 
-  const closeOptions = () => setOptionsOpen(false);
+  const closeOptions = () => {
+    setOptionsOpen(false);
+    setHoveredTooltip(null);
+  };
 
   return (
     <>
@@ -74,13 +76,11 @@ export default function Header({
               aria-expanded={optionsOpen}
               aria-label="Open options menu"
               className={cn(
-                'group relative flex items-center justify-center gap-2 px-3 py-2 rounded-full transition-all duration-300 outline-none cursor-pointer shadow-xs hover:shadow-md',
-                'bg-white/90 backdrop-blur-md border-2 border-gray-200/50'
+                'group relative flex items-center justify-center gap-2 px-3 py-2 rounded-full transition-all duration-300 outline-none cursor-pointer'
               )}
             >
               <div className="flex items-center gap-1">
-                <ChevronsLeft className="w-4 h-4 text-[#ff3131] transition-transform duration-300 group-hover:-translate-x-0.5" />
-                <span className="text-xs font-semibold tracking-tight text-zinc-800 group-hover:text-[#ff3131] transition-colors">
+                <span className="text-xs font-semibold tracking-tight text-gray-800 group-hover:text-[#ff3131] transition-colors">
                   Options
                 </span>
               </div>
@@ -98,7 +98,7 @@ export default function Header({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-xs"
+              className="fixed inset-0 z-40"
               onClick={closeOptions}
             />
 
@@ -108,10 +108,11 @@ export default function Header({
               animate={{ opacity: 1, scale: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.8, x: 20 }}
               transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-              className="fixed top-2 right-2 z-50 flex items-center gap-2 p-2 rounded-full bg-white/90 backdrop-blur-2xl border border-gray-200/80 shadow-2xl ring-1 ring-black/5"
+              className="fixed top-2 right-2 z-50 flex items-center gap-2 p-2"
+              onMouseLeave={() => setHoveredTooltip(null)}
             >
               {hasCategories && (
-                <div className="relative group/dock">
+                <div className="relative">
                   <motion.button
                     type="button"
                     whileHover={{ scale: 1.2, y: -2 }}
@@ -120,19 +121,18 @@ export default function Header({
                       onAnalyze();
                       closeOptions();
                     }}
+                    onMouseEnter={() => setHoveredTooltip('Analyze Mails')}
+                    onMouseLeave={() => setHoveredTooltip(null)}
                     disabled={analyzing || analyzeDisabled}
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-[#ff3131] to-red-500 text-white shadow-md shadow-red-500/25 cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-shadow hover:shadow-lg hover:shadow-red-500/40"
+                    className="flex items-center justify-center w-10 h-10 text-[#ff3131] cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-shadow hover:shadow-lg hover:shadow-red-500/40"
                     aria-label="Analyze Mails"
                   >
                     <Sparkles className="w-5 h-5" />
                   </motion.button>
-                  <div className="absolute top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover/dock:opacity-100 transition-all duration-200 pointer-events-none z-60 whitespace-nowrap bg-zinc-900 text-white text-[11px] font-medium px-2.5 py-1 rounded-md shadow-md">
-                    Analyze Mails
-                  </div>
                 </div>
               )}
 
-              <div className="relative group/dock">
+              <div className="relative">
                 <motion.button
                   type="button"
                   whileHover={{ scale: 1.2, y: -2 }}
@@ -141,8 +141,10 @@ export default function Header({
                     onFetch();
                     closeOptions();
                   }}
+                  onMouseEnter={() => setHoveredTooltip(loading ? 'Fetching...' : 'Fetch from Gmail')}
+                  onMouseLeave={() => setHoveredTooltip(null)}
                   disabled={loading}
-                  className="flex items-center justify-center w-10 h-10 cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                  className="flex items-center justify-center w-10 h-10 hover:text-[#ff3131] cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
                   aria-label="Fetch from Gmail"
                 >
                   {loading ? (
@@ -151,12 +153,9 @@ export default function Header({
                     <CloudDownloadIcon className="w-5 h-5" />
                   )}
                 </motion.button>
-                <div className="absolute top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover/dock:opacity-100 transition-all duration-200 pointer-events-none z-60 whitespace-nowrap bg-zinc-900 text-white text-[11px] font-medium px-2.5 py-1 rounded-md shadow-md">
-                  {loading ? 'Fetching...' : 'Fetch from Gmail'}
-                </div>
               </div>
 
-              <div className="relative group/dock">
+              <div className="relative">
                 <motion.button
                   type="button"
                   whileHover={{ scale: 1.2, y: -2 }}
@@ -165,19 +164,18 @@ export default function Header({
                     onLoadDataFromDatabase();
                     closeOptions();
                   }}
+                  onMouseEnter={() => setHoveredTooltip(loading ? 'Loading...' : 'Load Database')}
+                  onMouseLeave={() => setHoveredTooltip(null)}
                   disabled={loading}
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-zinc-100 text-zinc-700 hover:text-[#ff3131] hover:bg-[#ff3131]/10 border border-zinc-200/60 cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                  className="flex items-center justify-center w-10 h-10 text-gray-700 hover:text-[#ff3131] cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
                   aria-label="Load from Database"
                 >
                   <DatabaseBackupIcon className={`w-5 h-5 ${loading ? 'animate-pulse' : ''}`} />
                 </motion.button>
-                <div className="absolute top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover/dock:opacity-100 transition-all duration-200 pointer-events-none z-60 whitespace-nowrap bg-zinc-900 text-white text-[11px] font-medium px-2.5 py-1 rounded-md shadow-md">
-                  {loading ? 'Loading...' : 'Load Database'}
-                </div>
               </div>
 
               {sessionUserEmail && (
-                <div className="relative group/dock">
+                <div className="relative">
                   <motion.button
                     type="button"
                     whileHover={{ scale: 1.2, y: -2 }}
@@ -186,33 +184,29 @@ export default function Header({
                       onAccount();
                       closeOptions();
                     }}
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-zinc-100 text-zinc-700 hover:text-[#ff3131] hover:bg-[#ff3131]/10 border border-zinc-200/60 cursor-pointer transition-colors"
+                    onMouseEnter={() => setHoveredTooltip('Account')}
+                    onMouseLeave={() => setHoveredTooltip(null)}
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-700 hover:text-[#ff3131] hover:bg-[#ff3131]/10 border border-gray-200/60 cursor-pointer transition-colors"
                     aria-label="Account Settings"
                   >
                     <User className="w-5 h-5" />
                   </motion.button>
-                  <div className="absolute top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover/dock:opacity-100 transition-all duration-200 pointer-events-none z-60 whitespace-nowrap bg-zinc-900 text-white text-[11px] font-medium px-2.5 py-1 rounded-md shadow-md">
-                    Account
-                  </div>
                 </div>
               )}
-              <div className="w-px h-6 bg-zinc-200 mx-0.5" />
 
-              <div className="relative group/dock">
-                <motion.button
-                  type="button"
-                  whileHover={{ scale: 1.15 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={closeOptions}
-                  className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-200/70 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-300/80 cursor-pointer transition-colors"
-                  aria-label="Close dock"
-                >
-                  <X className="w-4 h-4" />
-                </motion.button>
-                <div className="absolute top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover/dock:opacity-100 transition-all duration-200 pointer-events-none z-60 whitespace-nowrap bg-zinc-900 text-white text-[11px] font-medium px-2 py-1 rounded-md shadow-md">
-                  Close
-                </div>
-              </div>
+              <AnimatePresence>
+                {hoveredTooltip && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-14 right-2 pointer-events-none z-60 whitespace-nowrap bg-[#ff3131] text-white text-[11px] font-medium px-2.5 py-1 rounded-lg"
+                  >
+                    {hoveredTooltip}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           </>
         )}
