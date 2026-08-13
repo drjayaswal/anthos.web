@@ -38,19 +38,25 @@ export default function Loader({ onComplete }: { onComplete?: () => void }) {
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center">
       <motion.div
-        className="flex flex-col items-center gap-4 w-48 animate-pulse"
+      
+        className="flex flex-col items-center w-48 animate-pulse"
         animate={isExiting ? { opacity: 0, y: 10 } : { opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1.6, ease: "linear", repeat: Infinity }}
+        >
           <Image
-            src="/firemail-opensource.svg"
-            alt="firemail"
+            src="/flar.svg"
+            alt="flar"
             width={100}
             height={100}
             quality={90}
-            style={{ width: '240px', height: 'auto' }}
+            style={{ width: '60px', height: 'auto' }}
             priority
           />
+        </motion.div>
       </motion.div>
     </div>
   );

@@ -238,7 +238,7 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                   type="button"
                   onClick={() => setActiveTab(idx)}
                   className={cn(
-                    'relative cursor-pointer py-1.5 text-xs font-medium transition-colors duration-200 truncate max-w-[140px] whitespace-nowrap snap-start shrink-0',
+                    'relative cursor-pointer py-1.5 text-xs font-medium transition-colors duration-200 truncate max-w-35 whitespace-nowrap snap-start shrink-0',
                     activeTab === idx ? 'text-black' : 'text-black/40 hover:text-black'
                   )}
                 >
@@ -301,7 +301,7 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
             </AnimatePresence>
           </svg>
           <div className="absolute bottom-6 left-[8%] right-[8%] pointer-events-none">
-            <div className="w-full h-[1px] bg-zinc-200 relative mb-1" />
+            <div className="w-full h-px bg-zinc-200 relative mb-1" />
             <div className="flex justify-between w-full relative">
               {['-1', '0', '+1'].map((l, index) => {
                 const alignmentClass =
@@ -319,7 +319,7 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                       transform: index === 1 ? 'translateX(-50%)' : 'none'
                     }}
                   >
-                    <div className="h-1.5 w-[1px] bg-zinc-400 -mt-[8px] mb-1" />
+                    <div className="h-1.5 w-px bg-zinc-400 -mt-2 mb-1" />
                     <span className="text-[10px] font-medium text-zinc-500 tabular-nums">
                       {l}
                     </span>
@@ -398,7 +398,7 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                   <p className="text-[11px] font-medium text-muted-foreground">
                     Classifications & Priorities
                   </p>
-                  <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-1">
+                  <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
                     {(preview.categories?.filter(Boolean).length ?? 0) > 0 ? (
                       preview.categories!.filter(Boolean).map((cat, idx) => {
                         const globalIdx = fetchedCategories.findIndex((c) => c.name === cat);

@@ -1,98 +1,127 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import {
+  DownloadCloud,
+  Shield,
+  Sparkles,
+  Database,
+  Inbox,
+  Terminal,
+  HelpCircle,
+  Key,
+  Layers,
+} from 'lucide-react';
 
 export default function HelpCenter() {
-  const features = [
+  const guides = [
     {
       title: 'Fetching Emails',
-      description: 'Use the Fetch dialog to query your Gmail inbox. You can apply specific filters including read/unread status, lookback period (in days), maximum mail count, important flags, and starred indicators to retrieve exactly what you need.',
-      icon: (
-        <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-        </svg>
-      )
+      description:
+        'Use the Fetch dialog to query your Gmail inbox. You can apply granular filters including read/unread status, lookback period in days, max count, importance, and starred flags.',
+      icon: DownloadCloud,
     },
     {
       title: 'Local Vault Security',
-      description: 'Once fetched, your emails are stored in your browser using high-grade AES-GCM encryption. The cryptographic key is dynamically derived from your unique user ID and email address, ensuring local state remains strictly confidential.',
-      icon: (
-        <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
-      )
+      description:
+        'Emails are secured directly within your browser utilizing client-side AES-GCM encryption. Keys are dynamically derived from your unique user identity for zero-knowledge caching.',
+      icon: Shield,
     },
     {
-      title: 'AI Analysis',
-      description: 'Select emails from your Fetched inbox and run them through our AI analysis engine. The engine will intelligently derive processing options based on the content of your selection. You can choose to process the results temporarily or store them permanently.',
-      icon: (
-        <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      )
+      title: 'AI Analysis & Insights',
+      description:
+        'Select any batch of fetched emails to run through intelligent AI processing models. Derive action items, priorities, summaries, and categorized intelligence in seconds.',
+      icon: Sparkles,
     },
     {
-      title: 'Cloud Vault',
-      description: 'Analyzed emails can be manually synchronized to your Cloud Vault (Postgres). Mails stored here are heavily encrypted server-side, providing a secure, persistent backup of your processed intelligence.',
-      icon: (
-        <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-        </svg>
-      )
+      title: 'Cloud Vault Sync',
+      description:
+        'Optionally sync processed and analyzed emails to your dedicated Cloud Vault. Data is protected with strong server-side encryption for persistent multi-device access.',
+      icon: Database,
     },
     {
       title: 'Firebox Navigation',
-      description: 'Switch effortlessly between your Fetched and Analyzed inboxes using the primary tab system. Both views support comprehensive real-time search, multi-selection, and a detailed slide-out sheet for reading specific threads.',
-      icon: (
-        <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-        </svg>
-      )
+      description:
+        'Seamlessly toggle between Fetched and Analyzed inboxes. Use full-text search, selection bars, sorting, and the slide-out sheet reader for complete email review.',
+      icon: Inbox,
     },
     {
-      title: 'CLI eco-system',
-      description: 'Integrate Firemail into your existing workflows. Execute secure Fetches and AI-powered Analyzes directly from your terminal using our official CLI.',
-      icon: (
-        <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-        </svg>
-      )
-    }
+      title: 'Custom AI Models & Keys',
+      description:
+        'Bring your own API keys for OpenAI, Anthropic, Gemini, or custom LLMs in Settings. All keys remain encrypted and are only used for your specific requests.',
+      icon: Key,
+    },
+    {
+      title: 'Custom Categories',
+      description:
+        'Admins and users can configure custom categorization tags and descriptions to organize classification pipelines tailored specifically to their workflow.',
+      icon: Layers,
+    },
+    {
+      title: 'CLI Integration',
+      description:
+        'Connect Flar directly to your local terminal workflows and shell scripts. Trigger secure fetches and automated AI pipelines programmatically via the Flar CLI.',
+      icon: Terminal,
+    },
   ];
 
   return (
-    <div className="min-h-[94.15vh] p-7 flex justify-center">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-4xl w-full"
-      >
-        <div className="mb-12">
-          <h1 className="text-3xl font-semibold tracking-tight text-black mt-6">Documentation & Help</h1>
-          <p className="text-black/75 text-sm">Learn how to securely fetch, analyze, and manage your intelligence with Firemail.</p>
+    <div className="min-h-0 text-white">
+      <main className="max-w-4xl sm:mt-0 sm:mx-auto mt-10 mx-2 px-4 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8">
+        <div className="flex flex-row items-center justify-between gap-3 border-b border-dashed border-white/15 pb-4 sm:pb-5">
+          <div className="space-y-0.5 min-w-0">
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center text-white shrink-0">
+                <HelpCircle className="h-5 w-5 sm:h-6 sm:w-6" />
+              </div>
+              <h1 className="text-lg font-semibold tracking-tight text-white sm:text-2xl truncate">
+                Documentation &amp; Help
+              </h1>
+            </div>
+            <p className="text-xs text-white/40 sm:text-sm truncate">
+              Learn how to securely fetch, analyze, and manage your intelligence with Flar.
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-          {features.map((feature, idx) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: idx * 0.1 }}
-              className="p-6"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                {feature.icon}
-                <h2 className="text-base font-semibold text-black">{feature.title}</h2>
-              </div>
-              <p className="text-sm text-black leading-relaxed">
-                {feature.description}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm sm:text-base font-semibold tracking-tight text-white">
+              Platform Guides &amp; Architecture
+            </h2>
+            <span className="text-[11px] sm:text-xs text-white/40 font-mono">
+              {guides.length} topics
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            {guides.map((guide, idx) => {
+              const Icon = guide.icon;
+              return (
+                <motion.div
+                  key={guide.title}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: idx * 0.04 }}
+                  className="p-2 text-white space-y-1"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-6 w-6 items-center justify-center text-white shrink-0">
+                      <Icon className="h-3.5 w-3.5" />
+                    </div>
+                    <h3 className="text-xs sm:text-sm font-semibold text-white">
+                      {guide.title}
+                    </h3>
+                  </div>
+                  <p className="text-[11px] sm:text-xs text-white/60 leading-relaxed">
+                    {guide.description}
+                  </p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

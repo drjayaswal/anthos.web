@@ -50,21 +50,21 @@ export default function Auth() {
 
   return (
     <div className="min-h-[94.28vh] flex flex-col items-center justify-center">
-        <div className="flex items-center">
-          <div className="flex flex-col gap-4 items-center justify-center">
-            <Image
-              src="/firemail-opensource.svg"
-              alt="firemail"
-              width={100}
-              height={100}
-              quality={90}
-              style={{ width: '240px', height: 'auto' }}
-              priority
-            />
+      <div className="flex items-center">
+        <div className="flex flex-col gap-4 items-center justify-center">
+          <Image
+            src="/flar.svg"
+            alt="flar"
+            width={100}
+            height={100}
+            quality={90}
+            style={{ width: '240px', height: 'auto' }}
+            priority
+          />
           <button
             type="button"
             disabled={loading}
-            className={`cursor-pointer active:bg-gray-200/30 active:shadow-inner text-black rounded-2xl px-4 py-2 ${loading && "bg-gray-200/30 shadow-inner flex justify-center items-center gap-2"}`}
+            className={`transition-colors duration-200 active:shadow-inner text-white rounded-2xl px-4 py-2 ${loading ? "shadow-inner flex cursor-not-allowed justify-center items-center gap-2 text-white/40" : "hover:bg-gray-200/10 cursor-pointer"}`}
             onClick={handleGoogleSignIn}
           >
             {loading && (
@@ -73,7 +73,7 @@ export default function Auth() {
             {loading ? 'Redirecting…' : 'Continue with Google'}
           </button>
         </div>
-        </div>
+      </div>
     </div>
   );
 }

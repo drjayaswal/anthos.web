@@ -4,45 +4,41 @@ import "./globals.css";
 import { Toaster } from "@/components/Toaster";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://firemail.in"),
+  metadataBase: new URL("https://flar.in"),
   title: {
-    default: "Firemail",
-    template: "%s | Firemail",
+    default: "Flar",
+    template: "%s | Flar",
   },
   description: "Secure, Transparent, Reliable. Fire up your inbox.",
-  applicationName: "firemail",
-  authors: [{ name: "Firemail Team and Dhruv Ratan Jayaswal" }],
-  keywords: ["email analysis", "privacy", "gmail", "encryption", "ai mail", "firemail", "fire mail"],
+  applicationName: "flar",
+  authors: [{ name: "Flar Team and Dhruv Ratan Jayaswal" }],
+  keywords: ["email analysis", "privacy", "gmail", "encryption", "ai mail", "flar", "fire mail"],
   icons: {
-    icon: "/icons/favicon.ico",
-    shortcut: "/icons/favicon-32x32.png",
+    icon: [
+      { url: "/icons/favicon.ico" },
+      { url: "/icons/favicon.svg", type: "image/svg+xml" },
+      { url: "/icons/favicon-96x96.png", type: "image/png", sizes: "96x96" },
+    ],
+    shortcut: "/icons/favicon.ico",
     apple: "/icons/apple-touch-icon.png",
     other: [
       {
-        rel: "icon",
-        type: "image/png",
-        sizes: "32x32",
-        url: "/icons/favicon-32x32.png",
-      },
-      {
-        rel: "icon",
-        type: "image/png",
-        sizes: "16x16",
-        url: "/icons/favicon-16x16.png",
+        rel: "manifest",
+        url: "/icons/site.webmanifest",
       },
     ],
   },
 
   openGraph: {
-    title: "firemail",
+    title: "flar",
     description: "Fire up your inbox.",
-    url: "https://firemail.in",
-    siteName: "firemail",
+    url: "https://flar.in",
+    siteName: "flar",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "firemail",
+    title: "flar",
     description: "Fire up your inbox.",
   },
 };
@@ -54,7 +50,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased" suppressHydrationWarning>
-      <body className="bg-gray-50 flex flex-col select-none">
+      <body className="flex flex-col select-none">
         <Toaster />
         <Suspense fallback={null}>
           <main className="flex-1">

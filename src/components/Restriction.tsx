@@ -6,8 +6,8 @@ const Restriction = () => {
       <div className="z-10 flex flex-col items-center max-w-sm w-full text-center">
         <div className="space-y-4">
           <Image
-            src="/firemail-opensource.svg"
-            alt="firemail"
+            src="/flar-opensource.svg"
+            alt="flar"
             width={100}
             height={100}
             quality={90}

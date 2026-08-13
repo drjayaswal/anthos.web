@@ -9,7 +9,6 @@ import {
   User,
   ShieldCheck,
   HelpCircle,
-  Shield,
   FileText,
   ChevronRight,
   SettingsIcon,
@@ -168,13 +167,13 @@ export default function AppNavbar({
           )}
           >
           <div className="flex items-center gap-1">
-            <span className="text-xs font-semibold tracking-tight text-zinc-800 group-hover:text-[#ff3131] transition-colors">
+            <span className="text-xs font-semibold tracking-tight text-white/75 group-hover:text-white transition-colors">
               Menu
             </span>
             <ChevronRight
               className={cn(
                 'w-4 h-4 transition-transform duration-300',
-                menuOpen ? 'rotate-90' : 'text-black group-hover:text-[#ff3131] group-hover:translate-x-0.5'
+                menuOpen ? 'rotate-90' : 'text-white/75 group-hover:text-white -translate-x-0.5 group-hover:translate-x-0.5'
               )}
             />
           </div>
@@ -190,7 +189,7 @@ export default function AppNavbar({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="fixed inset-0 z-60 bg-black/40"
+              className="fixed inset-0 z-60 bg-black/40 backdrop-blur-sm"
               onClick={closeMenu}
             />
 
@@ -200,7 +199,7 @@ export default function AppNavbar({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-              className="fixed top-0 left-0 bottom-0 z-70 w-80 sm:w-80 bg-white shadow-2xl flex flex-col overflow-hidden"
+              className="fixed top-0 left-0 bottom-0 z-70 w-80 sm:w-70 bg-[#2c0237] border-r border-white/10 shadow-2xl flex flex-col overflow-hidden"
             >
               <motion.div
                 variants={containerVariants}
@@ -220,7 +219,8 @@ export default function AppNavbar({
                         href={item.href}
                         onClick={closeMenu}
                         className={cn(
-                          'group flex items-center justify-between p-2 rounded-2xl transition-all duration-200'
+                          'group flex items-center justify-between p-2 rounded-3xl transition-all duration-200',
+                          active ? "bg-white/10" : ""
                         )}
                       >
                         <div className="flex items-center gap-3">
@@ -228,22 +228,34 @@ export default function AppNavbar({
                             className={cn(
                               'p-2.5 rounded-2xl transition-colors',
                               active
-                                ? 'text-[#ff3131]'
-                                : 'group-hover:text-[#ff3131] transition-colors'
+                                ? 'text-white bg-white/10'
+                                : 'text-white/40 group-hover:text-white transition-colors'
                             )}
                           >
                             <Icon className="w-5 h-5" />
                           </div>
                           <div>
-                            <div className="font-medium text-sm text-zinc-900 group-hover:text-[#ff3131] transition-colors">
+                            <div className={cn(
+                              "font-medium text-sm text-white/50 group-hover:text-white transition-colors",
+                              active
+                                ? 'text-white'
+                                : 'text-white/40 group-hover:text-white transition-colors'
+                            )}
+                            >
                               {item.label}
                             </div>
-                            <div className="text-[9px] text-zinc-500 group-hover:text-[#ff3131] font-normal">
+                            <div className={cn(
+                              "font-medium text-[9px] text-white/50 group-hover:text-white transition-colors",
+                              active
+                                ? 'text-white'
+                                : 'text-white/40 group-hover:text-white transition-colors'
+                            )}
+                            >
                               {item.description}
                             </div>
                           </div>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:translate-x-1 group-hover:text-[#ff3131] transition-all" />
+                        <ChevronRight className="w-4 h-4 text-white/30 group-hover:translate-x-1 -translate-x-1 group-hover:text-white transition-all" />
                       </Link>
                     </motion.div>
                   );

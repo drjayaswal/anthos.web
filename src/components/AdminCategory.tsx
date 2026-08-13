@@ -134,35 +134,35 @@ export default function AdminCategories() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4 sm:space-y-8">
+    <div className="mx-auto sm:mt-0 mt-10 max-w-3xl px-4 sm:px-6 py-4 sm:py-0 space-y-4 sm:space-y-8">
       <div className="space-y-0.5 sm:space-y-1">
-        <h1 className="text-lg font-semibold tracking-tight text-black sm:text-2xl">Categories</h1>
-        <p className="text-xs text-zinc-500 sm:text-sm">
+        <h1 className="text-lg font-semibold tracking-tight text-white sm:text-2xl">Categories</h1>
+        <p className="text-xs text-white/40 sm:text-sm">
           Manage labels used to classify encrypted mail. Changes apply for all users.
         </p>
       </div>
 
-      <section className="rounded-xl border border-black/10 bg-white p-3 shadow-sm sm:p-6">
-        <h2 className="text-xs font-medium text-black sm:text-sm">
+      <section className="rounded-2xl bg-white/10 p-5 shadow-sm sm:p-5">
+        <h2 className="text-xs font-medium text-white sm:text-sm">
           {editingId ? "Edit category" : "Add category"}
         </h2>
 
         <form onSubmit={handleSubmit} className="mt-3 space-y-3 sm:mt-4 sm:space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2 sm:col-span-1">
-              <Label htmlFor="category-name">Name</Label>
+              <Label htmlFor="category-name" className="text-white/70">Name</Label>
               <Input
                 id="category-name"
                 required
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                placeholder="e.g. Invoices"
-                className="h-9 px-2.5 text-sm text-black sm:h-10 sm:px-3"
+                placeholder="Category Name"
+                className="h-9 px-2.5 text-sm text-white bg-white/10 border-0 placeholder:text-white/30 focus:ring-0 sm:h-10 sm:px-3"
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="category-description">
-                Description <span className="font-normal text-zinc-400">(optional)</span>
+              <Label htmlFor="category-description" className="text-white/70">
+                Description <span className="font-normal text-white/30">(optional)</span>
               </Label>
               <textarea
                 id="category-description"
@@ -170,7 +170,7 @@ export default function AdminCategories() {
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="What belongs in this category?"
                 rows={2}
-                className="w-full resize-none rounded-xl border border-border/10 px-2.5 py-1.5 text-xs text-black outline-0 focus:border-black/25 sm:px-3 sm:py-2 sm:text-sm"
+                className="w-full resize-none rounded-xl border-0 bg-white/5 px-2.5 py-1.5 text-xs text-white placeholder:text-white/30 outline-0 sm:px-3 sm:py-2 sm:text-sm"
               />
             </div>
           </div>
@@ -178,21 +178,21 @@ export default function AdminCategories() {
           <div className="flex flex-wrap gap-2">
             <Button
               type="submit"
-              variant="accent"
+              className="bg-white/10 hover:bg-white hover:text-black rounded-xl"
               disabled={saving || !form.name.trim()}
             >
               {saving ? (
-                <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2Icon className="h-4 w-4 animate-spin" />
               ) : editingId ? (
-                <CheckIcon className="mr-2 h-4 w-4" />
+                <CheckIcon className="h-4 w-4" />
               ) : (
-                <PlusIcon className="mr-2 h-4 w-4" />
+                <PlusIcon className="h-4 w-4" />
               )}
               {editingId ? "Save" : "Add"}
             </Button>
             {editingId && (
-              <Button type="button" variant="ghost" onClick={resetForm} disabled={saving}>
-                <XIcon className="mr-2 h-4 w-4" />
+              <Button type="button" onClick={resetForm} disabled={saving} className="bg-white/10 rounded-xl hover:text-white text-white/70 hover:bg-red-600">
+                <XIcon className="h-4 w-4" />
                 Cancel
               </Button>
             )}
@@ -200,72 +200,72 @@ export default function AdminCategories() {
         </form>
       </section>
 
-      <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
-        <div className="border-b border-black/10 px-3 py-2.5 sm:px-6 sm:py-4">
-          <h2 className="text-xs font-medium text-black sm:text-sm">All categories</h2>
+      <section className="overflow-hidden rounded-2xl bg-white/10 sm:py-2 p-2 shadow-sm">
+        <div className="border-b border-white/10 px-3 py-2.5 sm:px-6 sm:py-4">
+          <h2 className="text-xs font-medium text-white sm:text-sm">All categories</h2>
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center gap-2 py-8 text-xs text-zinc-500 sm:py-12 sm:text-sm">
+          <div className="flex items-center justify-center gap-2 py-8 text-xs text-white sm:py-12 sm:text-sm">
             <Loader2Icon className="h-4 w-4 animate-spin" />
             Loading…
           </div>
         ) : items.length === 0 ? (
-          <p className="px-3 py-8 text-center text-xs text-zinc-500 sm:px-6 sm:py-12 sm:text-sm">No categories yet.</p>
+          <p className="p-4 text-center text-xs text-white sm:px-6 sm:py-12 sm:text-sm">No categories yet.</p>
         ) : (
           <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-b border-black/10 hover:bg-transparent">
-                <TableHead className="px-2 text-[10px] text-black sm:px-6 sm:text-xs">Name</TableHead>
-                <TableHead className="hidden text-[10px] text-black md:table-cell sm:text-xs">Description</TableHead>
-                <TableHead className="w-[88px] px-2 text-right text-[10px] text-black sm:w-[120px] sm:px-6 sm:text-xs">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {items.map((cat) => (
-                <TableRow
-                  key={cat.id}
-                  className={`border-b border-black/5 ${
-                    editingId === cat.id ? "bg-zinc-50" : ""
-                  }`}
-                >
-                  <TableCell className="max-w-[52vw] truncate px-2 text-xs font-medium text-black sm:max-w-none sm:px-6 sm:text-sm">{cat.name}</TableCell>
-                  <TableCell className="hidden max-w-xs truncate px-2 text-xs text-zinc-500 md:table-cell sm:px-6 sm:text-sm">
-                    {cat.description || "—"}
-                  </TableCell>
-                  <TableCell className="px-2 text-right sm:px-6">
-                    <div className="flex justify-end gap-1">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => startEdit(cat)}
-                        aria-label={`Edit ${cat.name}`}
-                      >
-                        <PencilIcon className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-600 hover:text-red-700"
-                        disabled={deletingId === cat.id}
-                        onClick={() => handleDelete(cat.id, cat.name)}
-                        aria-label={`Delete ${cat.name}`}
-                      >
-                        {deletingId === cat.id ? (
-                          <Loader2Icon className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2Icon className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </TableCell>
+            <Table>
+              <TableHeader className="border-b border-white/10">
+                <TableRow className="border-b border-white/10 hover:bg-transparent">
+                  <TableHead className="px-4 py-3 text-[10px] text-white sm:px-6 sm:py-3.5 sm:text-xs">Name</TableHead>
+                  <TableHead className="hidden px-4 py-3 text-[10px] text-white md:table-cell sm:px-6 sm:py-3.5 sm:text-xs">Description</TableHead>
+                  <TableHead className="w-24 px-4 py-3 text-right text-[10px] text-white sm:w-32 sm:px-6 sm:py-3.5 sm:text-xs">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {items.map((cat) => (
+                  <TableRow
+                    key={cat.id}
+                    className={`border-b border-white/10 transition-colors ${editingId === cat.id ? "bg-white/10" : "hover:bg-white/5"
+                      }`}
+                  >
+                    <TableCell className="max-w-[52vw] truncate px-4 py-3 text-xs font-medium text-white sm:max-w-none sm:px-6 sm:py-4 sm:text-sm">{cat.name}</TableCell>
+                    <TableCell className="hidden max-w-xs truncate px-4 py-3 text-xs text-white/50 md:table-cell sm:px-6 sm:py-4 sm:text-sm">
+                      {cat.description || "—"}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-right sm:px-6 sm:py-4">
+                      <div className="flex justify-end gap-1.5">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="text-white/50 rounded-lg hover:text-white hover:bg-blue-600 border-0 px-2.5 py-1"
+                          onClick={() => startEdit(cat)}
+                          aria-label={`Edit ${cat.name}`}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="text-white/50 rounded-lg hover:text-white hover:bg-red-600 border-0 px-2.5 py-1"
+                          disabled={deletingId === cat.id}
+                          onClick={() => handleDelete(cat.id, cat.name)}
+                          aria-label={`Delete ${cat.name}`}
+                        >
+                          {deletingId === cat.id ? (
+                            <Loader2Icon className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <div className="">Delete</div>
+                          )}
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         )}
       </section>

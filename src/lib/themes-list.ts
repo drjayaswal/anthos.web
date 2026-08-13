@@ -20,7 +20,7 @@ export type Theme = {
 
 export const THEMES: Theme[] = [
   {
-    name: "Firemail",
+    name: "Flar",
     colors: {
       primary: "#ff3131",
       planMode: "#ffffff",

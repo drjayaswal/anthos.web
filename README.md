@@ -1,4 +1,4 @@
-# Firemail Web
+# Flar Web
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61dafb?logo=react)](https://react.dev/)
@@ -37,8 +37,8 @@ A Next.js dashboard for Gmail: read-only OAuth, encrypted local vault (IndexedDB
 ### Install
 
 ```bash
-git clone https://github.com/YOUR_ORG/firemail.web.git
-cd firemail.web
+git clone https://github.com/YOUR_ORG/flar.web.git
+cd flar.web
 cp .env.example .env.local
 ```
 
@@ -101,7 +101,7 @@ Auth → /api/auth/[...all] (Better Auth + Google)
 
 ### CLI Integration
 
-The companion CLI companion project (`firemail.cli`) is fully integrated with this Next.js web application:
+The companion CLI companion project (`flar.cli`) is fully integrated with this Next.js web application:
 - **Shared DB Access**: The CLI's Hono server (`packages/server`) connects directly to the same Postgres database using Drizzle ORM.
 - **Better Auth Device Flow**: Authentication is secured through Better Auth's device authorization flow.
 - **Gmail Token Resolving**: When running in `ANALYZE` mode, the CLI retrieves and automatically refreshes Google OAuth tokens directly from the shared `account` table, enabling full terminal-based inbox querying and analysis.
@@ -200,4 +200,4 @@ Run `bun run lint` and `bun run build` before submitting.
 
 ## License
 
-[MIT](LICENSE) © Firemail contributors
+[MIT](LICENSE) © Flar contributors

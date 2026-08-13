@@ -32,7 +32,7 @@ function authSecret(): string {
 }
 
 export const auth = createBetterAuth({
-  appName: "firemail",
+  appName: "flar",
   secret: authSecret(),
   baseURL: authBaseUrl(),
   database: drizzleAdapter(db, {
