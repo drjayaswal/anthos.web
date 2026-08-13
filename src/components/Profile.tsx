@@ -222,7 +222,7 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
         </section>
 
         <p className="mt-4 flex items-start gap-2 text-[10px] leading-relaxed text-white/30 sm:text-xs">
-          Profile data is tied to your Flar account and Flar records.
+          Profile data is tied to your Anthos account and Anthos records.
         </p>
       </main>
     </div>

@@ -288,7 +288,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
               </h1>
             </div>
             <p className="text-[11px] text-white/40 sm:text-sm truncate">
-              Configure your AI processing models, custom parameters, and API keys for Flar.
+              Configure your AI processing models, custom parameters, and API keys for Anthos.
             </p>
           </div>
           <button

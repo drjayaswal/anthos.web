@@ -48,8 +48,8 @@ export default function Loader({ onComplete }: { onComplete?: () => void }) {
           transition={{ duration: 1.6, ease: "linear", repeat: Infinity }}
         >
           <Image
-            src="/flar.svg"
-            alt="flar"
+            src="/anthos.svg"
+            alt="anthos"
             width={100}
             height={100}
             quality={90}

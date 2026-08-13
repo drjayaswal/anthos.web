@@ -8,27 +8,27 @@ export default function TermsAndConditions() {
     {
       title: '1. Acceptance of Terms',
       content:
-        'By authenticating with Google and utilizing Flar, you agree to these Terms and Conditions. If you do not agree with any part of these terms, you must immediately cease use of the service and revoke authentication privileges.',
+        'By authenticating with Google and utilizing Anthos, you agree to these Terms and Conditions. If you do not agree with any part of these terms, you must immediately cease use of the service and revoke authentication privileges.',
     },
     {
       title: '2. Service Provision & Limitations',
       content:
-        'Flar acts as a secure intermediary and analysis tool for your existing Gmail data. We do not guarantee uninterrupted functionality of external Google APIs, nor do we guarantee the absolute accuracy of AI-derived analysis. The service is provided "as is" without warranties of any kind.',
+        'Anthos acts as a secure intermediary and analysis tool for your existing Gmail data. We do not guarantee uninterrupted functionality of external Google APIs, nor do we guarantee the absolute accuracy of AI-derived analysis. The service is provided "as is" without warranties of any kind.',
     },
     {
       title: '3. User Responsibilities & Security',
       content:
-        'You are responsible for maintaining the security of the local device and environment from which you access Flar. Because the Local Vault utilizes browser-based AES-GCM encryption derived from your authenticated identity, safeguarding your machine and session credentials is your responsibility.',
+        'You are responsible for maintaining the security of the local device and environment from which you access Anthos. Because the Local Vault utilizes browser-based AES-GCM encryption derived from your authenticated identity, safeguarding your machine and session credentials is your responsibility.',
     },
     {
       title: '4. API Usage and Fair Use',
       content:
-        'Users must not abuse the fetching or analysis mechanisms. Excessive automated querying of the Gmail API via Flar that triggers Google rate limits may result in temporary or permanent throttling of syncing capabilities.',
+        'Users must not abuse the fetching or analysis mechanisms. Excessive automated querying of the Gmail API via Anthos that triggers Google rate limits may result in temporary or permanent throttling of syncing capabilities.',
     },
     {
       title: '5. Limitation of Liability',
       content:
-        'In no event shall Flar, its developers, or its contributors be liable for any indirect, incidental, or consequential damages resulting from the use of the platform, the loss of data, unauthorized device access, or inaccuracies in AI-generated analysis.',
+        'In no event shall Anthos, its developers, or its contributors be liable for any indirect, incidental, or consequential damages resulting from the use of the platform, the loss of data, unauthorized device access, or inaccuracies in AI-generated analysis.',
     },
   ];
 
@@ -46,7 +46,7 @@ export default function TermsAndConditions() {
               </h1>
             </div>
             <p className="text-xs text-white/40 sm:text-sm truncate">
-              Terms and conditions governing the use of Flar services, integrations, and vaults.
+              Terms and conditions governing the use of Anthos services, integrations, and vaults.
             </p>
           </div>
         </div>

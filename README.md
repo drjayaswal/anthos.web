@@ -1,4 +1,4 @@
-# Flar Web
+# Anthos Web
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61dafb?logo=react)](https://react.dev/)
@@ -37,8 +37,8 @@ A Next.js dashboard for Gmail: read-only OAuth, encrypted local vault (IndexedDB
 ### Install
 
 ```bash
-git clone https://github.com/YOUR_ORG/flar.web.git
-cd flar.web
+git clone https://github.com/YOUR_ORG/anthos.web.git
+cd anthos.web
 cp .env.example .env.local
 ```
 
@@ -58,14 +58,14 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `BETTER_AUTH_SECRET` or `AUTH_SECRET` | Yes | Better Auth signing secret |
-| `BETTER_AUTH_URL` or `NEXTAUTH_URL` | Yes (prod) | App URL, e.g. `http://localhost:3000` |
-| `AUTH_GOOGLE_ID` | Yes | Google OAuth client ID |
-| `AUTH_GOOGLE_SECRET` | Yes | Google OAuth client secret |
-| `DATABASE_URL` | Yes | Postgres connection string |
-| `AI_SERVER_URL` | For analyze | Base URL of the analysis API |
-| `ADMIN_EMAIL` | Optional | Email allowed to access `/admin` |
-| `BETTER_AUTH_API_KEY` | Optional | Reserved for Better Auth integrations |
+| `BETTER_AUTH_SECRET` | Yes | Auth secret (32+ bytes random base64) |
+| `BETTER_AUTH_URL` | Yes | App base URL (e.g. `http://localhost:3000`) |
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `GOOGLE_CLIENT_ID` | Yes | Google Cloud OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Yes | Google Cloud OAuth client secret |
+| `ENCRYPTION_KEY` | Yes | 32-byte hex for AES-256-GCM cloud vault encryption |
+| `ADMIN_EMAIL` | No | Comma-separated admin emails |
+| `AI_SERVER_URL` | No | Base URL of the AI processing server |
 
 Google OAuth redirect URI: `{BETTER_AUTH_URL}/api/auth/callback/google`  
 Scope used: `openid email profile https://www.googleapis.com/auth/gmail.readonly`
@@ -101,7 +101,7 @@ Auth → /api/auth/[...all] (Better Auth + Google)
 
 ### CLI Integration
 
-The companion CLI companion project (`flar.cli`) is fully integrated with this Next.js web application:
+The companion CLI project (`anthos.cli`) is fully integrated with this Next.js web application:
 - **Shared DB Access**: The CLI's Hono server (`packages/server`) connects directly to the same Postgres database using Drizzle ORM.
 - **Better Auth Device Flow**: Authentication is secured through Better Auth's device authorization flow.
 - **Gmail Token Resolving**: When running in `ANALYZE` mode, the CLI retrieves and automatically refreshes Google OAuth tokens directly from the shared `account` table, enabling full terminal-based inbox querying and analysis.
@@ -131,11 +131,12 @@ src/
 ├── app/
 │   ├── actions.ts          # Server actions (fetch, analyze, sync)
 │   ├── api/mail/           # Route handlers
-│   ├── api/auth/           # NextAuth
+│   ├── api/auth/           # Better Auth
 │   ├── db/                 # Drizzle schema + client
 │   ├── admin/              # Admin gate (ADMIN_EMAIL)
-│   ├── policy/             # Privacy & security
-│   └── terms/              # Terms of use
+│   ├── privacy-policy/     # Privacy & security
+│   ├── terms-condition/    # Terms of use
+│   └── help/               # Documentation & guides
 ├── components/             # UI (Home, tables, dialogs, graph)
 ├── lib/                    # Gmail, crypto, vault, auth, API client
 └── types/                  # Shared TypeScript types
@@ -167,8 +168,9 @@ The AI server should accept:
 
 ## Legal pages
 
-- [Privacy & security](/policy) — `src/app/policy/page.tsx`
-- [Terms of use](/terms) — `src/app/terms/page.tsx`
+- [Privacy & security](/privacy-policy) — `src/app/(app)/privacy-policy/page.tsx`
+- [Terms of use](/terms-condition) — `src/app/(app)/terms-condition/page.tsx`
+- [Help & Documentation](/help) — `src/app/(app)/help/page.tsx`
 
 ---
 
@@ -200,4 +202,4 @@ Run `bun run lint` and `bun run build` before submitting.
 
 ## License
 
-[MIT](LICENSE) © Flar contributors
+[MIT](LICENSE) © Anthos contributors

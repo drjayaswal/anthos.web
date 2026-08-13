@@ -51,16 +51,19 @@ export default function Auth() {
   return (
     <div className="min-h-[94.28vh] flex flex-col items-center justify-center">
       <div className="flex items-center">
-        <div className="flex flex-col gap-4 items-center justify-center">
+        <div className="flex flex-col items-center justify-center">
           <Image
-            src="/flar.svg"
-            alt="flar"
+            src="/anthos.svg"
+            alt="anthos"
             width={100}
             height={100}
             quality={90}
             style={{ width: '240px', height: 'auto' }}
             priority
           />
+          <h1 className="text-3xl mb-3 sm:text-4xl md:text-5xl font-bold tracking-tight text-white text-center">
+            Anthos
+          </h1>
           <button
             type="button"
             disabled={loading}

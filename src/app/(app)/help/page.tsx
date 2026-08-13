@@ -60,7 +60,7 @@ export default function HelpCenter() {
     {
       title: 'CLI Integration',
       description:
-        'Connect Flar directly to your local terminal workflows and shell scripts. Trigger secure fetches and automated AI pipelines programmatically via the Flar CLI.',
+        'Connect Anthos directly to your local terminal workflows and shell scripts. Trigger secure fetches and automated AI pipelines programmatically via the Anthos CLI.',
       icon: Terminal,
     },
   ];
@@ -79,7 +79,7 @@ export default function HelpCenter() {
               </h1>
             </div>
             <p className="text-xs text-white/40 sm:text-sm truncate">
-              Learn how to securely fetch, analyze, and manage your intelligence with Flar.
+              Learn how to securely fetch, analyze, and manage your intelligence with Anthos.
             </p>
           </div>
         </div>

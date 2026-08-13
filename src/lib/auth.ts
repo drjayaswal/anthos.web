@@ -32,7 +32,7 @@ function authSecret(): string {
 }
 
 export const auth = createBetterAuth({
-  appName: "flar",
+  appName: "anthos",
   secret: authSecret(),
   baseURL: authBaseUrl(),
   database: drizzleAdapter(db, {
@@ -47,6 +47,9 @@ export const auth = createBetterAuth({
   user: {
     modelName: "user",
   },
+  trustedOrigins: [
+    "https://*.vercel.app",
+  ],
   session: {
     modelName: "session",
     expiresIn: 60 * 60 * 24 * 7,

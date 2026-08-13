@@ -8,7 +8,7 @@ export default function PrivacyPolicy() {
     {
       title: '1. Gmail API Integration & Data Fetching',
       content:
-        "Flar requires read-only access to your Gmail account via OAuth. We fetch email metadata and content strictly based on your applied filters (read/unread status, lookback days, importance, and starred status). Flar's use and transfer of information received from Google APIs to any other app will adhere to Google API Services User Data Policy, including the Limited Use requirements.",
+        "Anthos requires read-only access to your Gmail account via OAuth. We fetch email metadata and content strictly based on your applied filters (read/unread status, lookback days, importance, and starred status). Anthos's use and transfer of information received from Google APIs to any other app will adhere to Google API Services User Data Policy, including the Limited Use requirements.",
     },
     {
       title: '2. Local Vault & Encryption',
@@ -23,12 +23,12 @@ export default function PrivacyPolicy() {
     {
       title: '4. Cloud Vault Storage',
       content:
-        'You may explicitly opt to sync analyzed emails to the Flar Postgres cloud database. All synchronized data is subjected to robust server-side encryption prior to persistence. We do not aggregate, sell, or distribute your cloud vault data to third-party brokers.',
+        'You may explicitly opt to sync analyzed emails to the Anthos Postgres cloud database. All synchronized data is subjected to robust server-side encryption prior to persistence. We do not aggregate, sell, or distribute your cloud vault data to third-party brokers.',
     },
     {
       title: '5. Data Retention & Deletion',
       content:
-        "Local vault data can be cleared at any time by clearing your browser storage. Cloud vault data can be managed or permanently deleted through your account settings. Revoking OAuth access directly via your Google Account will instantly sever Flar's ability to fetch new data.",
+        "Local vault data can be cleared at any time by clearing your browser storage. Cloud vault data can be managed or permanently deleted through your account settings. Revoking OAuth access directly via your Google Account will instantly sever Anthos's ability to fetch new data.",
     },
   ];
 

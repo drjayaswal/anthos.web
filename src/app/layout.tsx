@@ -4,15 +4,15 @@ import "./globals.css";
 import { Toaster } from "@/components/Toaster";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://flar.in"),
+  metadataBase: new URL("https://anthos-opensource.vercel.app"),
   title: {
-    default: "Flar",
-    template: "%s | Flar",
+    default: "Anthos",
+    template: "%s | Anthos",
   },
   description: "Secure, Transparent, Reliable. Fire up your inbox.",
-  applicationName: "flar",
-  authors: [{ name: "Flar Team and Dhruv Ratan Jayaswal" }],
-  keywords: ["email analysis", "privacy", "gmail", "encryption", "ai mail", "flar", "fire mail"],
+  applicationName: "Anthos",
+  authors: [{ name: "Anthos Team and Dhruv Ratan Jayaswal" }],
+  keywords: ["email analysis", "privacy", "gmail", "encryption", "ai mail", "anthos", "anthos mail"],
   icons: {
     icon: [
       { url: "/icons/favicon.ico" },
@@ -30,15 +30,15 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "flar",
+    title: "Anthos",
     description: "Fire up your inbox.",
-    url: "https://flar.in",
-    siteName: "flar",
+    url: "https://anthos-opensource.vercel.app",
+    siteName: "Anthos",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "flar",
+    title: "Anthos",
     description: "Fire up your inbox.",
   },
 };
