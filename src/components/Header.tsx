@@ -124,7 +124,7 @@ export default function Header({
                     onMouseEnter={() => setHoveredTooltip('Analyze Mails')}
                     onMouseLeave={() => setHoveredTooltip(null)}
                     disabled={analyzing || analyzeDisabled}
-                    className="flex items-center justify-center w-10 h-10 text-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-shadow hover:shadow-lg hover:shadow-red-500/40"
+                    className="flex items-center justify-center w-10 h-10 rounded-2xl [html.light_&]:text-black dark:text-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
                     aria-label="Analyze Mails"
                   >
                     <Sparkles className="w-5 h-5" />
@@ -144,7 +144,7 @@ export default function Header({
                   onMouseEnter={() => setHoveredTooltip(loading ? 'Fetching...' : 'Fetch from Gmail')}
                   onMouseLeave={() => setHoveredTooltip(null)}
                   disabled={loading}
-                  className="flex items-center justify-center w-10 h-10 hover:text-white text-white/50 cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                  className="flex items-center justify-center w-10 h-10 rounded-2xl [html.light_&]:text-black dark:text-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
                   aria-label="Fetch from Gmail"
                 >
                   {loading ? (
@@ -167,7 +167,7 @@ export default function Header({
                   onMouseEnter={() => setHoveredTooltip(loading ? 'Loading...' : 'Load Database')}
                   onMouseLeave={() => setHoveredTooltip(null)}
                   disabled={loading}
-                  className="flex items-center justify-center w-10 h-10 text-white/50 hover:text-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                  className="flex items-center justify-center w-10 h-10 rounded-2xl [html.light_&]:text-black dark:text-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
                   aria-label="Load from Database"
                 >
                   <DatabaseBackupIcon className={`w-5 h-5 ${loading ? 'animate-pulse' : ''}`} />
@@ -185,7 +185,7 @@ export default function Header({
                   }}
                   onMouseEnter={() => setHoveredTooltip('Account')}
                   onMouseLeave={() => setHoveredTooltip(null)}
-                  className="flex items-center justify-center w-10 h-10 text-white/50 hover:text-white cursor-pointer transition-colors"
+                  className="flex items-center justify-center w-10 h-10 rounded-2xl [html.light_&]:text-black dark:text-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
                   aria-label="Account Settings"
                 >
                   <User className="w-5 h-5" />

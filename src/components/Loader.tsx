@@ -39,7 +39,7 @@ export default function Loader({ onComplete }: { onComplete?: () => void }) {
     <div className="fixed inset-0 z-100 flex items-center justify-center">
       <motion.div
       
-        className="flex flex-col items-center w-48 animate-pulse dark:invert"
+        className="flex flex-col items-center w-48 animate-pulse [html.light_&]:invert"
         animate={isExiting ? { opacity: 0, y: 10 } : { opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
       >

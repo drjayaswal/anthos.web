@@ -292,16 +292,23 @@ export default function AppNavbar({
                 })}
               </motion.div>
 
-              <div className="p-3 border-t border-white/10 shrink-0">
+              <div className="p-3 border-t border-dashed border-white/20 shrink-0">
                 <button
                   type="button"
                   onClick={toggleTheme}
-                  className="w-full group flex items-center justify-between p-2 rounded-2xl bg-white/5 hover:bg-white/10 transition-all duration-200 cursor-pointer"
+                  className="w-full group flex items-center justify-between p-2 cursor-pointer outline-none"
+                  aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-white/10 text-white/70 group-hover:text-white transition-colors">
-                      {theme === 'light' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                    </div>
+                    <motion.div
+                      key={theme}
+                      initial={{ scale: 0.8, rotate: -20 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      className="p-2 text-white/70 group-hover:text-white transition-colors"
+                    >
+                      {theme === 'light' ? <Sun className="w-4 h-4 text-black" /> : <Moon className="w-4 h-4 text-purple-300" />}
+                    </motion.div>
                     <div className="text-left">
                       <div className="text-xs font-semibold text-white/90 group-hover:text-white transition-colors">
                         {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
@@ -311,8 +318,19 @@ export default function AppNavbar({
                       </div>
                     </div>
                   </div>
-                  <div className="px-2 py-0.5 rounded-full text-[9px] font-mono font-medium bg-white/10 text-white/60">
-                    {theme === 'light' ? 'Light' : 'Dark'}
+
+                  <div className="relative w-12 h-7 p-0.5 rounded-full dark:bg-white/10 shadow-inner [html.light_&]:bg-black/3 border border-white/10 [html.light_&]:border-black/10 flex items-center shrink-0">
+                    <motion.div
+                      className="w-5.75 h-5.75 rounded-full border border-gray-200 bg-white shadow-md flex items-center justify-center text-black"
+                      animate={{
+                        x: theme === 'light' ? 20 : 0,
+                      }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                    />
                   </div>
                 </button>
               </div>
