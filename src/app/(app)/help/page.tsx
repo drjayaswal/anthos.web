@@ -78,7 +78,7 @@ export default function HelpCenter() {
                 Documentation &amp; Help
               </h1>
             </div>
-            <p className="text-xs text-white/40 sm:text-sm truncate">
+            <p className="text-xs text-white/50 sm:text-sm truncate">
               Learn how to securely fetch, analyze, and manage your intelligence with Anthos.
             </p>
           </div>
@@ -89,7 +89,7 @@ export default function HelpCenter() {
             <h2 className="text-sm sm:text-base font-semibold tracking-tight text-white">
               Platform Guides &amp; Architecture
             </h2>
-            <span className="text-[11px] sm:text-xs text-white/40 font-mono">
+            <span className="text-[11px] sm:text-xs text-white/50 font-mono">
               {guides.length} topics
             </span>
           </div>

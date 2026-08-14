@@ -1,27 +1,53 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { ArrowLeft, Inbox, Sparkles } from "lucide-react";
 
-const ThankYou = () => {
+export default function ThankYou() {
   return (
-    <div className="p-50 flex items-center justify-center">
-      <div className="flex flex-col items-center text-center">
-        <div className="relative">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:p-6 text-white">
+      <motion.div
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="relative overflow-hidden p-6 sm:p-10 max-w-md w-full text-center flex flex-col items-center space-y-5 sm:space-y-6 backdrop-blur-md"
+      >
+        <motion.div
+          initial={{ scale: 0.8, rotate: -8 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
+          className="relative flex items-center justify-center h-20 w-20 sm:h-24 sm:w-24"
+        >
           <Image
-            src="/thank-you.png"
+            src="/thank-you.svg"
             alt="Thank You"
-            height={300}
-            width={300}
+            height={64}
+            width={64}
             priority
             className="object-contain"
           />
+        </motion.div>
+
+        <div className="space-y-1.5 sm:space-y-2">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            Thank You!
+          </h1>
+          <p className="text-xs sm:text-sm text-white/60 leading-relaxed max-w-xs mx-auto">
+            Your intelligence workspace is ready. You can now securely query, analyze, and manage your emails anytime.
+          </p>
         </div>
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-neutral-900 -mt-2">
-          Thank You!
-        </h1>
-      </div>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 w-full pt-1 sm:pt-2">
+          <Link
+            href="/help"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium px-4 py-2.5 text-xs sm:text-sm transition active:scale-95 w-fit sm:w-auto"
+          >
+            <span>Documentation</span>
+          </Link>
+        </div>
+      </motion.div>
     </div>
   );
-};
-
-export default ThankYou;
+}

@@ -115,3 +115,247 @@
     font-weight: 700;
   }
 }
+
+/* Light Mode Rules */
+html.light,
+html[data-theme="light"],
+body.light {
+  --background: #ffffff !important;
+  --foreground: #000000 !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  color-scheme: light;
+}
+
+html.light body,
+html[data-theme="light"] body {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+html.light .bg-\[\#2c0237\] {
+  background-color: #ffffff !important;
+  border-color: rgba(44, 2, 55, 0.1) !important;
+  color: #000000 !important;
+}
+
+html.light .text-white {
+  color: #000000 !important;
+}
+
+html.light .text-white\/30 {
+  color: rgba(0, 0, 0, 0.35) !important;
+}
+
+html.light .text-white\/40 {
+  color: rgba(0, 0, 0, 0.45) !important;
+}
+
+html.light .text-white\/50 {
+  color: rgba(0, 0, 0, 0.55) !important;
+}
+
+html.light .text-white\/60 {
+  color: rgba(0, 0, 0, 0.65) !important;
+}
+
+html.light .text-white\/70 {
+  color: rgba(0, 0, 0, 0.75) !important;
+}
+
+html.light .text-white\/75 {
+  color: rgba(0, 0, 0, 0.75) !important;
+}
+
+html.light .text-white\/80 {
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+html.light .text-white\/90 {
+  color: rgba(0, 0, 0, 0.95) !important;
+}
+
+html.light .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+html.light .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .bg-white\/15 {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light .bg-white\/20 {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light .bg-white\/30 {
+  background-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+html.light .bg-white\/40 {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+html.light .border-white\/5 {
+  border-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light .border-white\/15 {
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light .border-white\/20 {
+  border-color: rgba(0, 0, 0, 0.16) !important;
+}
+
+html.light .border-white\/30 {
+  border-color: rgba(0, 0, 0, 0.22) !important;
+}
+
+html.light input,
+html.light textarea {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+  color: #000000 !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+
+html.light .group:hover .group-hover\:text-white {
+  color: #000000 !important;
+}
+
+html.light .hover\:bg-white\/10:hover {
+  background-color: rgba(0, 0, 0, 0.07) !important;
+}
+
+html.light .hover\:bg-white\/20:hover {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light .ring-white\/30 {
+  --tw-ring-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Ensure hover text white and colored hover badges always retain white text regardless of mode */
+html.light .hover\:text-white:hover,
+html[data-theme="light"] .hover\:text-white:hover,
+body.light .hover\:text-white:hover,
+html .hover\:text-white:hover,
+.hover\:text-white:hover,
+html.light [class*="hover:text-white"]:hover,
+html[data-theme="light"] [class*="hover:text-white"]:hover,
+[class*="hover:text-white"]:hover,
+html.light [class*="hover:bg-amber-"]:hover,
+html.light [class*="hover:bg-green-"]:hover,
+html.light [class*="hover:bg-emerald-"]:hover,
+html.light [class*="hover:bg-blue-"]:hover,
+html.light [class*="hover:bg-red-"]:hover,
+html.light [class*="hover:bg-rose-"]:hover,
+html.light [class*="hover:bg-indigo-"]:hover,
+html.light [class*="hover:bg-purple-"]:hover,
+html.light [class*="hover:bg-violet-"]:hover,
+html.light [class*="hover:bg-teal-"]:hover,
+html.light [class*="hover:bg-cyan-"]:hover,
+html.light [class*="hover:bg-sky-"]:hover,
+html.light [class*="hover:bg-orange-"]:hover,
+html.light [class*="hover:bg-yellow-"]:hover,
+html.light [class*="hover:bg-[#ff3131]"]:hover,
+html[data-theme="light"] [class*="hover:bg-amber-"]:hover,
+html[data-theme="light"] [class*="hover:bg-green-"]:hover,
+html[data-theme="light"] [class*="hover:bg-emerald-"]:hover,
+html[data-theme="light"] [class*="hover:bg-blue-"]:hover,
+html[data-theme="light"] [class*="hover:bg-red-"]:hover,
+html[data-theme="light"] [class*="hover:bg-rose-"]:hover,
+html[data-theme="light"] [class*="hover:bg-indigo-"]:hover,
+html[data-theme="light"] [class*="hover:bg-purple-"]:hover,
+html[data-theme="light"] [class*="hover:bg-violet-"]:hover,
+html[data-theme="light"] [class*="hover:bg-teal-"]:hover,
+html[data-theme="light"] [class*="hover:bg-cyan-"]:hover,
+html[data-theme="light"] [class*="hover:bg-sky-"]:hover,
+html[data-theme="light"] [class*="hover:bg-orange-"]:hover,
+html[data-theme="light"] [class*="hover:bg-yellow-"]:hover,
+html[data-theme="light"] [class*="hover:bg-[#ff3131]"]:hover,
+[class*="hover:bg-amber-"]:hover,
+[class*="hover:bg-green-"]:hover,
+[class*="hover:bg-emerald-"]:hover,
+[class*="hover:bg-blue-"]:hover,
+[class*="hover:bg-red-"]:hover,
+[class*="hover:bg-rose-"]:hover,
+[class*="hover:bg-indigo-"]:hover,
+[class*="hover:bg-purple-"]:hover,
+[class*="hover:bg-violet-"]:hover,
+[class*="hover:bg-teal-"]:hover,
+[class*="hover:bg-cyan-"]:hover,
+[class*="hover:bg-sky-"]:hover,
+[class*="hover:bg-orange-"]:hover,
+[class*="hover:bg-yellow-"]:hover,
+[class*="hover:bg-[#ff3131]"]:hover {
+  color: #ffffff !important;
+}
+
+/* Also ensure solid vibrant background elements always retain white text */
+html.light .bg-amber-600,
+html.light .bg-green-600,
+html.light .bg-blue-600,
+html.light .bg-red-600,
+html.light .bg-\[\#ff3131\],
+html[data-theme="light"] .bg-amber-600,
+html[data-theme="light"] .bg-green-600,
+html[data-theme="light"] .bg-blue-600,
+html[data-theme="light"] .bg-red-600,
+html[data-theme="light"] .bg-\[\#ff3131\],
+.bg-amber-600,
+.bg-green-600,
+.bg-blue-600,
+.bg-red-600,
+.bg-\[\#ff3131\] {
+  color: #ffffff !important;
+}
+
+/* Ensure hover text black and full white hover backgrounds retain black text */
+.hover\:text-black:hover,
+[class*="hover:text-black"]:hover,
+.hover\:bg-white:hover,
+[class*="hover:bg-white"]:not([class*="hover:bg-white/"]):hover,
+html:not(.light) [class*="hover:bg-white"]:not([class*="hover:bg-white/"]):hover,
+html[data-theme="dark"] [class*="hover:bg-white"]:not([class*="hover:bg-white/"]):hover {
+  color: #000000 !important;
+}
+
+/* Explicit light mode overrides for dark accents and white text */
+html.light .\[html\.light\_\&\]\:bg-\[\#2c0237\],
+html.light [class*="\[html.light_&\]:bg-[#2c0237]"],
+html[data-theme="light"] .\[html\.light\_\&\]\:bg-\[\#2c0237\],
+html[data-theme="light"] [class*="\[html.light_&\]:bg-[#2c0237]"] {
+  background-color: #2c0237 !important;
+  color: #ffffff !important;
+}
+
+html.light .\[html\.light\_\&\]\:text-white,
+html.light [class*="\[html.light_&\]:text-white"],
+html[data-theme="light"] .\[html\.light\_\&\]\:text-white,
+html[data-theme="light"] [class*="\[html.light_&\]:text-white"] {
+  color: #ffffff !important;
+}
+
+/* Ensure hover:border-transparent works regardless of light mode border overrides */
+html.light .hover\:border-transparent:hover,
+html[data-theme="light"] .hover\:border-transparent:hover,
+body.light .hover\:border-transparent:hover,
+.hover\:border-transparent:hover,
+html.light [class*="hover:border-transparent"]:hover,
+html[data-theme="light"] [class*="hover:border-transparent"]:hover,
+[class*="hover:border-transparent"]:hover {
+  border-color: transparent !important;
+}

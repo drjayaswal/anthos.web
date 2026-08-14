@@ -45,7 +45,7 @@ export default function TermsAndConditions() {
                 Terms &amp; Conditions
               </h1>
             </div>
-            <p className="text-xs text-white/40 sm:text-sm truncate">
+            <p className="text-xs text-white/50 sm:text-sm truncate">
               Terms and conditions governing the use of Anthos services, integrations, and vaults.
             </p>
           </div>

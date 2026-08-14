@@ -45,7 +45,7 @@ export default function PrivacyPolicy() {
                 Privacy Policy
               </h1>
             </div>
-            <p className="text-xs text-white/40 sm:text-sm truncate">
+            <p className="text-xs text-white/50 sm:text-sm truncate">
               Our data protection practices, encryption guarantees, and privacy commitments.
             </p>
           </div>

@@ -13,6 +13,8 @@ import {
   ChevronRight,
   SettingsIcon,
   LockIcon,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -55,7 +57,35 @@ export default function AppNavbar({
   }
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const isDesktop = useIsDesktop();
+
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    const isLight = saved === 'light' || document.documentElement.classList.contains('light');
+    setTheme(isLight ? 'light' : 'dark');
+    if (isLight) {
+      document.documentElement.classList.add('light');
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.body.classList.add('light');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    if (nextTheme === 'light') {
+      document.documentElement.classList.add('light');
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.body.classList.add('light');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.classList.remove('light');
+      document.documentElement.removeAttribute('data-theme');
+      document.body.classList.remove('light');
+      localStorage.setItem('theme', 'dark');
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -82,8 +112,8 @@ export default function AppNavbar({
     () => [
       {
         href: '/',
-        label: 'Firebox',
-        description: 'Your intelligent AI email hub',
+        label: 'Inbox',
+        description: 'Your intelligent AI email inbox',
         show: authenticated,
         icon: Inbox,
       },
@@ -165,15 +195,15 @@ export default function AppNavbar({
             'group relative flex items-center justify-center gap-2 px-3 py-2 rounded-full transition-all duration-300 outline-none cursor-pointer',
             'backdrop-blur-md'
           )}
-          >
+        >
           <div className="flex items-center gap-1">
-            <span className="text-xs font-semibold tracking-tight text-white/75 group-hover:text-white transition-colors">
+            <span className="text-xs font-semibold tracking-tight text-white/50 group-hover:text-white transition-colors">
               Menu
             </span>
             <ChevronRight
               className={cn(
                 'w-4 h-4 transition-transform duration-300',
-                menuOpen ? 'rotate-90' : 'text-white/75 group-hover:text-white -translate-x-0.5 group-hover:translate-x-0.5'
+                menuOpen ? 'rotate-90' : 'text-white/50 group-hover:text-white -translate-x-0.5 group-hover:translate-x-0.5'
               )}
             />
           </div>
@@ -229,7 +259,7 @@ export default function AppNavbar({
                               'p-2.5 rounded-2xl transition-colors',
                               active
                                 ? 'text-white bg-white/10'
-                                : 'text-white/40 group-hover:text-white transition-colors'
+                                : 'text-white/50 group-hover:text-white transition-colors'
                             )}
                           >
                             <Icon className="w-5 h-5" />
@@ -239,7 +269,7 @@ export default function AppNavbar({
                               "font-medium text-sm text-white/50 group-hover:text-white transition-colors",
                               active
                                 ? 'text-white'
-                                : 'text-white/40 group-hover:text-white transition-colors'
+                                : 'text-white/50 group-hover:text-white transition-colors'
                             )}
                             >
                               {item.label}
@@ -248,19 +278,44 @@ export default function AppNavbar({
                               "font-medium text-[9px] text-white/50 group-hover:text-white transition-colors",
                               active
                                 ? 'text-white'
-                                : 'text-white/40 group-hover:text-white transition-colors'
+                                : 'text-white/50 group-hover:text-white transition-colors'
                             )}
                             >
                               {item.description}
                             </div>
                           </div>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-white/30 group-hover:translate-x-1 -translate-x-1 group-hover:text-white transition-all" />
+                        <ChevronRight className="w-4 h-4 text-white/50 group-hover:translate-x-1 -translate-x-1 group-hover:text-white transition-all" />
                       </Link>
                     </motion.div>
                   );
                 })}
               </motion.div>
+
+              <div className="p-3 border-t border-white/10 shrink-0">
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="w-full group flex items-center justify-between p-2 rounded-2xl bg-white/5 hover:bg-white/10 transition-all duration-200 cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-white/10 text-white/70 group-hover:text-white transition-colors">
+                      {theme === 'light' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                    </div>
+                    <div className="text-left">
+                      <div className="text-xs font-semibold text-white/90 group-hover:text-white transition-colors">
+                        {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
+                      </div>
+                      <div className="text-[9px] text-white/40 group-hover:text-white/60 transition-colors">
+                        {theme === 'light' ? 'Switch to Dark' : 'Switch to Light'}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="px-2 py-0.5 rounded-full text-[9px] font-mono font-medium bg-white/10 text-white/60">
+                    {theme === 'light' ? 'Light' : 'Dark'}
+                  </div>
+                </button>
+              </div>
             </motion.div>
           </>
         )}

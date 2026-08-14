@@ -20,8 +20,8 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
     const [maxSwipe, setMaxSwipe] = useState(250);
     const x = useMotionValue(0);
 
-    const bg = useTransform(x, [0, maxSwipe], ["#ffffff", "#ff3131"]);
-    const iconColor = useTransform(x, [0, maxSwipe], ["#ff3131", "#ffffff"]);
+    const bg = useTransform(x, [0, maxSwipe], ["#ffffff", "#2c0237"]);
+    const iconColor = useTransform(x, [0, maxSwipe], ["#2c0237", "#ffffff"]);
 
     const handleDragEnd = (_: any, info: any) => {
         if (info.offset.x > maxSwipe * 0.8) {
@@ -43,46 +43,34 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent aria-describedby={undefined} className="rounded-xl border border-gray-200/75 bg-white p-5 sm:max-w-xs">
-                <DialogHeader>
-                    <DialogTitle className="text-xl tracking-tight text-black">Account</DialogTitle>
+            <DialogContent aria-describedby={undefined} className="w-full sm:w-80 rounded-t-4xl sm:rounded-2xl bg-[#2c0237] border border-white/10 [html.light_&]:bg-white [html.light_&]:border-black/10 text-white p-5 shadow-2xl">
+                <DialogHeader className="space-y-1">
+                    <DialogTitle className="text-base sm:text-lg font-semibold tracking-tight text-white">Account</DialogTitle>
                     {data ? (
-                        <div className="space-y-3 pt-2">
-                            <div className="flex items-center gap-3 text-sm text-black">
-                                <UserIcon size={16} className="text-zinc-400" />
+                        <div className="space-y-2.5 pt-2">
+                            <div className="flex items-center gap-3 text-xs sm:text-sm text-white">
+                                <UserIcon size={16} className="text-white/50 shrink-0" />
                                 <span className="truncate">{data.email}</span>
                             </div>
-                            <div className="flex items-center gap-3 text-sm text-black">
-                                <MailIcon size={16} className="text-zinc-400" />
+                            <div className="flex items-center gap-3 text-xs sm:text-sm text-white">
+                                <MailIcon size={16} className="text-white/50 shrink-0" />
                                 <span>{data.totalEncryptedMails} Encrypted Mails</span>
                             </div>
-                            <div className="flex items-center gap-3 text-sm text-black">
-                                <CalendarIcon size={16} className="text-zinc-400" />
+                            <div className="flex items-center gap-3 text-xs sm:text-sm text-white">
+                                <CalendarIcon size={16} className="text-white/50 shrink-0" />
                                 <span>Joined {new Date(data.createdAt).toLocaleDateString()}</span>
                             </div>
                         </div>
                     ) : (
-                        <div className="h-2 animate-pulse bg-zinc-100 rounded-lg" />
+                        <div className="h-20 animate-pulse bg-white/10 rounded-xl" />
                     )}
                 </DialogHeader>
-                <Button
-                    type="button"
-                    variant="light"
-                    size="sm"
-                    className="h-9 w-full text-xs"
-                    asChild
-                >
-                    <Link href="/profile" onClick={() => onOpenChange(false)}>
-                        <CircleUserIcon className="h-3.5 w-3.5" />
-                        View profile
-                    </Link>
-                </Button>
-                <DialogFooter className="bg-white border-t border-black/10">
+                <DialogFooter className="dark:bg-transparent bf border-t border-white/10 [html.light_&]:border-black/10 pt-3">
                     <div
                         ref={containerRef}
-                        className="relative w-full h-12 rounded-full overflow-hidden border border-black/5 shadow-inner bg-gray-100 flex items-center p-1">
+                        className="relative w-full h-12 rounded-full overflow-hidden border border-white/10 [html.light_&]:border-black/10 bg-white/5 [html.light_&]:bg-black/5 flex items-center p-1">
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <span className="text-black text-sm">
+                            <span className="text-white/70 [html.light_&]:text-black/70 text-xs font-medium">
                                 Slide to Disconnect
                             </span>
                         </div>

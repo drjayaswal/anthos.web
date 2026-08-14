@@ -67,7 +67,7 @@ export default function Auth() {
           <button
             type="button"
             disabled={loading}
-            className={`transition-colors duration-200 active:shadow-inner text-white rounded-2xl px-4 py-2 ${loading ? "shadow-inner flex cursor-not-allowed justify-center items-center gap-2 text-white/40" : "hover:bg-gray-200/10 cursor-pointer"}`}
+            className={`transition-colors duration-200 active:shadow-inner text-white rounded-2xl px-4 py-2 ${loading ? "shadow-inner flex cursor-not-allowed justify-center items-center gap-2 text-white/50" : "hover:bg-gray-200/10 cursor-pointer"}`}
             onClick={handleGoogleSignIn}
           >
             {loading && (

@@ -80,7 +80,7 @@ export default function Header({
               )}
             >
               <div className="flex items-center gap-1">
-                <span className="text-xs font-semibold tracking-tight text-gray-800 group-hover:text-[#ff3131] transition-colors">
+                <span className="text-xs font-semibold tracking-tight text-white/50 group-hover:text-white transition-colors">
                   Options
                 </span>
               </div>
@@ -124,7 +124,7 @@ export default function Header({
                     onMouseEnter={() => setHoveredTooltip('Analyze Mails')}
                     onMouseLeave={() => setHoveredTooltip(null)}
                     disabled={analyzing || analyzeDisabled}
-                    className="flex items-center justify-center w-10 h-10 text-[#ff3131] cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-shadow hover:shadow-lg hover:shadow-red-500/40"
+                    className="flex items-center justify-center w-10 h-10 text-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-shadow hover:shadow-lg hover:shadow-red-500/40"
                     aria-label="Analyze Mails"
                   >
                     <Sparkles className="w-5 h-5" />
@@ -144,7 +144,7 @@ export default function Header({
                   onMouseEnter={() => setHoveredTooltip(loading ? 'Fetching...' : 'Fetch from Gmail')}
                   onMouseLeave={() => setHoveredTooltip(null)}
                   disabled={loading}
-                  className="flex items-center justify-center w-10 h-10 hover:text-[#ff3131] cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                  className="flex items-center justify-center w-10 h-10 hover:text-white text-white/50 cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
                   aria-label="Fetch from Gmail"
                 >
                   {loading ? (
@@ -167,32 +167,30 @@ export default function Header({
                   onMouseEnter={() => setHoveredTooltip(loading ? 'Loading...' : 'Load Database')}
                   onMouseLeave={() => setHoveredTooltip(null)}
                   disabled={loading}
-                  className="flex items-center justify-center w-10 h-10 text-gray-700 hover:text-[#ff3131] cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                  className="flex items-center justify-center w-10 h-10 text-white/50 hover:text-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
                   aria-label="Load from Database"
                 >
                   <DatabaseBackupIcon className={`w-5 h-5 ${loading ? 'animate-pulse' : ''}`} />
                 </motion.button>
               </div>
 
-              {sessionUserEmail && (
-                <div className="relative">
-                  <motion.button
-                    type="button"
-                    whileHover={{ scale: 1.2, y: -2 }}
-                    whileTap={{ scale: 0.92 }}
-                    onClick={() => {
-                      onAccount();
-                      closeOptions();
-                    }}
-                    onMouseEnter={() => setHoveredTooltip('Account')}
-                    onMouseLeave={() => setHoveredTooltip(null)}
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-700 hover:text-[#ff3131] hover:bg-[#ff3131]/10 border border-gray-200/60 cursor-pointer transition-colors"
-                    aria-label="Account Settings"
-                  >
-                    <User className="w-5 h-5" />
-                  </motion.button>
-                </div>
-              )}
+              <div className="relative">
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.2, y: -2 }}
+                  whileTap={{ scale: 0.92 }}
+                  onClick={() => {
+                    onAccount();
+                    closeOptions();
+                  }}
+                  onMouseEnter={() => setHoveredTooltip('Account')}
+                  onMouseLeave={() => setHoveredTooltip(null)}
+                  className="flex items-center justify-center w-10 h-10 text-white/50 hover:text-white cursor-pointer transition-colors"
+                  aria-label="Account Settings"
+                >
+                  <User className="w-5 h-5" />
+                </motion.button>
+              </div>
 
               <AnimatePresence>
                 {hoveredTooltip && (
@@ -201,7 +199,7 @@ export default function Header({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-14 right-2 pointer-events-none z-60 whitespace-nowrap bg-[#ff3131] text-white text-[11px] font-medium px-2.5 py-1 rounded-lg"
+                    className="absolute top-14 right-2 pointer-events-none z-60 whitespace-nowrap bg-blue-600 text-white text-[11px] font-medium px-2.5 py-1 rounded-lg"
                   >
                     {hoveredTooltip}
                   </motion.div>

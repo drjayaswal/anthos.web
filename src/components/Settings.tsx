@@ -5,12 +5,12 @@ import Image from "next/image";
 import {
   Cpu,
   Key,
-  Plus,
   Eye,
   EyeOff,
   X,
   Loader2,
   SettingsIcon,
+  PlusIcon,
 } from "lucide-react";
 import type { UserSettings, ModelItem } from "@/app/api/_db/settings";
 import {
@@ -19,6 +19,7 @@ import {
   deleteModelSettingAction,
 } from "@/app/actions";
 import { toast } from "@/lib/toast";
+import { CustomButton } from "@/components/ui/button";
 
 type ModelCardProps = {
   model: ModelItem;
@@ -50,14 +51,14 @@ function ModelCard({
     <>
       <button
         onClick={(e) => { e.stopPropagation(); onToggleKey(model.id); }}
-        className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium text-white/40 hover:text-white hover:bg-amber-600"
+        className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium text-white/70 hover:text-white hover:bg-amber-500"
         title={isKeyVisible ? "Hide Key" : "Show Key"}
       >
         {isKeyVisible ? "Hide" : "Show"}
       </button>
       <button
         onClick={(e) => { e.stopPropagation(); onCopy(model.apiKey, model.id); }}
-        className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium text-white/40 hover:text-white hover:bg-green-600"
+        className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium text-white/70 hover:text-white hover:bg-green-600"
         title="Copy Key"
       >
         {copiedId === model.id ? "Copied!" : "Copy"}
@@ -65,7 +66,7 @@ function ModelCard({
       <button
         onClick={(e) => { e.stopPropagation(); onEdit(model); }}
         title="Edit model"
-        className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium text-white/40 hover:text-white hover:bg-blue-600"
+        className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium text-white/70 hover:text-white hover:bg-blue-600"
       >
         Edit
       </button>
@@ -73,7 +74,7 @@ function ModelCard({
         onClick={(e) => { e.stopPropagation(); onDelete(model); }}
         disabled={isDeleting}
         title="Delete model"
-        className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium disabled:opacity-50 text-white/40 hover:text-white hover:bg-red-600"
+        className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium disabled:opacity-50 text-white/70 hover:text-white hover:bg-red-600"
       >
         {isDeleting ? "…" : "Delete"}
       </button>
@@ -82,27 +83,27 @@ function ModelCard({
 
   return (
     <div
-      className="overflow-hidden rounded-2xl bg-white/10 border border-white/5 text-white shadow-sm"
+      className="overflow-hidden rounded-2xl bg-white dark:bg-white/10 border border-white/5 text-white shadow-sm"
       onMouseEnter={() => setIsModelHovered(true)}
       onMouseLeave={() => setIsModelHovered(false)}
       onClick={() => setIsExpanded((p) => !p)}
     >
       <div className="flex items-center gap-2 p-2">
         <div className="rounded-xl bg-white p-1">
-        <Image
-          src={model.logo || "/ai-model.png"}
-          alt={model.name}
-          width={24}
-          height={24}
-          unoptimized
-          className={`h-6 w-6 shrink-0 rounded-full object-cover ${!model.logo ? "grayscale invert" : ""}`}
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = "/ai-model.png";
-            target.classList.add("invert");
-          }}
+          <Image
+            src={model.logo || "/ai-model.png"}
+            alt={model.name}
+            width={24}
+            height={24}
+            unoptimized
+            className={`h-6 w-6 shrink-0 rounded-full object-cover ${!model.logo ? "grayscale invert" : ""}`}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = "/ai-model.png";
+              target.classList.add("invert");
+            }}
           />
-          </div>
+        </div>
 
         <div className="flex items-center gap-1.5 min-w-0 shrink-0">
           <span className="text-xs font-semibold truncate max-w-28">{model.name}</span>
@@ -114,7 +115,7 @@ function ModelCard({
         <div className="hidden sm:flex items-center gap-2 min-w-0 flex-1">
           <div className="w-px h-3.5 bg-white/15 shrink-0" />
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
-            <Key className="h-3 w-3 shrink-0 text-white/40" />
+            <Key className="h-3 w-3 shrink-0 text-white/50" />
             <span className="font-mono text-[10px] text-white/60 truncate">
               {isKeyVisible ? model.apiKey : maskApiKey(model.apiKey)}
             </span>
@@ -133,7 +134,7 @@ function ModelCard({
         <div className="overflow-hidden">
           <div className="flex items-center justify-between gap-2 mx-3 mb-2 rounded-xl bg-white/5 px-2.5 py-1.5">
             <div className="flex items-center gap-1.5 min-w-0 flex-1">
-              <Key className="h-3 w-3 shrink-0 text-white/40" />
+              <Key className="h-3 w-3 shrink-0 text-white/50" />
               <span className="font-mono text-[10px] text-white/60 truncate">
                 {isKeyVisible ? model.apiKey : maskApiKey(model.apiKey)}
               </span>
@@ -277,7 +278,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
   return (
     <div className="min-h-0 text-white">
       <main className="sm:mx-auto mx-2 max-w-4xl sm:mt-0 mt-10 px-3 sm:px-6 py-4 sm:py-10 space-y-4 sm:space-y-6">
-        <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 border-b border-dashed border-white/15 pb-4 sm:pb-5">
+        <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 border-b border-dashed border-white/30 pb-4 sm:pb-5">
           <div className="space-y-0.5 min-w-0">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center text-white shrink-0">
@@ -287,25 +288,23 @@ export default function Settings({ settings: initialSettings }: { settings: User
                 Settings
               </h1>
             </div>
-            <p className="text-[11px] text-white/40 sm:text-sm truncate">
+            <p className="text-[11px] text-white/50 sm:text-sm truncate">
               Configure your AI processing models, custom parameters, and API keys for Anthos.
             </p>
           </div>
-          <button
+          <CustomButton
             onClick={openAddModal}
             title="Add new model parameter"
-            className="inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl cursor-pointer hover:bg-white bg-white/30 text-white px-3 py-1.5 text-xs font-medium hover:text-black transition active:scale-95 sm:text-sm shrink-0"
           >
-            <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
             <span>Add</span>
-          </button>
+          </CustomButton>
         </div>
         <section className="space-y-3 sm:space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm sm:text-base font-semibold tracking-tight text-white flex items-center gap-2">
               AI Model Parameters &amp; Keys
             </h2>
-            <span className="text-[11px] sm:text-xs text-white/40 font-mono">
+            <span className="text-[11px] sm:text-xs text-white/50 font-mono">
               {settings.models.length} {settings.models.length === 1 ? "model" : "models"} total
             </span>
           </div>
@@ -317,7 +316,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
               </div>
               <div className="space-y-1 max-w-sm">
                 <h3 className="text-xs sm:text-sm font-semibold text-white">No AI models configured yet</h3>
-                <p className="text-[11px] sm:text-xs text-white/40 leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-white/50 leading-relaxed">
                   Add model parameters with your custom display name, AI model identifier, and provider API key to customize email analysis.
                 </p>
               </div>
@@ -360,7 +359,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
                 onClick={closeModal}
                 disabled={isSubmitting}
                 title="Close dialog"
-                className="rounded cursor-pointer p-1 text-white/40 hover:text-white transition"
+                className="rounded cursor-pointer p-1 text-white/50 hover:text-white transition"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -376,7 +375,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
                   title="Enter a display name for this model"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-lg bg-white/10 px-2.5 py-1.5 text-xs text-white placeholder:text-white/30 outline-none"
+                  className="w-full rounded-lg bg-white/10 px-2.5 py-1.5 text-xs text-white placeholder:text-white/50 outline-none"
                 />
               </div>
 
@@ -390,7 +389,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
                   title="Enter the AI model identifier or provider name"
                   value={modelName}
                   onChange={(e) => setModelName(e.target.value)}
-                  className="w-full rounded-lg bg-white/10 px-2.5 py-1.5 font-mono text-xs text-white placeholder:text-white/30 outline-none"
+                  className="w-full rounded-lg bg-white/10 px-2.5 py-1.5 font-mono text-xs text-white placeholder:text-white/50 outline-none"
                 />
               </div>
 
@@ -405,13 +404,13 @@ export default function Settings({ settings: initialSettings }: { settings: User
                     title="Enter your provider API key"
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
-                    className="w-full rounded-lg bg-white/10 pl-2.5 pr-8 py-1.5 font-mono text-xs text-white placeholder:text-white/30 outline-none"
+                    className="w-full rounded-lg bg-white/10 pl-2.5 pr-8 py-1.5 font-mono text-xs text-white placeholder:text-white/50 outline-none"
                   />
                   <button
                     type="button"
                     onClick={() => setShowApiKey(!showApiKey)}
                     title={showApiKey ? "Hide API key" : "Show API key"}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-white/40 hover:text-white transition"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-white/50 hover:text-white transition"
                   >
                     {showApiKey ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                   </button>
@@ -420,35 +419,26 @@ export default function Settings({ settings: initialSettings }: { settings: User
 
               <div className="space-y-1">
                 <label className="block text-[10px] font-medium text-white/60 uppercase tracking-wide">
-                  Logo URL <span className="text-white/30 normal-case font-normal">(optional)</span>
+                  Logo URL <span className="text-white/50 normal-case font-normal">(optional)</span>
                 </label>
                 <input
                   type="text"
                   title="Enter a URL for the model's logo icon (optional)"
                   value={logo}
                   onChange={(e) => setLogo(e.target.value)}
-                  className="w-full rounded-lg bg-white/10 px-2.5 py-1.5 text-xs text-white placeholder:text-white/30 outline-none"
+                  className="w-full rounded-lg bg-white/10 px-2.5 py-1.5 text-xs text-white placeholder:text-white/50 outline-none"
                 />
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
                 <button
-                  type="button"
-                  onClick={closeModal}
-                  disabled={isSubmitting}
-                  title="Discard changes and close"
-                  className="rounded-lg cursor-pointer px-3 py-1.5 text-xs font-medium text-white/50 hover:text-white transition"
-                >
-                  Cancel
-                </button>
-                <button
                   type="submit"
                   disabled={isSubmitting}
                   title={editingModel ? "Save changes to this model" : "Add this model parameter"}
-                  className="inline-flex items-center gap-1.5 rounded-lg cursor-pointer bg-[#ff3131] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#ff3131]/90 active:scale-95 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-lg cursor-pointer bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-green-600/90 active:scale-95 disabled:opacity-50"
                 >
-                  {isSubmitting && <Loader2 className="h-3 w-3 animate-spin" />}
-                  {editingModel ? "Save" : "Add"}
+                  {isSubmitting ? <Loader2 className="h-3 w-3 animate-spin" /> : <PlusIcon className="h-3 w-3" />}
+                  {editingModel ? "Save Model" : "Add Model"}
                 </button>
               </div>
             </form>

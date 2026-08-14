@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, CustomButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -15,9 +15,7 @@ import {
 import {
   CheckIcon,
   Loader2Icon,
-  PencilIcon,
   PlusIcon,
-  Trash2Icon,
   XIcon,
 } from "lucide-react";
 import { toast } from "@/lib/toast";
@@ -137,12 +135,12 @@ export default function AdminCategories() {
     <div className="mx-auto sm:mt-0 mt-10 max-w-3xl px-4 sm:px-6 py-4 sm:py-0 space-y-4 sm:space-y-8">
       <div className="space-y-0.5 sm:space-y-1">
         <h1 className="text-lg font-semibold tracking-tight text-white sm:text-2xl">Categories</h1>
-        <p className="text-xs text-white/40 sm:text-sm">
+        <p className="text-xs text-white/50 sm:text-sm">
           Manage labels used to classify encrypted mail. Changes apply for all users.
         </p>
       </div>
 
-      <section className="rounded-2xl bg-white/10 p-5 shadow-sm sm:p-5">
+      <section className="rounded-4xl bg-white dark:bg-white/10 [html.light_&]:border [html.light_&]:border-black/10 border-0 p-5 shadow-sm sm:p-5">
         <h2 className="text-xs font-medium text-white sm:text-sm">
           {editingId ? "Edit category" : "Add category"}
         </h2>
@@ -157,12 +155,12 @@ export default function AdminCategories() {
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 placeholder="Category Name"
-                className="h-9 px-2.5 text-sm text-white bg-white/10 border-0 placeholder:text-white/30 focus:ring-0 sm:h-10 sm:px-3"
+                className="h-9 px-2.5 text-sm text-white dark:bg-white/5 border-0 placeholder:text-white/50 focus:ring-0 sm:h-10 sm:px-3"
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="category-description" className="text-white/70">
-                Description <span className="font-normal text-white/30">(optional)</span>
+                Description <span className="font-normal text-white/50">(optional)</span>
               </Label>
               <textarea
                 id="category-description"
@@ -170,15 +168,14 @@ export default function AdminCategories() {
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="What belongs in this category?"
                 rows={2}
-                className="w-full resize-none rounded-xl border-0 bg-white/5 px-2.5 py-1.5 text-xs text-white placeholder:text-white/30 outline-0 sm:px-3 sm:py-2 sm:text-sm"
+                className="w-full resize-none rounded-xl border-0 dark:bg-white/5 px-2.5 py-1.5 text-xs text-white placeholder:text-white/50 outline-0 sm:px-3 sm:py-2 sm:text-sm"
               />
             </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button
+            <CustomButton
               type="submit"
-              className="bg-white/10 hover:bg-white hover:text-black rounded-xl"
               disabled={saving || !form.name.trim()}
             >
               {saving ? (
@@ -188,20 +185,24 @@ export default function AdminCategories() {
               ) : (
                 <PlusIcon className="h-4 w-4" />
               )}
-              {editingId ? "Save" : "Add"}
-            </Button>
+              <span>{editingId ? "Save" : "Add"}</span>
+            </CustomButton>
             {editingId && (
-              <Button type="button" onClick={resetForm} disabled={saving} className="bg-white/10 rounded-xl hover:text-white text-white/70 hover:bg-red-600">
+              <CustomButton
+                type="button"
+                onClick={resetForm}
+                disabled={saving}
+              >
                 <XIcon className="h-4 w-4" />
-                Cancel
-              </Button>
+                <span>Cancel</span>
+              </CustomButton>
             )}
           </div>
         </form>
       </section>
 
-      <section className="overflow-hidden rounded-2xl bg-white/10 sm:py-2 p-2 shadow-sm">
-        <div className="border-b border-white/10 px-3 py-2.5 sm:px-6 sm:py-4">
+      <section className="overflow-hidden rounded-4xl bg-white dark:bg-white/10 [html.light_&]:border [html.light_&]:border-black/10 border-0 sm:py-2 p-2 shadow-sm">
+        <div className="border-b border-black/10 dark:border-white/10 px-3 py-2.5 sm:px-6 sm:py-4">
           <h2 className="text-xs font-medium text-white sm:text-sm">All categories</h2>
         </div>
 
@@ -215,8 +216,8 @@ export default function AdminCategories() {
         ) : (
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader className="border-b border-white/10">
-                <TableRow className="border-b border-white/10 hover:bg-transparent">
+              <TableHeader className="border-b border-black/10 dark:border-white/10">
+                <TableRow className="border-b border-black/10 dark:border-white/10 hover:bg-transparent">
                   <TableHead className="px-4 py-3 text-[10px] text-white sm:px-6 sm:py-3.5 sm:text-xs">Name</TableHead>
                   <TableHead className="hidden px-4 py-3 text-[10px] text-white md:table-cell sm:px-6 sm:py-3.5 sm:text-xs">Description</TableHead>
                   <TableHead className="w-24 px-4 py-3 text-right text-[10px] text-white sm:w-32 sm:px-6 sm:py-3.5 sm:text-xs">Actions</TableHead>
@@ -226,7 +227,9 @@ export default function AdminCategories() {
                 {items.map((cat) => (
                   <TableRow
                     key={cat.id}
-                    className={`border-b border-white/10 transition-colors ${editingId === cat.id ? "bg-white/10" : "hover:bg-white/5"
+                    className={`border-b border-black/10 dark:border-white/10 transition-colors ${editingId === cat.id
+                        ? "bg-black/5 dark:bg-white/15"
+                        : "hover:bg-black/5 dark:hover:bg-white/5"
                       }`}
                   >
                     <TableCell className="max-w-[52vw] truncate px-4 py-3 text-xs font-medium text-white sm:max-w-none sm:px-6 sm:py-4 sm:text-sm">{cat.name}</TableCell>
@@ -239,7 +242,7 @@ export default function AdminCategories() {
                           type="button"
                           size="sm"
                           variant="ghost"
-                          className="text-white/50 rounded-lg hover:text-white hover:bg-blue-600 border-0 px-2.5 py-1"
+                          className="text-white/70 dark:text-white/70 rounded-lg hover:text-white hover:bg-blue-600 border-0 px-2.5 py-1 text-xs cursor-pointer"
                           onClick={() => startEdit(cat)}
                           aria-label={`Edit ${cat.name}`}
                         >
@@ -249,7 +252,7 @@ export default function AdminCategories() {
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="text-white/50 rounded-lg hover:text-white hover:bg-red-600 border-0 px-2.5 py-1"
+                          className="text-white/70 dark:text-white/70 rounded-lg hover:text-white hover:bg-red-600 border-0 px-2.5 py-1 text-xs cursor-pointer"
                           disabled={deletingId === cat.id}
                           onClick={() => handleDelete(cat.id, cat.name)}
                           aria-label={`Delete ${cat.name}`}
@@ -257,7 +260,7 @@ export default function AdminCategories() {
                           {deletingId === cat.id ? (
                             <Loader2Icon className="h-4 w-4 animate-spin" />
                           ) : (
-                            <div className="">Delete</div>
+                            <div>Delete</div>
                           )}
                         </Button>
                       </div>

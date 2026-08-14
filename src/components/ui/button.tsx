@@ -9,6 +9,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        custom_button:
+          "text-white hover:bg-white border border-white/30 border-dashed hover:border-transparent hover:text-black rounded-xl duration-200 [html.light_&]:bg-white [html.light_&]:text-black [html.light_&]:hover:bg-black [html.light_&]:hover:border-transparent [html.light_&]:hover:text-white active:scale-95",
+        custom:
+          "text-white hover:bg-white border border-white/30 border-dashed hover:border-transparent hover:text-black rounded-xl duration-200 [html.light_&]:bg-white [html.light_&]:text-black [html.light_&]:hover:bg-black [html.light_&]:hover:border-transparent [html.light_&]:hover:text-white active:scale-95",
         light:"border border-gray-200/75 bg-white hover:-translate-y-px active:translate-y-px hover:shadow-sm text-black rounded-xl",
         classic: "bg-white hover:opacity-85 text-black active:scale-98 active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0",
         classic_accent: "bg-white hover:bg-accent hover:text-black text-black active:scale-98 active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0",
@@ -26,9 +30,9 @@ const buttonVariants = cva(
       },
       size: {
         default:
-          "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+          "h-8 gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
         xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+        sm: "h-7 gap-1.5 rounded-xl px-2.5 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
         lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
         xl: "h-11 gap-2 px-3 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3",
         icon: "size-8",
@@ -69,4 +73,20 @@ function Button({
   )
 }
 
-export { Button, buttonVariants }
+function CustomButton({
+  className,
+  variant = "custom_button",
+  size = "default",
+  ...props
+}: React.ComponentProps<typeof Button>) {
+  return (
+    <Button
+      variant={variant}
+      size={size}
+      className={className}
+      {...props}
+    />
+  )
+}
+
+export { Button, CustomButton, buttonVariants }

@@ -39,7 +39,7 @@ export default function Loader({ onComplete }: { onComplete?: () => void }) {
     <div className="fixed inset-0 z-100 flex items-center justify-center">
       <motion.div
       
-        className="flex flex-col items-center w-48 animate-pulse"
+        className="flex flex-col items-center w-48 animate-pulse dark:invert"
         animate={isExiting ? { opacity: 0, y: 10 } : { opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
@@ -48,7 +48,7 @@ export default function Loader({ onComplete }: { onComplete?: () => void }) {
           transition={{ duration: 1.6, ease: "linear", repeat: Infinity }}
         >
           <Image
-            src="/anthos.svg"
+            src="/anthos.png"
             alt="anthos"
             width={100}
             height={100}

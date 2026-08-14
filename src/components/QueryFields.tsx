@@ -198,7 +198,7 @@ export function DatabaseQueryFields(p: DatabaseQueryFieldsProps) {
     <div className="space-y-6">
       <div className="flex flex-col gap-4">
         <div className="space-y-2">
-          <Label className="text-[11px] text-gray-400">Emails Count</Label>
+          <Label className="text-[11px] text-white/50">Emails Count</Label>
           <Counter value={p.count} min={1} max={10} onChange={p.setCount} />
         </div>
       </div>

@@ -43,7 +43,7 @@ function Field({
         {label}
       </dt>
       <dd
-        className={`text-xs text-white/30 sm:text-sm ${mono ? "break-all font-mono text-[11px] sm:text-xs" : "wrap-break-word"}`}
+        className={`text-xs text-white/50 sm:text-sm ${mono ? "break-all font-mono text-[11px] sm:text-xs" : "wrap-break-word"}`}
       >
         {value}
       </dd>
@@ -63,12 +63,12 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
           <h1 className="text-lg font-semibold tracking-tight sm:text-xl">
             Your profile
           </h1>
-          <p className="text-xs text-white/40 sm:text-sm">
+          <p className="text-xs text-white/50 sm:text-sm">
             Account details from your sign-in. This is read-only information and can't be edited.
           </p>
         </div>
 
-        <section className="overflow-hidden rounded-4xl bg-white/10 shadow-sm">
+        <section className="overflow-hidden rounded-4xl bg-white [html.light_&]:border dark:border-0 dark:bg-white/10 shadow-sm">
           <div className="flex items-center gap-3 border-b border-black/10 p-3 sm:gap-4 sm:p-4">
             <div className={profile.emailVerified ? "p-0.5 rounded-full ring-2 ring-white/30 shrink-0" : "shrink-0"}>
               {profile.image ? (
@@ -80,7 +80,7 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
                   className="h-11 w-11 rounded-full object-cover sm:h-12 sm:w-12"
                 />
               ) : (
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/40 sm:h-12 sm:w-12">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full text-white/40 sm:h-12 sm:w-12">
                   <UserIcon className="h-5 w-5 text-white sm:h-6 sm:w-6" />
                 </div>
               )}
@@ -89,7 +89,7 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
               <p className="truncate text-sm font-medium sm:text-base">
                 {profile.name}
               </p>
-              <p className="truncate text-xs text-white/40 sm:text-sm">
+              <p className="truncate text-xs text-white/50 sm:text-sm">
                 {profile.email}
               </p>
 
@@ -117,10 +117,10 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
           </dl>
         </section>
 
-        <section className="mt-3 overflow-hidden rounded-2xl bg-white/10 shadow-sm sm:mt-4">
+        <section className="mt-3 overflow-hidden rounded-2xl [html.light_&]:border bg-white dark:bg-white/10 shadow-sm sm:mt-4">
           <div className="border-b border-white/10 px-3 py-2 sm:px-4 sm:py-2.5">
             <h2 className="flex items-center gap-1.5 text-xs font-medium sm:text-sm">
-              <ShieldIcon className="h-3.5 w-3.5 text-white/40" />
+              <ShieldIcon className="h-3.5 w-3.5 text-white/50" />
               Sign-in &amp; access
             </h2>
           </div>
@@ -170,19 +170,20 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
                     </a>
                   ))
                 ) : (
-                  <span className="text-xs text-white/40 sm:text-sm">—</span>
+                  <span className="text-xs text-white/50 sm:text-sm">—</span>
                 )}
               </dd>
             </div>
           </dl>
         </section>
-        <section className="mt-3 overflow-hidden rounded-2xl bg-white/10 shadow-sm sm:mt-4">
+
+        <section className="mt-3 overflow-hidden rounded-2xl bg-white [html.light_&]:border dark:bg-white/10 shadow-sm sm:mt-4">
           <div className="border-b border-white/10 px-3 py-2 sm:px-4 sm:py-2.5">
             <h2 className="text-xs font-medium sm:text-sm">Active Sessions</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[10px] sm:text-xs">
-              <thead className="border-b border-white/10 uppercase text-white/40">
+              <thead className="border-b border-white/10 uppercase text-white/50">
                 <tr>
                   <th className="px-3 py-2 font-medium">Session ID</th>
                   <th className="px-3 py-2 font-medium">IP Address</th>
@@ -208,10 +209,10 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
                     >
                       {sess.ipAddress ? `${sess.ipAddress.slice(0, 8)}...${sess.ipAddress.slice(-4)}` : "—"}
                     </td>
-                    <td className="px-3 py-2 text-white/40">
+                    <td className="px-3 py-2 text-white/50">
                       {parseUserAgent(sess.userAgent || "").split(" ")[0] || "—"}
                     </td>
-                    <td className="px-3 py-2 text-white/40">
+                    <td className="px-3 py-2 text-white/50">
                       {new Date(sess.expiresAt).toLocaleDateString()}
                     </td>
                   </tr>
@@ -221,7 +222,7 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
           </div>
         </section>
 
-        <p className="mt-4 flex items-start gap-2 text-[10px] leading-relaxed text-white/30 sm:text-xs">
+        <p className="mt-4 flex items-start gap-2 text-[10px] leading-relaxed text-white/50 sm:text-xs">
           Profile data is tied to your Anthos account and Anthos records.
         </p>
       </main>

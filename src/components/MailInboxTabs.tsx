@@ -36,17 +36,19 @@ export default function MailInboxTabs({
             type="button"
             onClick={() => onChange(tab.id)}
             className={cn(
-              'relative flex items-center active:bg-gray-200 active:shadow-inner gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer outline-none select-none',
+              'relative flex items-center active:shadow-inner gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold dark:text-white transition-all duration-200 cursor-pointer outline-none select-none',
               isActive
-                ? 'shadow-inner bg-gray-200/50'
-                : 'text-black hover:text-[#ff3131]'
+                ? 'shadow-inner bg-gray-200/30 text-white [html.light_&]:bg-[#2c0237] [html.light_&]:text-white'
+                : '[html.light_&]:text-black'
             )}
           >
             <span>{tab.label}</span>
             {tab.count > 0 && <span
               className={cn(
                 'px-1.5 py-0.5 -mr-1 text-[10px] font-bold rounded-full transition-colors',
-                isActive ? 'bg-[#ff3131] text-white' : 'text-[#ff3131]'
+                isActive
+                  ? 'bg-[#ff3131] text-white [html.light_&]:bg-white/25 [html.light_&]:text-white'
+                  : 'text-[#2c0237] dark:text-white/70 [html.light_&]:text-black/70'
               )}
             >
               {tab.count}
