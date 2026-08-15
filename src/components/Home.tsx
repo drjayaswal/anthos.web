@@ -29,9 +29,9 @@ import { RefreshCw } from 'lucide-react';
 import { useDemoMode } from '@/lib/demo-context';
 import {
   DEMO_CATEGORIES,
-  DEMO_GMAIL_MAIL,
-  DEMO_DB_MAIL,
-  DEMO_ANALYZED_MAIL,
+  DEMO_GMAIL_MAILS,
+  DEMO_DB_MAILS,
+  getDemoAnalyzedMail,
   getDemoSettings,
 } from '@/lib/demo-data';
 
@@ -93,8 +93,10 @@ export default function Home({
       try {
         if (isDemo) {
           await new Promise((r) => setTimeout(r, 600));
-          setFetchedMails([DEMO_GMAIL_MAIL]);
-          toast.success('1 Message Fetched (Demo)');
+          const count = opts.count ? Math.min(Math.max(opts.count, 1), DEMO_GMAIL_MAILS.length) : DEMO_GMAIL_MAILS.length;
+          const fetched = DEMO_GMAIL_MAILS.slice(0, count);
+          setFetchedMails(fetched);
+          toast.success(`${fetched.length} Message${fetched.length > 1 ? 's' : ''} Fetched (Demo)`);
           return;
         }
         const result = await fetchMailsAction(opts);
@@ -160,8 +162,10 @@ export default function Home({
       try {
         if (isDemo) {
           await new Promise((r) => setTimeout(r, 600));
-          setEncryptedMails([DEMO_DB_MAIL]);
-          toast.success('1 Message Loaded (Demo)');
+          const count = opts.count ? Math.min(Math.max(opts.count, 1), DEMO_DB_MAILS.length) : DEMO_DB_MAILS.length;
+          const loaded = DEMO_DB_MAILS.slice(0, count);
+          setEncryptedMails(loaded);
+          toast.success(`${loaded.length} Message${loaded.length > 1 ? 's' : ''} Loaded (Demo)`);
           return;
         }
         const result = await loadMailsFromDatabaseAction(opts);
@@ -197,15 +201,7 @@ export default function Home({
           const activeModelNames = ['Anthos Default', ...demoSettings.models.map((m) => m.name)];
           setLoadingText(`Analyzing with ${activeModelNames.join(', ')}...`);
           await new Promise((r) => setTimeout(r, 800));
-          const demoAnalyzed = selection.map((m) => {
-            if (m.id === DEMO_GMAIL_MAIL.id) return DEMO_ANALYZED_MAIL;
-            return {
-              ...m,
-              categories: ['Work', 'Updates'],
-              priority: ['0.75', '0.4'],
-              summary: `Analyzed with [${activeModelNames.join(', ')}]: Key insights and priority scores generated for "${m.subject}".`,
-            };
-          });
+          const demoAnalyzed = selection.map((m) => getDemoAnalyzedMail(m, activeModelNames));
           const merged = mergeAnalyzedMails(analyzedMails, demoAnalyzed);
           setAnalyzedMails(merged);
           setSelectedFetchedIds(new Set());
@@ -353,10 +349,10 @@ export default function Home({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
               transition={{ duration: 0.2 }}
-              className="flex items-center justify-center gap-2.5 text-black text-xs sm:text-sm font-medium mt-4 mb-2 sm:mt-6 sm:mb-3 py-2"
+              className="flex items-center justify-center gap-2.5 [html.light_&]:text-black dark:text-white text-xs sm:text-sm font-medium mt-4 mb-2 sm:mt-6 sm:mb-3 py-2"
             >
-              <RefreshCw className="w-4 h-4 sm:w-4.5 sm:h-4.5 animate-spin text-[#2c0237] shrink-0" />
-              <span className="text-zinc-800 font-semibold">{loadingText || 'Processing request...'}</span>
+              <RefreshCw className="w-4 h-4 sm:w-4.5 sm:h-4.5 animate-spin [html.light_&]:text-black dark:text-white shrink-0" />
+              <span className="[html.light_&]:text-black dark:text-white font-semibold">{loadingText || 'Processing request...'}</span>
             </motion.div>
           )}
         </AnimatePresence>

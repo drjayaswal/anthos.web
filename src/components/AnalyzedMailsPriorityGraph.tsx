@@ -380,28 +380,27 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
       <AnimatePresence>
         {preview && (
           <Dialog open onOpenChange={(o) => !o && setPreview(null)}>
-            <DialogContent className="sm:max-w-md w-[95vw] p-5! rounded-lg bg-white">
+            <DialogContent className="sm:max-w-md w-full rounded-t-4xl sm:rounded-2xl p-5! bg-[#2c0237] border border-white/10 [html.light_&]:bg-white [html.light_&]:border-black/10 text-white [html.light_&]:text-black shadow-2xl">
               <DialogHeader>
-                <DialogTitle className="text-black line-clamp-1 pr-8">{parseSenderName(preview.sender)}</DialogTitle>
-                <DialogDescription className="text-left text-xs">
+                <DialogTitle className="text-white [html.light_&]:text-black line-clamp-1 pr-8">{parseSenderName(preview.sender)}</DialogTitle>
+                <DialogDescription className="text-left text-xs text-white/50 [html.light_&]:text-black/50">
                   {new Date(preview.createdAt).toLocaleString()}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-4 text-sm">
                 <div className="space-y-1.5">
-                  <p className="text-[11px] font-medium text-muted-foreground">Subject</p>
-                  <p className="text-sm text-black line-clamp-2">{preview.subject}</p>
+                  <p className="text-[11px] font-medium text-white/50 [html.light_&]:text-black/50">Subject</p>
+                  <p className="text-sm text-white [html.light_&]:text-black line-clamp-2">{preview.subject}</p>
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-[11px] font-medium text-muted-foreground">
+                  <p className="text-[11px] font-medium text-white/50 [html.light_&]:text-black/50">
                     Classifications & Priorities
                   </p>
                   <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
                     {(preview.categories?.filter(Boolean).length ?? 0) > 0 ? (
                       preview.categories!.filter(Boolean).map((cat, idx) => {
-                        const globalIdx = fetchedCategories.findIndex((c) => c.name === cat);
                         const pri = Array.isArray(preview.priority)
                           ? preview.priority[idx]
                           : idx === 0
@@ -411,30 +410,30 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                         return (
                           <div
                             key={`${cat}-${idx}`}
-                            className="flex items-center justify-between py-1 border-b border-border/30 last:border-0"
+                            className="flex items-center justify-between py-1 border-b border-white/10 [html.light_&]:border-black/10 last:border-0"
                           >
                             <Badge
                               variant="outline"
                               className={cn(
-                                'text-[11px] font-normal border-0 bg-black/8 text-black rounded-md px-2',
+                                'text-[11px] font-normal border-0 bg-white/10 [html.light_&]:bg-black/8 text-white [html.light_&]:text-black rounded-md px-2',
                               )}>
                               {cat}
                             </Badge>
-                            <span className="text-xs tabular-nums font-mono text-black">
+                            <span className="text-xs tabular-nums font-mono text-white [html.light_&]:text-black">
                               {pri ? formatMailPriorityDisplay(pri) : 'N/A'}
                             </span>
                           </div>
                         );
                       })
                     ) : (
-                      <p className="text-xs text-muted-foreground">No classifications</p>
+                      <p className="text-xs text-white/50 [html.light_&]:text-black/50">No classifications</p>
                     )}
                   </div>
                 </div>
 
                 <div className="pt-2">
-                  <p className="text-[11px] font-medium text-muted-foreground mb-1.5">Preview</p>
-                  <p className="text-xs text-black line-clamp-3 leading-relaxed">
+                  <p className="text-[11px] font-medium text-white/50 [html.light_&]:text-black/50 mb-1.5">Preview</p>
+                  <p className="text-xs text-white/80 [html.light_&]:text-black/80 line-clamp-3 leading-relaxed">
                     {formatEmailContent(preview.body).slice(0, 220)}
                     {(preview.body?.length ?? 0) > 220 ? '…' : ''}
                   </p>

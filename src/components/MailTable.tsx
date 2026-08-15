@@ -91,7 +91,7 @@ export default function MailTable({
               <TableHead className="w-10 sm:w-12 px-2 sm:px-3 text-center">
                 <div className="flex items-center justify-center">
                   <Checkbox checked={allSelected}
-                    className="[html.light_&]:data-checked:bg-accent [html.light_&]:data-checked:border-accent dark:data-checked:bg-white dark:data-checked:border-white dark:data-checked:text-black [html.light_&]:data-checked:text-white"
+                    className="[html.light_&]:data-checked:border-green-600"
                     onCheckedChange={() => onToggleAll?.()} aria-label="Select all" />
                 </div>
               </TableHead>
@@ -155,8 +155,7 @@ export default function MailTable({
                     exit={{ opacity: 0, scale: 0.98 }}
                     key={mail.id}
                     className={cn(
-                      'group cursor-pointer rounded-xl transition-colors dark:text-white hover:bg-black/5',
-                      selected && 'bg-accent/10 hover:bg-accent/10 dark:text-white',
+                      'group cursor-pointer rounded-xl transition-colors dark:text-white hover:bg-black/5'
                     )}
                     onContextMenu={(e) => {
                       e.preventDefault();
@@ -187,7 +186,7 @@ export default function MailTable({
                         <div className="flex items-center justify-center">
                           <Checkbox
                             checked={selected}
-                            className="[html.light_&]:data-checked:bg-accent [html.light_&]:data-checked:border-accent dark:data-checked:bg-white dark:data-checked:border-white dark:data-checked:text-black [html.light_&]:data-checked:text-white"
+                            className="[html.light_&]:data-checked:border-green-600"
                             onCheckedChange={() => onToggleSelect?.(mail.id)}
                             aria-label={`Select ${mail.subject}`}
                           />

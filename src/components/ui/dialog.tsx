@@ -55,30 +55,101 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
 }) {
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const closeBtnRef = React.useRef<HTMLButtonElement>(null);
+  const startYRef = React.useRef<number | null>(null);
+  const currentYRef = React.useRef<number>(0);
+  const startTimeRef = React.useRef<number>(0);
+  const isDraggingRef = React.useRef<boolean>(false);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 640) return;
+    const touch = e.touches[0];
+    const target = e.target as HTMLElement;
+    if (target.closest('input, select, textarea, [data-prevent-drawer-drag], [aria-label*="Slide"], [aria-label*="slide"]')) {
+      return;
+    }
+    startYRef.current = touch.clientY;
+    currentYRef.current = touch.clientY;
+    startTimeRef.current = Date.now();
+    isDraggingRef.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (startYRef.current === null) return;
+    const touch = e.touches[0];
+    const deltaY = touch.clientY - startYRef.current;
+    
+    if (deltaY > 0) {
+      isDraggingRef.current = true;
+      currentYRef.current = touch.clientY;
+      if (contentRef.current) {
+        contentRef.current.style.transition = 'none';
+        contentRef.current.style.transform = `translateY(${deltaY}px)`;
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (startYRef.current === null) return;
+    const deltaY = currentYRef.current - startYRef.current;
+    const time = Date.now() - startTimeRef.current;
+    const velocity = deltaY / (time || 1);
+
+    if (contentRef.current) {
+      contentRef.current.style.transition = 'transform 0.22s cubic-bezier(0.32, 0.72, 0, 1)';
+      if (isDraggingRef.current && (deltaY > 75 || (deltaY > 30 && velocity > 0.4))) {
+        contentRef.current.style.transform = 'translateY(100%)';
+        setTimeout(() => {
+          closeBtnRef.current?.click();
+          if (contentRef.current) {
+            contentRef.current.style.transform = '';
+            contentRef.current.style.transition = '';
+          }
+        }, 180);
+      } else {
+        contentRef.current.style.transform = '';
+      }
+    }
+
+    startYRef.current = null;
+    isDraggingRef.current = false;
+  };
+
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
+        ref={contentRef}
         data-slot="dialog-content"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-white p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "fixed bottom-0 sm:bottom-auto sm:top-1/2 left-0 sm:left-1/2 right-0 sm:right-auto z-50 grid w-full sm:max-w-sm sm:-translate-x-1/2 sm:-translate-y-1/2 gap-4 rounded-t-4xl sm:rounded-2xl bg-white p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 outline-none duration-150 data-open:animate-in data-open:fade-in-0 data-open:slide-in-from-bottom-8 sm:data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:slide-out-to-bottom-8 sm:data-closed:zoom-out-95",
           className
         )}
         {...props}
       >
+        <div className="sm:hidden flex shrink-0 justify-center -mt-1 pb-1 cursor-grab active:cursor-grabbing select-none touch-none">
+          <div className="h-1.5 w-12 rounded-full bg-white/25 [html.light_&]:bg-black/25" />
+        </div>
         {children}
-        {showCloseButton && (
-          <DialogPrimitive.Close data-slot="dialog-close" asChild>
+        <DialogPrimitive.Close ref={closeBtnRef} data-slot="dialog-close" asChild>
+          {showCloseButton ? (
             <Button
               className="[html.light_&]:bg-white dark:bg-transparent dark:text-white absolute hover:text-red-600 sm:text-black text-red-600 top-2 right-2"
               size="icon-sm"
             >
-              <XIcon
-              />
+              <XIcon />
               <span className="sr-only">Close</span>
             </Button>
-          </DialogPrimitive.Close>
-        )}
+          ) : (
+            <button type="button" className="hidden" aria-hidden="true" tabIndex={-1}>
+              Close
+            </button>
+          )}
+        </DialogPrimitive.Close>
       </DialogPrimitive.Content>
     </DialogPortal>
   )

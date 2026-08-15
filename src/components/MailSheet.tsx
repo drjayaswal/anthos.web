@@ -47,10 +47,18 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.7 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 80 || info.velocity.y > 200) {
+                onClose();
+              }
+            }}
             className="fixed bottom-0 left-0 right-0 z-70 flex max-h-[88dvh] sm:max-w-2xl sm:mx-auto flex-col rounded-t-4xl mx-2 border border-b-0 border-white/10 [html.light_&]:border-black/10 bg-[#2c0237] [html.light_&]:bg-white text-white [html.light_&]:text-black shadow-2xl overflow-hidden"
           >
-            <div className="flex shrink-0 justify-center pt-3 pb-1">
-              <div className="h-1 w-8 rounded-full bg-white/20 [html.light_&]:bg-black/20" />
+            <div className="flex shrink-0 justify-center pt-3 pb-1.5 cursor-grab active:cursor-grabbing touch-none select-none">
+              <div className="h-1.5 w-12 rounded-full bg-white/25 [html.light_&]:bg-black/25" />
             </div>
             <div className="shrink-0 px-4 sm:px-5 pt-2 pb-3 border-b border-white/10 [html.light_&]:border-black/10">
               <div className="flex items-start justify-between gap-3">

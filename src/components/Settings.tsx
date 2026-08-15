@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Cpu,
   Key,
@@ -388,109 +389,134 @@ export default function Settings({ settings: initialSettings, demoMode }: { sett
         </section>
       </main>
 
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4"
-          onClick={closeModal}
-        >
-          <div
-            className="w-full sm:w-72 rounded-t-4xl mx-2 sm:rounded-2xl bg-[#2c0237] border border-white/10 shadow-2xl animate-in fade-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-white/10">
-              <h2 className="text-xs font-semibold text-white">
-                {editingModel ? "Edit Model" : "Add Model"}
-              </h2>
-              <button
-                onClick={closeModal}
-                disabled={isSubmitting}
-                title="Close dialog"
-                className="rounded cursor-pointer p-1 text-white/50 hover:text-white transition"
+      <AnimatePresence>
+        {isModalOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+              onClick={closeModal}
+            />
+            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 pointer-events-none">
+              <motion.div
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                transition={{ type: "spring", damping: 28, stiffness: 260 }}
+                drag="y"
+                dragConstraints={{ top: 0, bottom: 0 }}
+                dragElastic={{ top: 0, bottom: 0.7 }}
+                onDragEnd={(_, info) => {
+                  if (info.offset.y > 80 || info.velocity.y > 200) {
+                    closeModal();
+                  }
+                }}
+                className="w-full sm:w-80 rounded-t-4xl sm:rounded-2xl bg-[#2c0237] border border-white/10 [html.light_&]:bg-white [html.light_&]:border-black/10 text-white [html.light_&]:text-black shadow-2xl overflow-hidden pointer-events-auto"
+                onClick={(e) => e.stopPropagation()}
               >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-            <form onSubmit={handleSaveModel} className="px-4 py-3 space-y-2.5">
-              <div className="space-y-1">
-                <label className="block text-[10px] font-medium text-white/60 uppercase tracking-wide">
-                  Display Name <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  title="Enter a display name for this model"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-lg bg-white/10 px-2.5 py-1.5 text-xs text-white placeholder:text-white/50 outline-none"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="block text-[10px] font-medium text-white/60 uppercase tracking-wide">
-                  Model Identifier <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  title="Enter the AI model identifier or provider name"
-                  value={modelName}
-                  onChange={(e) => setModelName(e.target.value)}
-                  className="w-full rounded-lg bg-white/10 px-2.5 py-1.5 font-mono text-xs text-white placeholder:text-white/50 outline-none"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="block text-[10px] font-medium text-white/60 uppercase tracking-wide">
-                  API Key <span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type={showApiKey ? "text" : "password"}
-                    required
-                    title="Enter your provider API key"
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    className="w-full rounded-lg bg-white/10 pl-2.5 pr-8 py-1.5 font-mono text-xs text-white placeholder:text-white/50 outline-none"
-                  />
+                <div className="sm:hidden flex shrink-0 justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing select-none touch-none">
+                  <div className="h-1.5 w-12 rounded-full bg-white/25 [html.light_&]:bg-black/25" />
+                </div>
+                <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-white/10 [html.light_&]:border-black/10">
+                  <h2 className="text-xs font-semibold text-white [html.light_&]:text-black">
+                    {editingModel ? "Edit Model" : "Add Model"}
+                  </h2>
                   <button
                     type="button"
-                    onClick={() => setShowApiKey(!showApiKey)}
-                    title={showApiKey ? "Hide API key" : "Show API key"}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-white/50 hover:text-white transition"
+                    onClick={closeModal}
+                    disabled={isSubmitting}
+                    title="Close dialog"
+                    className="rounded cursor-pointer p-1 text-white/50 hover:text-white [html.light_&]:text-black/50 [html.light_&]:hover:text-black transition"
                   >
-                    {showApiKey ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
-              </div>
+                <form onSubmit={handleSaveModel} className="px-4 py-3 space-y-2.5">
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-medium text-white/60 [html.light_&]:text-black/60 uppercase tracking-wide">
+                      Display Name <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      title="Enter a display name for this model"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full rounded-lg bg-white/10 [html.light_&]:bg-black/5 px-2.5 py-1.5 text-xs text-white [html.light_&]:text-black placeholder:text-white/50 [html.light_&]:placeholder:text-black/50 outline-none"
+                    />
+                  </div>
 
-              <div className="space-y-1">
-                <label className="block text-[10px] font-medium text-white/60 uppercase tracking-wide">
-                  Logo URL <span className="text-white/50 normal-case font-normal">(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  title="Enter a URL for the model's logo icon (optional)"
-                  value={logo}
-                  onChange={(e) => setLogo(e.target.value)}
-                  className="w-full rounded-lg bg-white/10 px-2.5 py-1.5 text-xs text-white placeholder:text-white/50 outline-none"
-                />
-              </div>
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-medium text-white/60 [html.light_&]:text-black/60 uppercase tracking-wide">
+                      Model Identifier <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      title="Enter the AI model identifier or provider name"
+                      value={modelName}
+                      onChange={(e) => setModelName(e.target.value)}
+                      className="w-full rounded-lg bg-white/10 [html.light_&]:bg-black/5 px-2.5 py-1.5 font-mono text-xs text-white [html.light_&]:text-black placeholder:text-white/50 [html.light_&]:placeholder:text-black/50 outline-none"
+                    />
+                  </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  title={editingModel ? "Save changes to this model" : "Add this model parameter"}
-                  className="inline-flex items-center gap-1.5 rounded-lg cursor-pointer bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-green-600/90 active:scale-95 disabled:opacity-50"
-                >
-                  {isSubmitting ? <Loader2 className="h-3 w-3 animate-spin" /> : <PlusIcon className="h-3 w-3" />}
-                  {editingModel ? "Save Model" : "Add Model"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-medium text-white/60 [html.light_&]:text-black/60 uppercase tracking-wide">
+                      API Key <span className="text-red-400">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showApiKey ? "text" : "password"}
+                        required
+                        title="Enter your provider API key"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        className="w-full rounded-lg bg-white/10 [html.light_&]:bg-black/5 pl-2.5 pr-8 py-1.5 font-mono text-xs text-white [html.light_&]:text-black placeholder:text-white/50 [html.light_&]:placeholder:text-black/50 outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowApiKey(!showApiKey)}
+                        title={showApiKey ? "Hide API key" : "Show API key"}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-white/50 hover:text-white [html.light_&]:text-black/50 [html.light_&]:hover:text-black transition"
+                      >
+                        {showApiKey ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-medium text-white/60 [html.light_&]:text-black/60 uppercase tracking-wide">
+                      Logo URL <span className="text-white/50 [html.light_&]:text-black/50 normal-case font-normal">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      title="Enter a URL for the model's logo icon (optional)"
+                      value={logo}
+                      onChange={(e) => setLogo(e.target.value)}
+                      className="w-full rounded-lg bg-white/10 [html.light_&]:bg-black/5 px-2.5 py-1.5 text-xs text-white [html.light_&]:text-black placeholder:text-white/50 [html.light_&]:placeholder:text-black/50 outline-none"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/10 [html.light_&]:border-black/10">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      title={editingModel ? "Save changes to this model" : "Add this model parameter"}
+                      className="inline-flex items-center gap-1.5 rounded-lg cursor-pointer bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-green-600/90 active:scale-95 disabled:opacity-50"
+                    >
+                      {isSubmitting ? <Loader2 className="h-3 w-3 animate-spin" /> : <PlusIcon className="h-3 w-3" />}
+                      {editingModel ? "Save Model" : "Add Model"}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -5,15 +5,13 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { CustomButton } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info, Wand2Icon } from 'lucide-react';
+import { Info, Sparkles, X } from 'lucide-react';
 
 interface AnalyzeDialogProps {
   open: boolean;
@@ -33,31 +31,52 @@ export default function AnalyzeDialog({ open, onOpenChange, selectedCount, onAna
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="rounded-xl border border-gray-200/75 bg-white sm:max-w-xs max-w-xs">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle className="text-xl tracking-tight text-black">Analyze selected</DialogTitle>
-            <DialogDescription className="text-[10px] text-black/60">
+      <DialogContent
+        showCloseButton={false}
+        className="w-full sm:w-80 rounded-t-4xl sm:rounded-2xl bg-[#2c0237] border border-white/10 [html.light_&]:bg-white [html.light_&]:border-black/10 text-white shadow-2xl p-0 gap-0 overflow-hidden"
+      >
+        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-white/10 [html.light_&]:border-black/10">
+          <div>
+            <DialogTitle className="text-xs font-semibold text-white [html.light_&]:text-black">
+              Analyze Selected
+            </DialogTitle>
+            <DialogDescription className="text-[10px] text-white/50 [html.light_&]:text-black/50">
               {selectedCount > 2 ? (
-                <span className="text-red-500 font-semibold">Maximum 2 mails can be analyzed at a time</span>
+                <span className="text-red-400 font-semibold">Maximum 2 mails can be analyzed at a time</span>
               ) : (
                 `${selectedCount} mail${selectedCount === 1 ? '' : 's'} selected (max 2)`
               )}
             </DialogDescription>
-          </DialogHeader>
-          <div className="py-6">
-            <div className="flex items-center space-x-2">
-              <Checkbox id="store" checked={store} onCheckedChange={(c) => setStore(c === true)} />
-              <div className="flex items-center gap-1.5">
-                <Label htmlFor="store" className="cursor-pointer text-sm font-medium text-black">
-                  Store Context
+          </div>
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            title="Close dialog"
+            className="rounded cursor-pointer p-1 text-white/50 hover:text-white [html.light_&]:text-black/50 [html.light_&]:hover:text-black transition"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="px-4 py-4">
+            <div className="flex items-center space-x-2.5 rounded-xl bg-white/5 [html.light_&]:bg-black/5 p-3 border border-white/5 [html.light_&]:border-black/5">
+              <Checkbox
+                id="store"
+                checked={store}
+                onCheckedChange={(c) => setStore(c === true)}
+                className="[html.light_&]:data-checked:bg-accent [html.light_&]:data-checked:border-accent dark:data-checked:bg-white dark:data-checked:border-white dark:data-checked:text-black [html.light_&]:data-checked:text-white"
+              />
+              <div className="flex items-center gap-1.5 flex-1">
+                <Label htmlFor="store" className="cursor-pointer text-xs font-medium text-white [html.light_&]:text-black select-none">
+                  Store Encrypted in Database
                 </Label>
                 <TooltipProvider>
                   <Tooltip delayDuration={300}>
                     <TooltipTrigger asChild>
-                      <Info className="h-3 w-3 cursor-help text-blue-600" strokeWidth={3} />
+                      <Info className="h-3.5 w-3.5 cursor-help text-blue-400 [html.light_&]:text-blue-600 shrink-0" />
                     </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-62.5 border-border bg-blue-600 text-[10px]">
+                    <TooltipContent side="top" className="max-w-62.5 border-border bg-blue-600 text-white text-[10px]">
                       <p>Persist results encrypted in the Database</p>
                     </TooltipContent>
                   </Tooltip>
@@ -65,15 +84,16 @@ export default function AnalyzeDialog({ open, onOpenChange, selectedCount, onAna
               </div>
             </div>
           </div>
-          <DialogFooter className="grid grid-cols-2 gap-2 border-t-gray-200/75 bg-white">
-            <Button type="button" variant="no_outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="accent" disabled={selectedCount === 0 || selectedCount > 2}>
-              <Wand2Icon />
-              Analyze
-            </Button>
-          </DialogFooter>
+
+          <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-white/10 [html.light_&]:border-black/10">
+            <CustomButton
+              type="submit"
+              disabled={selectedCount === 0 || selectedCount > 2}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Analyze</span>
+            </CustomButton>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
