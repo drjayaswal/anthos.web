@@ -67,13 +67,13 @@
   --secondary-foreground: #111111;
   --muted: #f0f0f0;
   --muted-foreground: #888888;
-  --accent: #ff3131;
+  --accent: #2c0237;
   --accent-foreground: #ffffff;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #e8e8e8;
   --input: #f0f0f0;
-  --ring: #ff3131;
+  --ring: #2c0237;
   --chart-1: #111111;
   --chart-2: #444444;
   --chart-3: #888888;
@@ -85,9 +85,9 @@
   --sidebar-primary: #111111;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #fff0f0;
-  --sidebar-accent-foreground: #ff3131;
+  --sidebar-accent-foreground: #2c0237;
   --sidebar-border: #e8e8e8;
-  --sidebar-ring: #ff3131;
+  --sidebar-ring: #2c0237;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -270,7 +270,7 @@ html.light [class*="hover:bg-cyan-"]:hover,
 html.light [class*="hover:bg-sky-"]:hover,
 html.light [class*="hover:bg-orange-"]:hover,
 html.light [class*="hover:bg-yellow-"]:hover,
-html.light [class*="hover:bg-[#ff3131]"]:hover,
+html.light [class*="hover:bg-[#2c0237]"]:hover,
 html[data-theme="light"] [class*="hover:bg-amber-"]:hover,
 html[data-theme="light"] [class*="hover:bg-green-"]:hover,
 html[data-theme="light"] [class*="hover:bg-emerald-"]:hover,
@@ -285,7 +285,7 @@ html[data-theme="light"] [class*="hover:bg-cyan-"]:hover,
 html[data-theme="light"] [class*="hover:bg-sky-"]:hover,
 html[data-theme="light"] [class*="hover:bg-orange-"]:hover,
 html[data-theme="light"] [class*="hover:bg-yellow-"]:hover,
-html[data-theme="light"] [class*="hover:bg-[#ff3131]"]:hover,
+html[data-theme="light"] [class*="hover:bg-[#2c0237]"]:hover,
 [class*="hover:bg-amber-"]:hover,
 [class*="hover:bg-green-"]:hover,
 [class*="hover:bg-emerald-"]:hover,
@@ -300,7 +300,7 @@ html[data-theme="light"] [class*="hover:bg-[#ff3131]"]:hover,
 [class*="hover:bg-sky-"]:hover,
 [class*="hover:bg-orange-"]:hover,
 [class*="hover:bg-yellow-"]:hover,
-[class*="hover:bg-[#ff3131]"]:hover {
+[class*="hover:bg-[#2c0237]"]:hover {
   color: #ffffff !important;
 }
 
@@ -309,17 +309,17 @@ html.light .bg-amber-600,
 html.light .bg-green-600,
 html.light .bg-blue-600,
 html.light .bg-red-600,
-html.light .bg-\[\#ff3131\],
+html.light .bg-\[\#2c0237\],
 html[data-theme="light"] .bg-amber-600,
 html[data-theme="light"] .bg-green-600,
 html[data-theme="light"] .bg-blue-600,
 html[data-theme="light"] .bg-red-600,
-html[data-theme="light"] .bg-\[\#ff3131\],
+html[data-theme="light"] .bg-\[\#2c0237\],
 .bg-amber-600,
 .bg-green-600,
 .bg-blue-600,
 .bg-red-600,
-.bg-\[\#ff3131\] {
+.bg-\[\#2c0237\] {
   color: #ffffff !important;
 }
 

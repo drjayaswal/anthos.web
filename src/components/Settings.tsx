@@ -20,6 +20,7 @@ import {
 } from "@/app/actions";
 import { toast } from "@/lib/toast";
 import { CustomButton } from "@/components/ui/button";
+import { saveDemoSettings } from "@/lib/demo-data";
 
 type ModelCardProps = {
   model: ModelItem;
@@ -149,7 +150,7 @@ function ModelCard({
   );
 }
 
-export default function Settings({ settings: initialSettings }: { settings: UserSettings }) {
+export default function Settings({ settings: initialSettings, demoMode }: { settings: UserSettings; demoMode?: boolean }) {
   const [settings, setSettings] = useState<UserSettings>(initialSettings);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingModel, setEditingModel] = useState<ModelItem | null>(null);
@@ -200,6 +201,41 @@ export default function Settings({ settings: initialSettings }: { settings: User
 
     setIsSubmitting(true);
     try {
+      if (demoMode) {
+        await new Promise((r) => setTimeout(r, 300));
+        if (editingModel) {
+          const updatedModels = settings.models.map((m) =>
+            m.id === editingModel.id
+              ? { ...m, name: name.trim(), modelName: modelName.trim(), apiKey: apiKey.trim(), logo: logo.trim() || null }
+              : m
+          );
+          const updatedSettings = { ...settings, models: updatedModels, updatedAt: new Date().toISOString() };
+          setSettings(updatedSettings);
+          saveDemoSettings(updatedSettings);
+          toast.success(`Updated model "${name.trim()}" successfully! (Demo)`);
+          closeModal();
+        } else {
+          const newModel: ModelItem = {
+            id: `demo-model-${Date.now()}`,
+            name: name.trim(),
+            modelName: modelName.trim(),
+            apiKey: apiKey.trim(),
+            logo: logo.trim() || null,
+            settingId: settings.id,
+          };
+          const updatedSettings = {
+            ...settings,
+            models: [...settings.models, newModel],
+            updatedAt: new Date().toISOString(),
+          };
+          setSettings(updatedSettings);
+          saveDemoSettings(updatedSettings);
+          toast.success(`Added new model "${name.trim()}" successfully! (Demo)`);
+          closeModal();
+        }
+        return;
+      }
+
       if (editingModel) {
         const res = await updateModelSettingAction(editingModel.id, {
           name: name.trim(),
@@ -245,6 +281,16 @@ export default function Settings({ settings: initialSettings }: { settings: User
 
     setDeletingId(model.id);
     try {
+      if (demoMode) {
+        await new Promise((r) => setTimeout(r, 200));
+        const updatedModels = settings.models.filter((m) => m.id !== model.id);
+        const updatedSettings = { ...settings, models: updatedModels, updatedAt: new Date().toISOString() };
+        setSettings(updatedSettings);
+        saveDemoSettings(updatedSettings);
+        toast.success(`Model "${model.name}" deleted successfully. (Demo)`);
+        return;
+      }
+
       const res = await deleteModelSettingAction(model.id);
       if (res.ok && res.settings) {
         setSettings(res.settings);

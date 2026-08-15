@@ -37,7 +37,7 @@ function PriorityLegend() {
       {legendItems.map((item) => (
         <div key={item.label} className="flex items-center gap-1.5">
           <div className={`size-2.5 rounded-full ${item.color}`} />
-          <span className="text-[10px] uppercase tracking-wider font-semibold text-black/50">
+          <span className="text-[10px] uppercase tracking-wider font-semibold dark:text-white/50 [html.light_&]:text-black/50">
             {item.label}
           </span>
         </div>
@@ -225,8 +225,8 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
     <>
       <section className="px-4 py-5 sm:px-6 space-y-4">
         <div className="flex items-center gap-3">
-          <p className="text-sm font-medium text-black">Priority Analysis</p>
-          <p className="text-xs text-black/40">{filteredMails.length} mail{filteredMails.length !== 1 ? 's' : ''}</p>
+          <p className="text-sm font-medium dark:text-white [html.light_&]:text-black">Priority Analysis</p>
+          <p className="text-xs dark:text-white/70 [html.light_&]:text-black/40">{filteredMails.length} mail{filteredMails.length !== 1 ? 's' : ''}</p>
         </div>
         <PriorityLegend />
         {validCategories.length > 0 && (
@@ -239,14 +239,14 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                   onClick={() => setActiveTab(idx)}
                   className={cn(
                     'relative cursor-pointer py-1.5 text-xs font-medium transition-colors duration-200 truncate max-w-35 whitespace-nowrap snap-start shrink-0',
-                    activeTab === idx ? 'text-black' : 'text-black/40 hover:text-black'
+                    activeTab === idx ? 'text-black dark:text-white' : 'text-black/40 dark:text-white/40'
                   )}
                 >
                   {cat.name}
                   {activeTab === idx && (
                     <motion.span
                       layoutId="tab-glide-line"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 w-full rounded-full bg-black"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 w-full rounded-full bg-black dark:bg-white"
                       transition={{ type: 'spring', damping: 24, stiffness: 300 }}
                     />
                   )}
@@ -257,7 +257,7 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
         )}
 
         <div
-          className="relative w-full rounded-xl border border-border/20 overflow-hidden"
+          className="relative w-full rounded-xl overflow-hidden"
           style={{ aspectRatio: '4/3', minHeight: 200, maxHeight: 340 }}
         >
           <svg
@@ -301,7 +301,7 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
             </AnimatePresence>
           </svg>
           <div className="absolute bottom-6 left-[8%] right-[8%] pointer-events-none">
-            <div className="w-full h-px bg-zinc-200 relative mb-1" />
+            <div className="w-full h-px [html.light_&]:bg-black/50 dark:bg-white/50 relative mb-1" />
             <div className="flex justify-between w-full relative">
               {['-1', '0', '+1'].map((l, index) => {
                 const alignmentClass =
@@ -319,8 +319,8 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                       transform: index === 1 ? 'translateX(-50%)' : 'none'
                     }}
                   >
-                    <div className="h-1.5 w-px bg-zinc-400 -mt-2 mb-1" />
-                    <span className="text-[10px] font-medium text-zinc-500 tabular-nums">
+                    <div className="h-1.5 w-px [html.light_&]:bg-black dark:bg-white -mt-2 mb-1" />
+                    <span className="text-[10px] font-medium text-white tabular-nums">
                       {l}
                     </span>
                   </div>
@@ -337,15 +337,15 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                     <motion.button
                       type="button"
                       aria-label={`Mail: ${mail.subject}`}
-                      className="absolute size-5 -translate-x-1/2 -translate-y-1/2 rounded-full cursor-pointer z-10"
+                      className="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full cursor-pointer z-10"
                       style={(() => {
                         const ps = getPriorityStyles(priorityVal);
                         return {
                           left: `${left}%`,
                           top: `${top}%`,
                           backgroundColor: ps.main,
-                          borderColor: '#FFFFFF99',
-                          borderWidth: 4,
+                          borderColor: '#FFFFFF50',
+                          borderWidth: 1,
                           boxShadow: `0 0 0 1px hsl(var(--background)), 0 0 0 3px ${ps.ring}, 0 4px 10px ${ps.shadow}`,
                         };
                       })()}
@@ -360,8 +360,8 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                   </TooltipTrigger>
                   <TooltipContent side="top" className="px-2 bg-transparent relative rounded-t-none">
                     <div className={`absolute h-0.5 w-full ${getPriorityColor(priorityVal)} top-0 left-0`} />
-                    <span className="text-[12px] text-black">
-                      {getPriorityMessage(priorityVal)}
+                    <span className="text-[12px] [html.light_&]:text-black dark:text-white">
+                      {getPriorityMessage(priorityVal)} with {rawPriority}
                     </span>
                   </TooltipContent>
                 </Tooltip>

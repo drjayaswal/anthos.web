@@ -47,8 +47,8 @@ export default function MailInboxTabs({
               className={cn(
                 'px-1.5 py-0.5 -mr-1 text-[10px] font-bold rounded-full transition-colors',
                 isActive
-                  ? 'bg-[#ff3131] text-white [html.light_&]:bg-white/25 [html.light_&]:text-white'
-                  : 'text-[#2c0237] dark:text-white/70 [html.light_&]:text-black/70'
+                  ? 'dark:bg-[#2c0237] text-white [html.light_&]:bg-white/25 [html.light_&]:text-white'
+                  : 'text-[#2c0237] dark:bg-white/10 bg-black/10 dark:text-white/70 [html.light_&]:text-black/70'
               )}
             >
               {tab.count}

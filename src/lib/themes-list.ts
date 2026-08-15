@@ -22,12 +22,12 @@ export const THEMES: Theme[] = [
   {
     name: "Anthos",
     colors: {
-      primary: "#ff3131",
+      primary: "#2c0237",
       planMode: "#ffffff",
-      selection: "#ff3131",
+      selection: "#2c0237",
       thinking: "#ffffff",
       success: "#4ADE80",
-      error: "#ff3131",
+      error: "#2c0237",
       info: "#1b59c5",
       background: "#000000",
       surface: "#111111",

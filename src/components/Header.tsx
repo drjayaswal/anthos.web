@@ -148,7 +148,7 @@ export default function Header({
                   aria-label="Fetch from Gmail"
                 >
                   {loading ? (
-                    <RefreshCw className="w-5 h-5 animate-spin text-[#ff3131]" />
+                    <RefreshCw className="w-5 h-5 animate-spin text-[#2c0237]" />
                   ) : (
                     <CloudDownloadIcon className="w-5 h-5" />
                   )}

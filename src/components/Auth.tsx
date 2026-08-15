@@ -2,16 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Loader2Icon } from 'lucide-react';
+import { Loader2Icon, PlayIcon } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
-import { Button } from './ui/button';
+import { CustomButton } from './ui/button';
 import { toast } from '@/lib/toast';
 import { useSearchParams } from 'next/navigation';
+import { useDemoMode } from '@/lib/demo-context';
 
 export default function Auth() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [redirectTo, setRedirectTo] = useState("/");
+  const { enterDemo } = useDemoMode();
 
   useEffect(() => {
     const redirectParam = searchParams.get("redirect");
@@ -53,21 +55,22 @@ export default function Auth() {
       <div className="flex items-center">
         <div className="flex flex-col items-center justify-center">
           <Image
-            src="/anthos.svg"
+            src="/anthos.png"
             alt="anthos"
             width={100}
             height={100}
             quality={90}
             style={{ width: '240px', height: 'auto' }}
             priority
+            className="[html.light_&]:invert"
           />
-          <h1 className="text-3xl mb-3 sm:text-4xl md:text-5xl font-bold tracking-tight text-white text-center">
+          <h1 className="text-3xl mb-3 sm:text-4xl md:text-5xl font-bold tracking-tight text-white [html.light_&]:text-black text-center">
             Anthos
           </h1>
           <button
             type="button"
             disabled={loading}
-            className={`transition-colors duration-200 active:shadow-inner text-white rounded-2xl px-4 py-2 ${loading ? "shadow-inner flex cursor-not-allowed justify-center items-center gap-2 text-white/50" : "hover:bg-gray-200/10 cursor-pointer"}`}
+            className={`transition-colors duration-200 active:shadow-inner rounded-2xl px-4 py-2 text-white [html.light_&]:text-black ${loading ? "shadow-inner flex cursor-not-allowed justify-center items-center gap-2 text-white/50 [html.light_&]:text-black/50" : "hover:bg-white/10 [html.light_&]:hover:bg-black/5 cursor-pointer"}`}
             onClick={handleGoogleSignIn}
           >
             {loading && (
@@ -75,6 +78,13 @@ export default function Auth() {
             )}
             {loading ? 'Redirecting…' : 'Continue with Google'}
           </button>
+          <CustomButton
+            onClick={enterDemo}
+            className="mt-3"
+          >
+            <PlayIcon className="fill-current h-3.5 w-3.5" />
+            <span>Try Demo</span>
+          </CustomButton>
         </div>
       </div>
     </div>

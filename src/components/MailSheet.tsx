@@ -1,10 +1,9 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Clock, User, Reply, Forward, Trash2 } from 'lucide-react';
+import { X, Clock, User } from 'lucide-react';
 import { Mail } from '@/types';
 import { Badge } from './ui/badge';
-import { Button } from './ui/button';
 import { useBodyScrollLock } from '@/lib/useBodyScrollLock';
 import { formatEmailContent } from '@/lib/utils';
 
@@ -48,21 +47,21 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-            className="fixed bottom-0 left-0 right-0 z-70 flex max-h-[88dvh] flex-col rounded-t-[30px] mx-2 border border-b-0 border-gray-200/75 bg-white shadow-2xl"
+            className="fixed bottom-0 left-0 right-0 z-70 flex max-h-[88dvh] sm:max-w-2xl sm:mx-auto flex-col rounded-t-4xl mx-2 border border-b-0 border-white/10 [html.light_&]:border-black/10 bg-[#2c0237] [html.light_&]:bg-white text-white [html.light_&]:text-black shadow-2xl overflow-hidden"
           >
             <div className="flex shrink-0 justify-center pt-3 pb-1">
-              <div className="h-1 w-8 rounded-full bg-gray-200/75" />
+              <div className="h-1 w-8 rounded-full bg-white/20 [html.light_&]:bg-black/20" />
             </div>
-            <div className="shrink-0 px-4 sm:px-5 pt-2 pb-3 border-b border-gray-200/75">
+            <div className="shrink-0 px-4 sm:px-5 pt-2 pb-3 border-b border-white/10 [html.light_&]:border-black/10">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-black/5 border border-black/10 flex items-center justify-center">
-                    <span className="text-xs sm:text-sm font-semibold text-black">{initials}</span>
+                  <div className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-white/10 [html.light_&]:bg-black/5 border border-white/10 [html.light_&]:border-black/10 flex items-center justify-center">
+                    <span className="text-xs sm:text-sm font-semibold text-white [html.light_&]:text-black">{initials}</span>
                   </div>
 
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-semibold text-black truncate max-w-40 sm:max-w-xs">
+                      <p className="text-sm font-semibold text-white [html.light_&]:text-black truncate max-w-40 sm:max-w-xs">
                         {mail.sender}
                       </p>
                       <Badge
@@ -73,8 +72,8 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
                       </Badge>
                     </div>
                     <div className="flex items-center gap-1 mt-0.5">
-                      <Clock className="h-3 w-3 text-black/40 shrink-0" />
-                      <p className="text-[11px] text-black/50 truncate">{formattedDate}</p>
+                      <Clock className="h-3 w-3 text-white/40 [html.light_&]:text-black/40 shrink-0" />
+                      <p className="text-[11px] text-white/50 [html.light_&]:text-black/50 truncate">{formattedDate}</p>
                     </div>
                   </div>
                 </div>
@@ -82,27 +81,37 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="shrink-0 h-7 w-7 cursor-pointer rounded-full flex items-center justify-center text-black/40 hover:text-black hover:bg-black/5 transition-colors"
+                  className="shrink-0 h-7 w-7 cursor-pointer rounded-full flex items-center justify-center text-white/50 hover:text-white [html.light_&]:text-black/50 [html.light_&]:hover:text-black hover:bg-white/10 [html.light_&]:hover:bg-black/5 transition-colors"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
               {mail.recipient && (
                 <div className="mt-2.5 flex items-center gap-1.5">
-                  <User className="h-3 w-3 text-black/30 shrink-0" />
-                  <span className="text-[11px] text-black/50">To:</span>
-                  <span className="text-[11px] text-black/70 truncate">{mail.recipient}</span>
+                  <User className="h-3 w-3 text-white/30 [html.light_&]:text-black/30 shrink-0" />
+                  <span className="text-[11px] text-white/50 [html.light_&]:text-black/50">To:</span>
+                  <span className="text-[11px] text-white/70 [html.light_&]:text-black/70 truncate">{mail.recipient}</span>
                 </div>
               )}
             </div>
-            <div className="shrink-0 px-4 sm:px-5 py-3 border-b border-black/10 bg-black/2">
-              <h2 className="text-base sm:text-lg font-semibold leading-snug text-black wrap-break-word">
+            <div className="shrink-0 px-4 sm:px-5 py-3 border-b border-white/10 [html.light_&]:border-black/10 bg-white/5 [html.light_&]:bg-black/2">
+              <h2 className="text-base sm:text-lg font-semibold leading-snug text-white [html.light_&]:text-black wrap-break-word">
                 {mail.subject}
               </h2>
+              {mail.summary && (
+                <div className="mt-2 p-2.5 rounded-xl bg-white/5 [html.light_&]:bg-black/5 border border-white/5 [html.light_&]:border-black/5">
+                  <p className="text-[10px] font-medium uppercase tracking-wider text-white/50 [html.light_&]:text-black/50 mb-1">
+                    AI Summary
+                  </p>
+                  <p className="text-xs text-white/80 [html.light_&]:text-black/80 leading-relaxed">
+                    {mail.summary}
+                  </p>
+                </div>
+              )}
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 sm:px-5 py-4">
               <div className="max-w-none">
-                <p className="text-sm leading-relaxed text-black/80 whitespace-pre-wrap wrap-break-word">
+                <p className="text-sm leading-relaxed text-white/80 [html.light_&]:text-black/80 whitespace-pre-wrap wrap-break-word font-normal">
                   {formatEmailContent(mail.body) || 'No content.'}
                 </p>
               </div>

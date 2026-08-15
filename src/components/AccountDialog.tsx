@@ -10,14 +10,16 @@ import {
 } from '@/components/ui/dialog';
 import { UserIcon, MailIcon, CalendarIcon, ChevronsRightIcon, X } from 'lucide-react';
 import { fetchUserDetails } from '@/app/actions';
+import { DEMO_USER } from '@/lib/demo-data';
 
 interface AccountDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSignOut: () => void;
+  demoMode?: boolean;
 }
 
-export default function AccountDialog({ open, onOpenChange, onSignOut }: AccountDialogProps) {
+export default function AccountDialog({ open, onOpenChange, onSignOut, demoMode }: AccountDialogProps) {
   const [data, setData] = useState<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [maxSwipe, setMaxSwipe] = useState(220);
@@ -36,6 +38,14 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
   useEffect(() => {
     async function loadData() {
       if (open) {
+        if (demoMode) {
+          setData({
+            email: DEMO_USER.email,
+            totalEncryptedMails: 1,
+            createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          });
+          return;
+        }
         const result = await fetchUserDetails();
         if (result.ok && result.data) {
           setData(result.data);
@@ -43,7 +53,7 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
       }
     }
     loadData();
-  }, [open]);
+  }, [open, demoMode]);
 
   useEffect(() => {
     if (containerRef.current) {

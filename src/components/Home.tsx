@@ -26,6 +26,14 @@ import LoadDialog from './LoadDialog';
 import AccountDialog from './AccountDialog';
 import { useRouter } from 'next/navigation';
 import { RefreshCw } from 'lucide-react';
+import { useDemoMode } from '@/lib/demo-context';
+import {
+  DEMO_CATEGORIES,
+  DEMO_GMAIL_MAIL,
+  DEMO_DB_MAIL,
+  DEMO_ANALYZED_MAIL,
+  getDemoSettings,
+} from '@/lib/demo-data';
 
 export function toggleInSet(prev: Set<string>, id: string): Set<string> {
   const next = new Set(prev);
@@ -41,6 +49,7 @@ export default function Home({
   sessionUserEmail?: string | null;
   sessionUserId?: string | null;
 }) {
+  const { isDemo, exitDemo } = useDemoMode();
   const [appLoading, setAppLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<MailInboxTab>('fetched');
   const [fetchedMails, setFetchedMails] = useState<Mail[]>([]);
@@ -62,13 +71,17 @@ export default function Home({
   const router = useRouter();
 
   useEffect(() => {
+    if (isDemo) {
+      setCategories(DEMO_CATEGORIES);
+      return;
+    }
     (async () => {
       const res = await getCategoriesAction();
       if (res.ok && res.categories) {
         setCategories(res.categories);
       }
     })();
-  }, []);
+  }, [isDemo]);
 
   const hasCategories = categories.length > 0;
 
@@ -78,6 +91,12 @@ export default function Home({
       setLoadingText('Fetching latest emails from Gmail...');
       setActiveTab('fetched');
       try {
+        if (isDemo) {
+          await new Promise((r) => setTimeout(r, 600));
+          setFetchedMails([DEMO_GMAIL_MAIL]);
+          toast.success('1 Message Fetched (Demo)');
+          return;
+        }
         const result = await fetchMailsAction(opts);
         if (!result.ok || !result.mails) {
           toast.error(result.error ?? 'Fetch failed');
@@ -97,6 +116,10 @@ export default function Home({
     setLoadingText('Signing out...');
     setAnalyzing(true);
     await new Promise((r) => setTimeout(r, 400));
+    if (isDemo) {
+      exitDemo();
+      return;
+    }
     await authClient.signOut();
     setLoading(false);
     setLoadingText('');
@@ -135,6 +158,12 @@ export default function Home({
       setLoadingText('Loading saved mails from Database...');
       setActiveTab('encrypted');
       try {
+        if (isDemo) {
+          await new Promise((r) => setTimeout(r, 600));
+          setEncryptedMails([DEMO_DB_MAIL]);
+          toast.success('1 Message Loaded (Demo)');
+          return;
+        }
         const result = await loadMailsFromDatabaseAction(opts);
         if (!result.ok || !result.mails) {
           toast.error(result.error ?? 'Load failed');
@@ -163,6 +192,32 @@ export default function Home({
       setAnalyzing(true);
       setLoadingText('Analyzing selected mails with Groq AI...');
       try {
+        if (isDemo) {
+          const demoSettings = getDemoSettings();
+          const activeModelNames = ['Anthos Default', ...demoSettings.models.map((m) => m.name)];
+          setLoadingText(`Analyzing with ${activeModelNames.join(', ')}...`);
+          await new Promise((r) => setTimeout(r, 800));
+          const demoAnalyzed = selection.map((m) => {
+            if (m.id === DEMO_GMAIL_MAIL.id) return DEMO_ANALYZED_MAIL;
+            return {
+              ...m,
+              categories: ['Work', 'Updates'],
+              priority: ['0.75', '0.4'],
+              summary: `Analyzed with [${activeModelNames.join(', ')}]: Key insights and priority scores generated for "${m.subject}".`,
+            };
+          });
+          const merged = mergeAnalyzedMails(analyzedMails, demoAnalyzed);
+          setAnalyzedMails(merged);
+          setSelectedFetchedIds(new Set());
+          setActiveTab('analyzed');
+          toast.success(
+            `${demoAnalyzed.length} mail(s) analyzed with ${activeModelNames.length} AI model(s) (Demo)`
+          );
+          if (store) {
+            toast.success(`${demoAnalyzed.length} stored encrypted in DB (Demo)`);
+          }
+          return;
+        }
         const result = await performGroqMailAnalysisAction(selection);
         if (!result.ok || !result.analyzedMails) {
           toast.error(result.error ?? 'Groq analysis failed');
@@ -236,6 +291,10 @@ export default function Home({
   };
 
   const handleStoreSingleEncrypted = (mail: Mail) => {
+    if (isDemo) {
+      toast.success('Mail stored encrypted in database (Demo)');
+      return;
+    }
     void (async () => {
       setLoading(true);
       setLoadingText('Encrypting & storing mail in database...');
@@ -296,7 +355,7 @@ export default function Home({
               transition={{ duration: 0.2 }}
               className="flex items-center justify-center gap-2.5 text-black text-xs sm:text-sm font-medium mt-4 mb-2 sm:mt-6 sm:mb-3 py-2"
             >
-              <RefreshCw className="w-4 h-4 sm:w-4.5 sm:h-4.5 animate-spin text-[#ff3131] shrink-0" />
+              <RefreshCw className="w-4 h-4 sm:w-4.5 sm:h-4.5 animate-spin text-[#2c0237] shrink-0" />
               <span className="text-zinc-800 font-semibold">{loadingText || 'Processing request...'}</span>
             </motion.div>
           )}
@@ -359,6 +418,7 @@ export default function Home({
         open={accountDialogOpen}
         onOpenChange={setAccountDialogOpen}
         onSignOut={handleSignOut}
+        demoMode={isDemo}
       />
       <LoadDialog
         sessionUserId={sessionUserId}
