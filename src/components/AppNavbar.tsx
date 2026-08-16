@@ -185,7 +185,7 @@ export default function AppNavbar({
 
   return (
     <>
-      <header className="fixed top-2 left-12 -translate-x-1/2 z-40">
+      <header data-tour="navbar-menu" className="fixed top-2 left-12 -translate-x-1/2 z-40">
         <button
           type="button"
           onClick={() => setMenuOpen((o) => !o)}
@@ -197,13 +197,13 @@ export default function AppNavbar({
           )}
         >
           <div className="flex items-center gap-1">
-            <span className="text-xs font-semibold tracking-tight text-white/50 group-hover:text-white transition-colors">
+            <span className="text-xs font-semibold tracking-tight text-white [html.light_&]:text-black transition-colors">
               Menu
             </span>
             <ChevronRight
               className={cn(
                 'w-4 h-4 transition-transform duration-300',
-                menuOpen ? 'rotate-90' : 'text-white/50 group-hover:text-white -translate-x-0.5 group-hover:translate-x-0.5'
+                menuOpen ? 'rotate-90' : 'text-white [html.light_&]:text-black -translate-x-0.5 group-hover:translate-x-0.5'
               )}
             />
           </div>

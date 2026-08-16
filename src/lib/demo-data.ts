@@ -1,14 +1,12 @@
 import type { Mail } from '@/types';
 import type { UserSettings, ModelItem } from '@/app/api/_db/settings';
 
-// ─── Demo User Identity ────────────────────────────────────────────
 export const DEMO_USER = {
   id: 'demo-jane-doe',
   email: 'jane.doe@demo.anthos',
   name: 'Jane Doe',
 } as const;
 
-// ─── Demo Categories ───────────────────────────────────────────────
 export const DEMO_CATEGORIES: { name: string; description?: string | null }[] = [
   { name: 'Work', description: 'Work-related emails and tasks' },
   { name: 'Social', description: 'Social networking and community updates' },
@@ -16,7 +14,6 @@ export const DEMO_CATEGORIES: { name: string; description?: string | null }[] = 
   { name: 'Promotions', description: 'Marketing, deals, and promotional content' },
 ];
 
-// ─── Dummy Gmail Mails (fetched from cloud) ────────────────────────
 export const DEMO_GMAIL_MAILS: Mail[] = [
   {
     id: 'demo-gmail-001',
@@ -86,10 +83,8 @@ export const DEMO_GMAIL_MAILS: Mail[] = [
   },
 ];
 
-// ─── Single default reference for backwards-compatibility ──────────
 export const DEMO_GMAIL_MAIL: Mail = DEMO_GMAIL_MAILS[0];
 
-// ─── Dummy Database Mails (loaded from encrypted DB) ───────────────
 export const DEMO_DB_MAILS: Mail[] = [
   {
     id: 'demo-db-001',
@@ -177,10 +172,8 @@ export const DEMO_DB_MAILS: Mail[] = [
   },
 ];
 
-// ─── Single default reference for backwards-compatibility ──────────
 export const DEMO_DB_MAIL: Mail = DEMO_DB_MAILS[0];
 
-// ─── Dynamic Analyzed Mails Mapping ────────────────────────────────
 export const DEMO_ANALYZED_MAP: Record<string, { categories: string[]; priority: string[]; summary: string }> = {
   'demo-gmail-001': {
     categories: ['Work', 'Updates'],
@@ -239,7 +232,6 @@ export function getDemoAnalyzedMail(mail: Mail, activeModelNames: string[] = ['A
   };
 }
 
-// ─── Demo Settings (default Anthos model) ──────────────────────────
 export const DEMO_DEFAULT_SETTINGS: UserSettings = {
   id: 'demo-settings-001',
   userId: DEMO_USER.id,
@@ -248,11 +240,9 @@ export const DEMO_DEFAULT_SETTINGS: UserSettings = {
   updatedAt: new Date().toISOString(),
 };
 
-// ─── LocalStorage keys ─────────────────────────────────────────────
 export const DEMO_SETTINGS_KEY = 'firemail-demo-settings';
 export const DEMO_MODE_KEY = 'firemail-demo';
 
-// ─── Helpers to get/set demo settings from localStorage ────────────
 export function getDemoSettings(): UserSettings {
   if (typeof window === 'undefined') return DEMO_DEFAULT_SETTINGS;
   try {

@@ -7,6 +7,7 @@ import {
   DatabaseBackupIcon,
   CloudDownloadIcon,
   Sparkles,
+  HelpCircle,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -21,6 +22,7 @@ interface HeaderProps {
   analyzeDisabled?: boolean;
   onFetch: () => void;
   onAccount: () => void;
+  onStartTour?: () => void;
   sessionUserEmail?: string | null;
   hasCategories?: boolean;
 }
@@ -33,6 +35,7 @@ export default function Header({
   analyzeDisabled = false,
   onAccount,
   onFetch,
+  onStartTour,
   sessionUserEmail,
   hasCategories = true,
 }: HeaderProps) {
@@ -69,7 +72,7 @@ export default function Header({
     <>
       <header className="flex w-full items-center justify-between gap-3">
         {!optionsOpen && (
-          <div className="fixed top-2 right-2 z-40">
+          <div data-tour="options-button" className="fixed top-2 right-2 z-40">
             <button
               type="button"
               onClick={() => setOptionsOpen(true)}
@@ -80,7 +83,7 @@ export default function Header({
               )}
             >
               <div className="flex items-center gap-1">
-                <span className="text-xs font-semibold tracking-tight text-white/50 group-hover:text-white transition-colors">
+                <span className="text-xs font-semibold tracking-tight text-white [html.light_&]:text-black transition-colors">
                   Options
                 </span>
               </div>
@@ -191,6 +194,26 @@ export default function Header({
                   <User className="w-5 h-5" />
                 </motion.button>
               </div>
+
+              {onStartTour && (
+                <div className="relative">
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.2, y: -2 }}
+                    whileTap={{ scale: 0.92 }}
+                    onClick={() => {
+                      onStartTour();
+                      closeOptions();
+                    }}
+                    onMouseEnter={() => setHoveredTooltip('Quick Tour')}
+                    onMouseLeave={() => setHoveredTooltip(null)}
+                    className="flex items-center justify-center w-10 h-10 rounded-2xl [html.light_&]:text-black dark:text-white cursor-pointer transition-colors"
+                    aria-label="Quick Tour"
+                  >
+                    <HelpCircle className="w-5 h-5" />
+                  </motion.button>
+                </div>
+              )}
 
               <AnimatePresence>
                 {hoveredTooltip && (

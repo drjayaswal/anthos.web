@@ -2,7 +2,15 @@
 
 import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RotateCw, ShieldCheck } from 'lucide-react';
+import {
+  Sparkles,
+  RotateCw,
+  ShieldCheck,
+  CloudDownload,
+  DatabaseBackup,
+  Inbox,
+  HelpCircle,
+} from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -14,8 +22,10 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Checkbox } from '@/components/ui/checkbox';
+import { CustomButton } from '@/components/ui/button';
 import { Mail } from '@/types';
 import { formatEmailContent, cn } from '@/lib/utils';
+import type { MailInboxTab } from './MailInboxTabs';
 
 const HOLD_MS = 450;
 
@@ -30,6 +40,12 @@ interface MailTableProps {
   onRowHoldSelect?: (mail: Mail) => void;
   onStoreEncryptedMail?: (mail: Mail) => void;
   hasCategories?: boolean;
+  activeTab?: MailInboxTab;
+  onFetch?: () => void;
+  onLoadDataFromDatabase?: () => void;
+  onGoToFetched?: () => void;
+  onStartTutorial?: () => void;
+  isDemo?: boolean;
 }
 
 export default function MailTable({
@@ -43,6 +59,12 @@ export default function MailTable({
   onRowHoldSelect,
   onStoreEncryptedMail,
   hasCategories = true,
+  activeTab = 'fetched',
+  onFetch,
+  onLoadDataFromDatabase,
+  onGoToFetched,
+  onStartTutorial,
+  isDemo = false,
 }: MailTableProps) {
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdFired = useRef(false);
@@ -81,6 +103,69 @@ export default function MailTable({
       onRowHoldSelect(mail);
     }, HOLD_MS);
   };
+
+  if (!loading && mails.length === 0) {
+    return (
+      <div data-tour="empty-state-card" className="w-full flex flex-col items-center justify-center py-12 sm:py-16 px-4 text-center">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center mb-4 text-white/70 [html.light_&]:text-black/70">
+          {activeTab === 'encrypted' ? (
+            <DatabaseBackup className="w-6 h-6 sm:w-10 sm:h-10" />
+          ) : activeTab === 'analyzed' ? (
+            <Sparkles className="w-6 h-6 sm:w-10 sm:h-10" />
+          ) : (
+            <Inbox className="w-6 h-6 sm:w-10 sm:h-10" />
+          )}
+        </div>
+
+        <h3 className="text-base sm:text-lg font-bold text-white [html.light_&]:text-black tracking-tight mb-1.5">
+          {activeTab === 'encrypted'
+            ? 'No Encrypted Mails Loaded'
+            : activeTab === 'analyzed'
+            ? 'No Prioritized Mails Yet'
+            : 'Your Inbox is Ready'}
+        </h3>
+
+        <p className="text-xs sm:text-sm text-white/60 [html.light_&]:text-black/60 max-w-md leading-relaxed mb-5">
+          {activeTab === 'encrypted'
+            ? 'Load your securely stored emails from database with AES-256 client-side decryption.'
+            : activeTab === 'analyzed'
+            ? 'Select fetched emails and run AI Priority Analysis to classify topics and calculate priority scores.'
+            : 'Fetch your latest emails from Gmail to view, categorize, and run AI Priority Analysis.'}
+        </p>
+
+        <div className="flex items-center gap-3 flex-wrap justify-center">
+          {activeTab === 'encrypted' && onLoadDataFromDatabase ? (
+            <div data-tour="load-action-btn">
+              <CustomButton onClick={onLoadDataFromDatabase}>
+                <DatabaseBackup className="w-3.5 h-3.5" />
+                <span>Load from Database</span>
+              </CustomButton>
+            </div>
+          ) : activeTab === 'analyzed' ? (
+            <CustomButton onClick={() => onGoToFetched?.()}>
+              <Inbox className="w-3.5 h-3.5" />
+              <span>Go to Fetched Mails</span>
+            </CustomButton>
+          ) : onFetch ? (
+            <div data-tour="fetch-action-btn">
+              <CustomButton onClick={onFetch}>
+                <CloudDownload className="w-3.5 h-3.5" />
+                <span>Fetch from Gmail</span>
+              </CustomButton>
+            </div>
+          ) : null}
+
+          {isDemo && onStartTutorial && (
+              <CustomButton onClick={onStartTutorial}>
+
+                <HelpCircle className="w-3.5 h-3.5" />
+                <span>Take a Quick Tour</span>
+              </CustomButton>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full sm:m-0 mt-10 overflow-x-auto no-scrollbar">
@@ -136,12 +221,6 @@ export default function MailTable({
                   </TableCell>
                 </TableRow>
               ))
-            ) : mails.length === 0 ? (
-              <TableRow className="border-gray-200/75 hover:bg-transparent">
-                <TableCell colSpan={selectable ? 6 : 5} className="h-32 text-center text-[10px] uppercase tracking-wider text-muted-foreground sm:h-48 sm:text-xs sm:tracking-widest">
-                  No Mails Found
-                </TableCell>
-              </TableRow>
             ) : (
               mails.map((mail) => {
                 const selected = selectedIds?.has(mail.id) ?? false;

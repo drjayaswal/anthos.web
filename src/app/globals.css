@@ -116,7 +116,6 @@
   }
 }
 
-/* Light Mode Rules */
 html.light,
 html[data-theme="light"],
 body.light {
@@ -247,7 +246,6 @@ html.light .ring-white\/30 {
   --tw-ring-color: rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Ensure hover text white and colored hover badges always retain white text regardless of mode */
 html.light .hover\:text-white:hover,
 html[data-theme="light"] .hover\:text-white:hover,
 body.light .hover\:text-white:hover,
@@ -304,7 +302,6 @@ html[data-theme="light"] [class*="hover:bg-[#2c0237]"]:hover,
   color: #ffffff !important;
 }
 
-/* Also ensure solid vibrant background elements always retain white text */
 html.light .bg-amber-600,
 html.light .bg-green-600,
 html.light .bg-blue-600,
@@ -323,7 +320,6 @@ html[data-theme="light"] .bg-\[\#2c0237\],
   color: #ffffff !important;
 }
 
-/* Ensure hover text black and full white hover backgrounds retain black text */
 .hover\:text-black:hover,
 [class*="hover:text-black"]:hover,
 .hover\:bg-white:hover,
@@ -333,7 +329,6 @@ html[data-theme="dark"] [class*="hover:bg-white"]:not([class*="hover:bg-white/"]
   color: #000000 !important;
 }
 
-/* Explicit light mode overrides for dark accents and white text */
 html.light .\[html\.light\_\&\]\:bg-\[\#2c0237\],
 html.light [class*="\[html.light_&\]:bg-[#2c0237]"],
 html[data-theme="light"] .\[html\.light\_\&\]\:bg-\[\#2c0237\],
@@ -349,7 +344,6 @@ html[data-theme="light"] [class*="\[html.light_&\]:text-white"] {
   color: #ffffff !important;
 }
 
-/* Ensure hover:border-transparent works regardless of light mode border overrides */
 html.light .hover\:border-transparent:hover,
 html[data-theme="light"] .hover\:border-transparent:hover,
 body.light .hover\:border-transparent:hover,
@@ -358,4 +352,15 @@ html.light [class*="hover:border-transparent"]:hover,
 html[data-theme="light"] [class*="hover:border-transparent"]:hover,
 [class*="hover:border-transparent"]:hover {
   border-color: transparent !important;
+}
+
+.tour-spotlight-active {
+  position: relative !important;
+  z-index: 105 !important;
+}
+
+header.tour-spotlight-active,
+div.fixed.tour-spotlight-active {
+  position: fixed !important;
+  z-index: 105 !important;
 }

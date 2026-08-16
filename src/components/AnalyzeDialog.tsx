@@ -65,7 +65,7 @@ export default function AnalyzeDialog({ open, onOpenChange, selectedCount, onAna
                 id="store"
                 checked={store}
                 onCheckedChange={(c) => setStore(c === true)}
-                className="[html.light_&]:data-checked:bg-accent [html.light_&]:data-checked:border-accent dark:data-checked:bg-white dark:data-checked:border-white dark:data-checked:text-black [html.light_&]:data-checked:text-white"
+                className="[html.light_&]:data-checked:border-green-600"
               />
               <div className="flex items-center gap-1.5 flex-1">
                 <Label htmlFor="store" className="cursor-pointer text-xs font-medium text-white [html.light_&]:text-black select-none">

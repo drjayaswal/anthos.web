@@ -24,6 +24,7 @@ import { toast } from '@/lib/toast';
 import Loader from './Loader';
 import LoadDialog from './LoadDialog';
 import AccountDialog from './AccountDialog';
+import DemoTutorial from './DemoTutorial';
 import { useRouter } from 'next/navigation';
 import { RefreshCw } from 'lucide-react';
 import { useDemoMode } from '@/lib/demo-context';
@@ -64,6 +65,7 @@ export default function Home({
   const [loadDialogOpen, setLoadDialogOpen] = useState(false);
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
   const [analyzeDialogOpen, setAnalyzeDialogOpen] = useState(false);
+  const [tutorialOpen, setTutorialOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [loadingText, setLoadingText] = useState<string>('');
   const [detailMail, setDetailMail] = useState<Mail | null>(null);
@@ -339,6 +341,7 @@ export default function Home({
           analyzeDisabled={selectedFetchedIds.size === 0 || selectedFetchedIds.size > 2}
           onFetch={() => setFetchDialogOpen(true)}
           onLoadDataFromDatabase={() => setLoadDialogOpen(true)}
+          onStartTour={isDemo ? () => setTutorialOpen(true) : undefined}
           sessionUserEmail={sessionUserEmail}
           hasCategories={hasCategories}
         />
@@ -363,6 +366,12 @@ export default function Home({
               loading={loading || analyzing}
               onMailClick={setDetailMail}
               selectable
+              activeTab={activeTab}
+              onFetch={() => setFetchDialogOpen(true)}
+              onLoadDataFromDatabase={() => setLoadDialogOpen(true)}
+              onGoToFetched={() => setActiveTab('fetched')}
+              onStartTutorial={() => setTutorialOpen(true)}
+              isDemo={isDemo}
               selectedIds={activeTab === 'fetched' ? selectedFetchedIds : activeTab === 'encrypted' ? selectedEncryptedIds : selectedAnalyzedIds}
               onToggleSelect={(id) => {
                 if (activeTab === 'fetched') {
@@ -428,6 +437,12 @@ export default function Home({
         selectedCount={selectedFetchedIds.size}
         onAnalyze={handleAnalyzeSelected}
       />
+      {isDemo && (
+        <DemoTutorial
+          isOpen={tutorialOpen}
+          onClose={() => setTutorialOpen(false)}
+        />
+      )}
     </div>
   );
 }
