@@ -316,11 +316,11 @@ export default function MailTable({
               <button
                 type="button"
                 disabled
-                className="group flex w-full items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-zinc-400 opacity-50 cursor-not-allowed select-none"
+                className="group flex w-full items-center justify-between px-3 py-2 rounded-xl text-xs font-medium [html.light_&]:hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
-                  <Sparkles className="w-4 h-4 text-zinc-400" />
-                  <span>Analyze</span>
+                  <Sparkles className="w-4 h-4 [html.light_&]:text-black dark:text-white" />
+                  <span className="[html.light_&]:text-black dark:text-white">Analyze</span>
                 </div>
                 <span className="text-[9px] bg-zinc-100 text-zinc-400 px-1.5 py-0.5 rounded font-semibold uppercase">Disabled</span>
               </button>
@@ -332,10 +332,10 @@ export default function MailTable({
                 setContextMenu(null);
                 window.location.reload();
               }}
-              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-zinc-700 hover:text-[#2c0237] hover:bg-[#2c0237]/10 transition-colors cursor-pointer"
+              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium [html.light_&]:hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
             >
-              <RotateCw className="w-4 h-4 text-zinc-500 group-hover:text-[#2c0237] transition-colors" />
-              <span>Refresh Page</span>
+              <RotateCw className="w-4 h-4 [html.light_&]:text-black dark:text-white" />
+              <span className='[html.light_&]:text-black dark:text-white'>Refresh Page</span>
             </button>
 
             <button
@@ -345,10 +345,10 @@ export default function MailTable({
                 setContextMenu(null);
                 onStoreEncryptedMail?.(targetMail);
               }}
-              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-zinc-700 hover:text-[#2c0237] hover:bg-[#2c0237]/10 transition-colors cursor-pointer"
+              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium [html.light_&]:hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
             >
-              <ShieldCheck className="w-4 h-4 text-zinc-500 group-hover:text-[#2c0237] transition-colors" />
-              <span>Store Encrypted in DB</span>
+              <ShieldCheck className="w-4 h-4 [html.light_&]:text-black dark:text-white" />
+              <span className="[html.light_&]:text-black dark:text-white">Store Encrypted in DB</span>
             </button>
           </motion.div>
         )}

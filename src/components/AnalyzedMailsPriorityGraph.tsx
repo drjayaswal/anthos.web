@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { Mail } from '@/types';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { Button, CustomButton } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn, formatEmailContent } from '@/lib/utils';
 import { formatMailPriorityDisplay, getPriorityColor, getPriorityMessage, parseMailPriority } from '@/lib/mail-priority';
@@ -449,13 +449,11 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
               </div>
 
               <div className="flex justify-end pt-1">
-                <Button
-                  variant="accent"
-                  type="button"
+                <CustomButton
                   onClick={() => { onOpenDetail(preview); setPreview(null); }}
                 >
                   Open Mail
-                </Button>
+                </CustomButton>
               </div>
             </DialogContent>
           </Dialog>

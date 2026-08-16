@@ -4,7 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Cpu,
   Key,
   Eye,
   EyeOff,
@@ -23,23 +22,34 @@ import { toast } from "@/lib/toast";
 import { CustomButton } from "@/components/ui/button";
 import { saveDemoSettings } from "@/lib/demo-data";
 
+const HARDCODED_DEFAULT_MODEL: ModelItem = {
+  id: "hardcoded-llama-70b",
+  name: "Llama 70B",
+  modelName: "llama-3.3-70b-versatile",
+  apiKey: "FREE",
+  logo: "/ai-default.png",
+  settingId: "system-default",
+};
+
 type ModelCardProps = {
   model: ModelItem;
-  isDeleting: boolean;
-  isKeyVisible: boolean;
-  copiedId: string | null;
-  onEdit: (model: ModelItem) => void;
-  onDelete: (model: ModelItem) => void;
-  onToggleKey: (id: string) => void;
-  onCopy: (key: string, id: string) => void;
-  maskApiKey: (key: string) => string;
+  isDeleting?: boolean;
+  isKeyVisible?: boolean;
+  copiedId?: string | null;
+  isReadOnly?: boolean;
+  onEdit?: (model: ModelItem) => void;
+  onDelete?: (model: ModelItem) => void;
+  onToggleKey?: (id: string) => void;
+  onCopy?: (key: string, id: string) => void;
+  maskApiKey?: (key: string) => string;
 };
 
 function ModelCard({
   model,
-  isDeleting,
-  isKeyVisible,
-  copiedId,
+  isDeleting = false,
+  isKeyVisible = true,
+  copiedId = null,
+  isReadOnly = false,
   onEdit,
   onDelete,
   onToggleKey,
@@ -49,31 +59,31 @@ function ModelCard({
   const [isModelHovered, setIsModelHovered] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const actionButtons = (
+  const actionButtons = isReadOnly ? null : (
     <>
       <button
-        onClick={(e) => { e.stopPropagation(); onToggleKey(model.id); }}
+        onClick={(e) => { e.stopPropagation(); onToggleKey?.(model.id); }}
         className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium text-white/70 hover:text-white hover:bg-amber-500"
         title={isKeyVisible ? "Hide Key" : "Show Key"}
       >
         {isKeyVisible ? "Hide" : "Show"}
       </button>
       <button
-        onClick={(e) => { e.stopPropagation(); onCopy(model.apiKey, model.id); }}
+        onClick={(e) => { e.stopPropagation(); onCopy?.(model.apiKey, model.id); }}
         className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium text-white/70 hover:text-white hover:bg-green-600"
         title="Copy Key"
       >
         {copiedId === model.id ? "Copied!" : "Copy"}
       </button>
       <button
-        onClick={(e) => { e.stopPropagation(); onEdit(model); }}
+        onClick={(e) => { e.stopPropagation(); onEdit?.(model); }}
         title="Edit model"
         className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium text-white/70 hover:text-white hover:bg-blue-600"
       >
         Edit
       </button>
       <button
-        onClick={(e) => { e.stopPropagation(); onDelete(model); }}
+        onClick={(e) => { e.stopPropagation(); onDelete?.(model); }}
         disabled={isDeleting}
         title="Delete model"
         className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium disabled:opacity-50 text-white/70 hover:text-white hover:bg-red-600"
@@ -85,31 +95,27 @@ function ModelCard({
 
   return (
     <div
-      className="overflow-hidden rounded-2xl bg-white dark:bg-white/10 border border-white/5 text-white shadow-sm"
-      onMouseEnter={() => setIsModelHovered(true)}
-      onMouseLeave={() => setIsModelHovered(false)}
-      onClick={() => setIsExpanded((p) => !p)}
+      className={`overflow-hidden ${!isReadOnly ? "rounded-4xl bg-white dark:bg-white/10 border border-white/5 shadow-sm" : "grayscale cursor-not-allowed"
+        } text-white`}
+      onMouseEnter={() => !isReadOnly && setIsModelHovered(true)}
+      onMouseLeave={() => !isReadOnly && setIsModelHovered(false)}
+      onClick={() => !isReadOnly && setIsExpanded((p) => !p)}
     >
-      <div className="flex items-center gap-2 p-2">
+      <div className="flex items-center gap-2 p-3">
         <div className="rounded-xl bg-white p-1">
           <Image
-            src={model.logo || "/ai-model.png"}
+            src={model.logo || "/anthos.svg"}
             alt={model.name}
-            width={24}
-            height={24}
+            width={100}
+            height={100}
             unoptimized
-            className={`h-6 w-6 shrink-0 rounded-full object-cover ${!model.logo ? "grayscale invert" : ""}`}
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = "/ai-model.png";
-              target.classList.add("invert");
-            }}
+            className={`${isReadOnly ? "h-10 w-10" : "h-8 w-8" } shrink-0 rounded-full object-cover`}
           />
         </div>
 
         <div className="flex items-center gap-1.5 min-w-0 shrink-0">
           <span className="text-xs font-semibold truncate max-w-28">{model.name}</span>
-          <span className="inline-flex items-center rounded-sm bg-white/10 px-1 py-px text-[9px] font-mono text-white/60 truncate max-w-24">
+          <span className="inline-flex items-center rounded-sm bg-white/10 px-1 py-px text-[9px] font-mono text-white/60 truncate">
             {model.modelName}
           </span>
         </div>
@@ -117,36 +123,40 @@ function ModelCard({
         <div className="hidden sm:flex items-center gap-2 min-w-0 flex-1">
           <div className="w-px h-3.5 bg-white/15 shrink-0" />
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
-            <Key className="h-3 w-3 shrink-0 text-white/50" />
+            {isReadOnly || <Key className="h-3 w-3 shrink-0 text-white/50" />}
             <span className="font-mono text-[10px] text-white/60 truncate">
-              {isKeyVisible ? model.apiKey : maskApiKey(model.apiKey)}
+              {isReadOnly ? model.apiKey : isKeyVisible ? model.apiKey : maskApiKey?.(model.apiKey)}
             </span>
           </div>
-          <div
-            className={`flex items-center gap-0.5 shrink-0 transition-all duration-200 ${isModelHovered ? "opacity-100 translate-x-0" : "opacity-0 pointer-events-none translate-x-2"
-              }`}
-          >
-            {actionButtons}
-          </div>
+          {actionButtons && (
+            <div
+              className={`flex items-center gap-0.5 shrink-0 transition-all duration-200 ${isModelHovered ? "opacity-100 translate-x-0" : "opacity-0 pointer-events-none translate-x-2"
+                }`}
+            >
+              {actionButtons}
+            </div>
+          )}
         </div>
       </div>
 
-      <div className={`sm:hidden grid transition-all duration-250 ease-in-out ${isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-        }`}>
-        <div className="overflow-hidden">
-          <div className="flex items-center justify-between gap-2 mx-3 mb-2 rounded-xl bg-white/5 px-2.5 py-1.5">
-            <div className="flex items-center gap-1.5 min-w-0 flex-1">
-              <Key className="h-3 w-3 shrink-0 text-white/50" />
-              <span className="font-mono text-[10px] text-white/60 truncate">
-                {isKeyVisible ? model.apiKey : maskApiKey(model.apiKey)}
-              </span>
-            </div>
-            <div className="flex items-center gap-0.5 shrink-0">
-              {actionButtons}
+      {!isReadOnly && actionButtons && (
+        <div className={`sm:hidden grid transition-all duration-250 ease-in-out ${isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+          }`}>
+          <div className="overflow-hidden">
+            <div className="flex items-center justify-between gap-2 mx-3 mb-2 rounded-xl bg-white/5 px-2.5 py-1.5">
+              <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                <Key className="h-3 w-3 shrink-0 text-white/50" />
+                <span className="font-mono text-[10px] text-white/60 truncate">
+                  {isKeyVisible ? model.apiKey : maskApiKey?.(model.apiKey)}
+                </span>
+              </div>
+              <div className="flex items-center gap-0.5 shrink-0">
+                {actionButtons}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -352,40 +362,34 @@ export default function Settings({ settings: initialSettings, demoMode }: { sett
               AI Model Parameters &amp; Keys
             </h2>
             <span className="text-[11px] sm:text-xs text-white/50 font-mono">
-              {settings.models.length} {settings.models.length === 1 ? "model" : "models"} total
+              {settings.models.length} + 1 {settings.models.length === 0 ? "Model" : "Models"}
             </span>
           </div>
 
-          {settings.models.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 sm:p-12 text-center space-y-3">
-              <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center">
-                <Cpu className="h-5 w-5 sm:h-6 sm:w-6 text-white/50" />
-              </div>
-              <div className="space-y-1 max-w-sm">
-                <h3 className="text-xs sm:text-sm font-semibold text-white">No AI models configured yet</h3>
-                <p className="text-[11px] sm:text-xs text-white/50 leading-relaxed">
-                  Add model parameters with your custom display name, AI model identifier, and provider API key to customize email analysis.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-3 sm:gap-4">
-              {settings.models.map((model) => (
-                <ModelCard
-                  key={model.id}
-                  model={model}
-                  isDeleting={deletingId === model.id}
-                  isKeyVisible={!!visibleKeyIds[model.id]}
-                  copiedId={copiedId}
-                  onEdit={openEditModal}
-                  onDelete={handleDeleteModel}
-                  onToggleKey={toggleKeyVisibility}
-                  onCopy={copyToClipboard}
-                  maskApiKey={maskApiKey}
-                />
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-1 gap-3 sm:gap-4">
+            <ModelCard
+              key={HARDCODED_DEFAULT_MODEL.id}
+              model={HARDCODED_DEFAULT_MODEL}
+              isReadOnly
+              isDeleting={false}
+              isKeyVisible={true}
+              copiedId={null}
+            />
+            {settings.models.map((model) => (
+              <ModelCard
+                key={model.id}
+                model={model}
+                isDeleting={deletingId === model.id}
+                isKeyVisible={!!visibleKeyIds[model.id]}
+                copiedId={copiedId}
+                onEdit={openEditModal}
+                onDelete={handleDeleteModel}
+                onToggleKey={toggleKeyVisibility}
+                onCopy={copyToClipboard}
+                maskApiKey={maskApiKey}
+              />
+            ))}
+          </div>
         </section>
       </main>
 
@@ -429,7 +433,7 @@ export default function Settings({ settings: initialSettings, demoMode }: { sett
                     onClick={closeModal}
                     disabled={isSubmitting}
                     title="Close dialog"
-                    className="rounded cursor-pointer p-1 text-white/50 hover:text-white [html.light_&]:text-black/50 [html.light_&]:hover:text-black transition"
+                    className="rounded cursor-pointer p-1 [html.light_&]:text-black dark:text-white"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -480,7 +484,7 @@ export default function Settings({ settings: initialSettings, demoMode }: { sett
                         type="button"
                         onClick={() => setShowApiKey(!showApiKey)}
                         title={showApiKey ? "Hide API key" : "Show API key"}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-white/50 hover:text-white [html.light_&]:text-black/50 [html.light_&]:hover:text-black transition"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer [html.light_&]:text-black dark:text-white"
                       >
                         {showApiKey ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                       </button>

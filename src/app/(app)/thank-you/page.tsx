@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Inbox, Sparkles } from "lucide-react";
 
 export default function ThankYou() {
   return (
@@ -26,7 +25,7 @@ export default function ThankYou() {
             height={64}
             width={64}
             priority
-            className="object-contain"
+            className="object-contain [html.light_&]:invert"
           />
         </motion.div>
 

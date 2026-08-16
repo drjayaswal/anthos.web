@@ -3,12 +3,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Sparkles,
   ArrowRight,
-  ArrowLeft,
   X,
   CheckCircle2,
-  HelpCircle,
 } from 'lucide-react';
 import { CustomButton } from './ui/button';
 
@@ -243,7 +240,7 @@ export default function DemoTutorial({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-100 select-none">
+      <div className="fixed inset-0 z-100 select-none backdrop-blur-sm">
         <motion.div
           ref={tooltipRef}
           key={`tooltip-${currentStep}`}
