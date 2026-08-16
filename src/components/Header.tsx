@@ -111,7 +111,7 @@ export default function Header({
               animate={{ opacity: 1, scale: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.8, x: 20 }}
               transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-              className="fixed top-2 right-2 z-50 flex items-center gap-2 p-2"
+              className="fixed top-2 right-2 z-50 backdrop-blur-md rounded-3xl [html.light_&]:bg-black/10 dark:bg-white/5 flex items-center gap-2 px-2 py-1.25"
               onMouseLeave={() => setHoveredTooltip(null)}
             >
               {hasCategories && (

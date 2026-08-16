@@ -239,14 +239,14 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                   onClick={() => setActiveTab(idx)}
                   className={cn(
                     'relative cursor-pointer py-1.5 text-xs font-medium transition-colors duration-200 truncate max-w-35 whitespace-nowrap snap-start shrink-0',
-                    activeTab === idx ? 'text-black dark:text-white' : 'text-black/40 dark:text-white/40'
+                    activeTab === idx ? '[html.light_&]:text-black dark:text-white' : '[html.light_&]:text-black/40 dark:text-white/40'
                   )}
                 >
                   {cat.name}
                   {activeTab === idx && (
                     <motion.span
                       layoutId="tab-glide-line"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 w-full rounded-full bg-black dark:bg-white"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 w-full rounded-full [html.light_&]:bg-black dark:bg-white"
                       transition={{ type: 'spring', damping: 24, stiffness: 300 }}
                     />
                   )}
@@ -289,7 +289,7 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                   key={seg.id}
                   x1={seg.x1} y1={seg.y1}
                   x2={seg.x2} y2={seg.y2}
-                  stroke={`url(#grad-${seg.id})`}
+                  className={"dark:stroke-white/30 [html.light_&]:stroke-black/30"}
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   initial={{ opacity: 0, pathLength: 0 }}
@@ -332,39 +332,47 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
           <TooltipProvider delayDuration={150}>
             <AnimatePresence mode="popLayout">
               {layout.map(({ mail, rawPriority, priorityVal, left, top }, i) => (
-                <Tooltip key={`${activeTab}-${mail.id}`}>
-                  <TooltipTrigger asChild>
-                    <motion.button
-                      type="button"
-                      aria-label={`Mail: ${mail.subject}`}
-                      className="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full cursor-pointer z-10"
-                      style={(() => {
-                        const ps = getPriorityStyles(priorityVal);
-                        return {
-                          left: `${left}%`,
-                          top: `${top}%`,
-                          backgroundColor: ps.main,
-                          borderColor: '#FFFFFF50',
-                          borderWidth: 1,
-                          boxShadow: `0 0 0 1px hsl(var(--background)), 0 0 0 3px ${ps.ring}, 0 4px 10px ${ps.shadow}`,
-                        };
-                      })()}
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ delay: i * 0.04, type: 'spring', damping: 16, stiffness: 300 }}
-                      whileHover={{ scale: 1.7 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() => setPreview(mail)}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="px-2 bg-transparent relative rounded-t-none">
-                    <div className={`absolute h-0.5 w-full ${getPriorityColor(priorityVal)} top-0 left-0`} />
-                    <span className="text-[12px] [html.light_&]:text-black dark:text-white">
-                      {getPriorityMessage(priorityVal)} with {rawPriority}
-                    </span>
-                  </TooltipContent>
-                </Tooltip>
+                <div
+                  key={`${activeTab}-${mail.id}`}
+                  className="absolute -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none"
+                  style={{ left: `${left}%`, top: `${top}%` }}
+                >
+                  <span className="sm:hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-1 text-[10px] font-mono font-bold leading-none dark:text-white [html.light_&]:text-black whitespace-nowrap select-none drop-shadow-sm pointer-events-none">
+                    {formatMailPriorityDisplay(rawPriority ? String(rawPriority) : String(priorityVal))}
+                  </span>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <motion.button
+                        type="button"
+                        aria-label={`Mail: ${mail.subject}`}
+                        className="pointer-events-auto size-3 rounded-full cursor-pointer block"
+                        style={(() => {
+                          const ps = getPriorityStyles(priorityVal);
+                          return {
+                            backgroundColor: ps.main,
+                            borderColor: '#FFFFFF50',
+                            borderWidth: 1,
+                            boxShadow: `0 0 0 1px hsl(var(--background)), 0 0 0 3px ${ps.ring}, 0 4px 10px ${ps.shadow}`,
+                          };
+                        })()}
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ delay: i * 0.04, type: 'spring', damping: 16, stiffness: 300 }}
+                        whileHover={{ scale: 1.7 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => setPreview(mail)}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="hidden sm:block px-2 bg-transparent relative rounded-t-none">
+                      <div className={`absolute h-0.5 w-full ${getPriorityColor(priorityVal)} top-0 left-0`} />
+                      <span className="text-[12px] [html.light_&]:text-black dark:text-white">
+                        {getPriorityMessage(priorityVal)} with {rawPriority}
+                      </span>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
               ))}
             </AnimatePresence>
           </TooltipProvider>
