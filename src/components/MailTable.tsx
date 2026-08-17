@@ -305,7 +305,7 @@ export default function MailTable({
             exit={{ opacity: 0, scale: 0.95, y: -4 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
             style={{ left: contextMenu.x, top: contextMenu.y }}
-            className="fixed z-70 w-56 rounded-2xl bg-white/95 backdrop-blur-2xl border border-gray-200/80 shadow-2xl p-1.5 ring-1 ring-black/5 flex flex-col gap-0.5 text-zinc-800"
+            className="fixed z-70 w-56 rounded-4xl rounded-tl-none [html.light_&]:bg-white dark:bg-accent backdrop-blur-2xl border [html.light_&]:border-gray-200/80 dark:border-white/20 shadow-2xl p-1.5 ring-1 ring-black/5 flex flex-col gap-0.5 text-zinc-800"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-3 py-1.5 text-[10px] font-bold text-zinc-400 uppercase tracking-wider truncate border-b border-zinc-100 mb-1">
@@ -322,7 +322,7 @@ export default function MailTable({
                   <Sparkles className="w-4 h-4 [html.light_&]:text-black dark:text-white" />
                   <span className="[html.light_&]:text-black dark:text-white">Analyze</span>
                 </div>
-                <span className="text-[9px] bg-zinc-100 text-zinc-400 px-1.5 py-0.5 rounded font-semibold uppercase">Disabled</span>
+                <span className="text-[9px] [html.light_&]:bg-black/20 [html.light_&]:text-black dark:bg-white/20 dark:text-white px-1.5 py-0.5 rounded font-semibold uppercase">NA</span>
               </button>
             )}
 
@@ -345,10 +345,13 @@ export default function MailTable({
                 setContextMenu(null);
                 onStoreEncryptedMail?.(targetMail);
               }}
+              disabled
               className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium [html.light_&]:hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
             >
               <ShieldCheck className="w-4 h-4 [html.light_&]:text-black dark:text-white" />
-              <span className="[html.light_&]:text-black dark:text-white">Store Encrypted in DB</span>
+              <span className="[html.light_&]:text-black dark:text-white">Store</span>
+                <span className="text-[9px] [html.light_&]:bg-black/20 [html.light_&]:text-black dark:bg-white/20 dark:text-white px-1.5 py-0.5 rounded font-semibold uppercase">NA</span>
+
             </button>
           </motion.div>
         )}
