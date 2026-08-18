@@ -8,11 +8,9 @@ import {
   syncEncryptedMailsToDb,
   loadMailsFromDatabaseAction,
   getCategoriesAction,
-  performGroqMailAnalysisAction,
 } from '@/app/actions';
 import { FetchOptions, LoadOptions, Mail, AnalysisModel } from '@/types';
 import { authClient } from '@/lib/auth-client';
-import { mergeAnalyzedMails } from '@/lib/analyze-payload';
 import Header from './Header';
 import MailTable from './MailTable';
 import MailSheet from './MailSheet';
@@ -26,15 +24,13 @@ import LoadDialog from './LoadDialog';
 import AccountDialog from './AccountDialog';
 import DemoTutorial from './DemoTutorial';
 import { useRouter } from 'next/navigation';
-import { LoaderCircleIcon, RefreshCw } from 'lucide-react';
+import { LoaderCircleIcon } from 'lucide-react';
 import { useDemoMode } from '@/lib/demo-context';
 import {
   DEMO_CATEGORIES,
   DEMO_GMAIL_MAILS,
   DEMO_DB_MAILS,
   DEMO_USER,
-  getDemoAnalyzedMail,
-  getDemoSettings,
 } from '@/lib/demo-data';
 
 export function toggleInSet(prev: Set<string>, id: string): Set<string> {
@@ -44,7 +40,7 @@ export function toggleInSet(prev: Set<string>, id: string): Set<string> {
   return next;
 }
 
-export default function Home({
+export default function Analyze({
   sessionUserEmail,
   sessionUserId,
 }: {

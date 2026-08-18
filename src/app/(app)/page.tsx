@@ -1,14 +1,7 @@
-import { getSession } from "@/lib/auth";
-import Home from "@/components/Home";
-import DemoGate from "@/components/DemoGate";
+import HomePage from "@/components/HomePage";
 
-export default async function HomePage() {
-  const session = await getSession();
-  if (!session) return <DemoGate />;
+export default async function Page() {
   return (
-    <Home
-      sessionUserId={session.user?.id ?? null}
-      sessionUserEmail={session.user?.email ?? null}
-    />
+    <HomePage/>
   );
 }

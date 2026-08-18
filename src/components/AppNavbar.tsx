@@ -111,7 +111,7 @@ export default function AppNavbar({
   const items = useMemo<NavItem[]>(
     () => [
       {
-        href: '/',
+        href: '/analyze',
         label: 'Inbox',
         description: 'Your intelligent AI email inbox',
         show: authenticated,

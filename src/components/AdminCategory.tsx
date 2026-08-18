@@ -155,7 +155,7 @@ export default function AdminCategories() {
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 placeholder="Category Name"
-                className="h-9 px-2.5 text-sm text-white dark:bg-white/5 border-0 placeholder:text-white/50 focus:ring-0 sm:h-10 sm:px-3"
+                className="h-9 px-2.5 text-sm text-white bg-transparent! border-0 placeholder:text-white/50 focus:ring-0 sm:h-10 sm:px-3"
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
@@ -168,7 +168,7 @@ export default function AdminCategories() {
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="What belongs in this category?"
                 rows={2}
-                className="w-full resize-none rounded-xl border-0 dark:bg-white/5 px-2.5 py-1.5 text-xs text-white placeholder:text-white/50 outline-0 sm:px-3 sm:py-2 sm:text-sm"
+                className="w-full resize-none rounded-xl bg-transparent! border-0 px-2.5 py-1.5 text-xs text-white placeholder:text-white/50 outline-0 sm:px-3 sm:py-2 sm:text-sm"
               />
             </div>
           </div>

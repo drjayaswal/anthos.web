@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { DEMO_MODE_KEY, DEMO_USER } from '@/lib/demo-data';
-import Home from './Home';
+import Home from './Analyze';
 import Auth from './Auth';
 
 export default function DemoGate() {

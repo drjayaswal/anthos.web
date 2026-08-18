@@ -37,7 +37,7 @@ const TOUR_STEPS: TourStep[] = [
     badge: 'Step 2 of 4 • Navigation',
     title: 'Inbox Views & Priority Graph',
     description:
-      'Switch between your Fetched Gmail emails, Analyzed AI Priority scatter plot, and Encrypted database vault.',
+      'Smoothly glide between your Fetched emails (blue), Analyzed AI priority & category view (green), and Encrypted database vault (teal).',
     placement: 'bottom',
     padding: 8,
     radius: 999,
