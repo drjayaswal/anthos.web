@@ -2,7 +2,7 @@
 
 import { fetchInternalApi } from "@/lib/internal-api";
 
-import type { AnalyzeOptions, FetchOptions, LoadOptions, Mail } from "@/types";
+import type { AnalyzeOptions, FetchOptions, LoadOptions, Mail, AnalysisModel } from "@/types";
 import { deriveAnalyzeOptionsFromMails } from "@/lib/derive-analyze-options";
 import { getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
@@ -160,7 +160,7 @@ export async function loadMailsFromDatabaseAction(options: LoadOptions): Promise
   }
 }
 
-export async function performGroqMailAnalysisAction(mails: Mail[]): Promise<{
+export async function performGroqMailAnalysisAction(mails: Mail[], modelId?: string): Promise<{
   ok: boolean;
   analyzedMails?: Mail[];
   error?: string;
@@ -169,7 +169,7 @@ export async function performGroqMailAnalysisAction(mails: Mail[]): Promise<{
     const res = await fetchInternalApi("/api/mail/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mails }),
+      body: JSON.stringify({ mails, modelId }),
     });
     const data = (await res.json()) as { ok?: boolean; analyzedMails?: Mail[]; error?: string };
     if (!res.ok || !data.ok) {
@@ -274,6 +274,44 @@ export async function deleteModelSettingAction(modelId: string): Promise<{
     return { ok: true, settings: updatedSettings };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Failed to delete model setting";
+    return { ok: false, error: errorMsg };
+  }
+}
+
+export async function getAnalysisModelsAction(): Promise<{
+  ok: boolean;
+  models?: AnalysisModel[];
+  error?: string;
+}> {
+  try {
+    const session = await getSession();
+    if (!session?.user?.id) {
+      return { ok: false, error: "Unauthorized" };
+    }
+    const userSettings = await getUserSettings(session.user.id);
+
+    const defaultModel: AnalysisModel = {
+      id: "hardcoded-llama-70b",
+      name: "Llama 70B",
+      displayName: "Llama 70B (Anthos Default)",
+      model: "llama-3.3-70b-versatile",
+      logo: "/ai-default.png",
+    };
+
+    const userModels: AnalysisModel[] = (userSettings.models || []).map((m) => ({
+      id: m.id,
+      name: m.name,
+      displayName: m.name,
+      model: m.modelName,
+      logo: m.logo ?? null,
+    }));
+
+    return {
+      ok: true,
+      models: [defaultModel, ...userModels],
+    };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Failed to fetch models for analysis";
     return { ok: false, error: errorMsg };
   }
 }

@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
 import { getSession } from '@/lib/auth';
 import { getCategories } from '@/lib/action';
+import { getUserSettings } from '@/app/api/_db/settings';
 import type { Mail } from '@/types';
 
-const groq = new Groq({
+const defaultGroq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
@@ -18,20 +19,22 @@ export async function POST(req: Request): Promise<NextResponse<MailAnalyzeRespon
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
-  let body: { mails?: Mail[] };
+  let body: { mails?: Mail[]; modelId?: string };
   try {
-    body = (await req.json()) as { mails?: Mail[] };
+    body = (await req.json()) as { mails?: Mail[]; modelId?: string };
   } catch {
     return NextResponse.json({ ok: false, error: 'Invalid JSON payload' }, { status: 400 });
   }
 
-  const { mails } = body;
+  const { mails, modelId } = body;
   if (!Array.isArray(mails) || mails.length === 0) {
     return NextResponse.json({ ok: false, error: 'No mails provided for analysis' }, { status: 400 });
   }
 
-  if (mails.length > 2) {
-    return NextResponse.json({ ok: false, error: 'You can analyze at most 2 mails at a time' }, { status: 400 });
+  const isHardcoded = !modelId || modelId === 'hardcoded-llama-70b';
+
+  if (isHardcoded && mails.length > 2) {
+    return NextResponse.json({ ok: false, error: 'You can analyze at most 2 mails at a time with the default model' }, { status: 400 });
   }
 
   const dbCategories = await getCategories();
@@ -43,6 +46,26 @@ export async function POST(req: Request): Promise<NextResponse<MailAnalyzeRespon
   const categoryFormattedList = dbCategories
     .map((c) => `- Category: "${c.name}"${c.description ? `\n  Description: "${c.description}"` : ''}`)
     .join('\n');
+
+  let groqClient = defaultGroq;
+  let modelNameToUse = 'llama-3.3-70b-versatile';
+
+  if (!isHardcoded && session.user?.id) {
+    try {
+      const settings = await getUserSettings(session.user.id);
+      const customModel = settings.models.find((m) => m.id === modelId);
+      if (customModel) {
+        if (customModel.apiKey && customModel.apiKey !== 'FREE') {
+          groqClient = new Groq({ apiKey: customModel.apiKey });
+        }
+        if (customModel.modelName) {
+          modelNameToUse = customModel.modelName;
+        }
+      }
+    } catch {
+      // Fallback to default Groq
+    }
+  }
 
   try {
     const analyzedMails: Mail[] = [];
@@ -65,12 +88,12 @@ Output MUST be a valid JSON object matching this schema strictly:
   "summary": "Short 1-sentence summary"
 }`;
 
-      const completion = await groq.chat.completions.create({
+      const completion = await groqClient.chat.completions.create({
         messages: [
           { role: 'system', content: 'You are an expert email analysis AI. Respond strictly in valid JSON.' },
           { role: 'user', content: prompt },
         ],
-        model: 'llama-3.3-70b-versatile',
+        model: modelNameToUse,
         response_format: { type: 'json_object' },
         temperature: 0.2,
       });

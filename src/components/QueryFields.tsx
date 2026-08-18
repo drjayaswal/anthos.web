@@ -174,13 +174,13 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
           Status &amp; Flags
         </label>
         <div className="grid grid-cols-2 gap-2">
-          <div className="flex items-center space-x-2 rounded-lg bg-white/5 [html.light_&]:bg-black/5 p-2 border border-white/5 [html.light_&]:border-black/5">
+          <div onClick={() => p.setUnread(true)} className="flex items-center space-x-2 rounded-lg bg-white/5 [html.light_&]:bg-black/5 p-2 border border-white/5 [html.light_&]:border-black/5">
             <Checkbox id="unread" checked={p.unread} onCheckedChange={() => p.setUnread(true)} className="[html.light_&]:data-checked:border-green-600"/>
             <Label htmlFor="unread" className="cursor-pointer text-xs font-medium text-white select-none">
               Unread
             </Label>
           </div>
-          <div className="flex items-center space-x-2 rounded-lg bg-white/5 [html.light_&]:bg-black/5 p-2 border border-white/5 [html.light_&]:border-black/5">
+          <div onClick={() => p.setUnread(false)} className="flex items-center space-x-2 rounded-lg bg-white/5 [html.light_&]:bg-black/5 p-2 border border-white/5 [html.light_&]:border-black/5">
             <Checkbox id="read" checked={!p.unread} onCheckedChange={() => p.setUnread(false)} className="[html.light_&]:data-checked:border-green-600"/>
             <Label htmlFor="read" className="cursor-pointer text-xs font-medium text-white select-none">
               Read

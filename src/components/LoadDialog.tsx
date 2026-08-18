@@ -36,7 +36,7 @@ export default function LoadDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="w-full sm:w-80 rounded-t-4xl sm:rounded-2xl bg-[#2c0237] border border-white/10 [html.light_&]:bg-white [html.light_&]:border-black/10 text-white shadow-2xl p-0 gap-0 overflow-hidden"
+        className="w-full sm:w-80 rounded-t-4xl sm:rounded-2xl bg-[#2c0237] border border-b-0 border-white/30 [html.light_&]:bg-white [html.light_&]:border-black/30 text-white shadow-2xl p-0 gap-0 overflow-hidden"
       >
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-white/10 [html.light_&]:border-black/10">
           <div>

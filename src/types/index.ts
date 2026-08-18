@@ -46,3 +46,11 @@ export interface AnalyzeRunPayload {
   mails: Mail[];
   options: AnalyzeOptions;
 }
+
+export interface AnalysisModel {
+  id: string;
+  name: string;
+  displayName: string;
+  model: string;
+  logo?: string | null;
+}

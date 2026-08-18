@@ -8,6 +8,7 @@ export default async function HomePage() {
   return (
     <Home
       sessionUserId={session.user?.id ?? null}
+      sessionUserEmail={session.user?.email ?? null}
     />
   );
 }

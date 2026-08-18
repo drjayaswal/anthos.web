@@ -55,7 +55,7 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
                 onClose();
               }
             }}
-            className="fixed bottom-0 left-0 right-0 z-70 flex max-h-[88dvh] sm:max-w-2xl sm:mx-auto flex-col rounded-t-4xl mx-2 border border-b-0 border-white/10 [html.light_&]:border-black/10 bg-[#2c0237] [html.light_&]:bg-white text-white [html.light_&]:text-black shadow-2xl overflow-hidden"
+            className="fixed bottom-0 left-0 right-0 z-70 flex max-h-[88dvh] w-full sm:mx-auto flex-col rounded-t-4xl border border-b-0 border-white/30 [html.light_&]:border-black/30 bg-[#2c0237] [html.light_&]:bg-white text-white [html.light_&]:text-black shadow-2xl overflow-hidden"
           >
             <div className="flex shrink-0 justify-center pt-3 pb-1.5 cursor-grab active:cursor-grabbing touch-none select-none">
               <div className="h-1.5 w-12 rounded-full bg-white/25 [html.light_&]:bg-black/25" />

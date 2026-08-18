@@ -17,7 +17,7 @@ export default function DemoGate() {
   if (!checked) return null;
 
   if (isDemo) {
-    return <Home sessionUserId={DEMO_USER.id} />;
+    return <Home sessionUserId={DEMO_USER.id} sessionUserEmail={DEMO_USER.email} />;
   }
 
   return <Auth />;

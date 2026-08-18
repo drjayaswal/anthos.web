@@ -132,7 +132,7 @@ function DialogContent({
         {...props}
       >
         <div className="sm:hidden flex shrink-0 justify-center -mt-1 pb-1 cursor-grab active:cursor-grabbing select-none touch-none">
-          <div className="h-1.5 w-12 rounded-full bg-white/25 [html.light_&]:bg-black/25" />
+          <div className="mt-3 h-1.5 w-12 rounded-full bg-white/25 [html.light_&]:bg-black/25" />
         </div>
         {children}
         <DialogPrimitive.Close ref={closeBtnRef} data-slot="dialog-close" asChild>

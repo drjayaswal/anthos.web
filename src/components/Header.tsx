@@ -25,6 +25,7 @@ interface HeaderProps {
   onStartTour?: () => void;
   sessionUserEmail?: string | null;
   hasCategories?: boolean;
+  isJaneDoe?: boolean;
 }
 
 export default function Header({
@@ -38,6 +39,7 @@ export default function Header({
   onStartTour,
   sessionUserEmail,
   hasCategories = true,
+  isJaneDoe = false,
 }: HeaderProps) {
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
@@ -114,7 +116,7 @@ export default function Header({
               className="fixed top-2 right-2 z-50 backdrop-blur-md rounded-3xl [html.light_&]:bg-black/5 dark:bg-white/5 flex items-center gap-2 px-2 py-1.25"
               onMouseLeave={() => setHoveredTooltip(null)}
             >
-              {hasCategories && (
+              {hasCategories && !isJaneDoe && (
                 <div className="relative">
                   <motion.button
                     type="button"

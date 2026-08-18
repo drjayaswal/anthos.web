@@ -10,7 +10,7 @@ import {
   getCategoriesAction,
   performGroqMailAnalysisAction,
 } from '@/app/actions';
-import { FetchOptions, LoadOptions, Mail } from '@/types';
+import { FetchOptions, LoadOptions, Mail, AnalysisModel } from '@/types';
 import { authClient } from '@/lib/auth-client';
 import { mergeAnalyzedMails } from '@/lib/analyze-payload';
 import Header from './Header';
@@ -26,12 +26,13 @@ import LoadDialog from './LoadDialog';
 import AccountDialog from './AccountDialog';
 import DemoTutorial from './DemoTutorial';
 import { useRouter } from 'next/navigation';
-import { RefreshCw } from 'lucide-react';
+import { LoaderCircleIcon, RefreshCw } from 'lucide-react';
 import { useDemoMode } from '@/lib/demo-context';
 import {
   DEMO_CATEGORIES,
   DEMO_GMAIL_MAILS,
   DEMO_DB_MAILS,
+  DEMO_USER,
   getDemoAnalyzedMail,
   getDemoSettings,
 } from '@/lib/demo-data';
@@ -51,6 +52,7 @@ export default function Home({
   sessionUserId?: string | null;
 }) {
   const { isDemo, exitDemo } = useDemoMode();
+  const isJaneDoe = isDemo || sessionUserEmail === DEMO_USER.email || sessionUserId === DEMO_USER.id;
   const [appLoading, setAppLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<MailInboxTab>('fetched');
   const [fetchedMails, setFetchedMails] = useState<Mail[]>([]);
@@ -149,10 +151,18 @@ export default function Home({
       toast.error('Select fetched mails to analyze');
       return;
     }
-    if (selectedFetchedIds.size > 2) {
-      toast.error('You can analyze at most 2 mails at a time');
+    setAnalyzeDialogOpen(true);
+  };
+
+  const handleAnalyzeSingleMail = (mail: Mail) => {
+    if (!hasCategories) {
+      toast.error('No categories found in database. Please add categories first.');
       return;
     }
+    if (activeTab !== 'fetched') {
+      setActiveTab('fetched');
+    }
+    setSelectedFetchedIds(new Set([mail.id]));
     setAnalyzeDialogOpen(true);
   };
 
@@ -184,62 +194,25 @@ export default function Home({
     })();
   };
 
-  const handleAnalyzeSelected = (store: boolean) => {
-    void (async () => {
-      const selection = selectedFetchedMails;
-      if (selection.length === 0) {
-        toast.error('Select fetched mails to analyze');
-        return;
-      }
-      if (selection.length > 2) {
-        toast.error('You can analyze at most 2 mails at a time');
-        return;
-      }
-      setAnalyzing(true);
-      setLoadingText('Analyzing selected mails with Groq AI...');
-      try {
-        if (isDemo) {
-          const demoSettings = getDemoSettings();
-          const activeModelNames = ['Anthos Default', ...demoSettings.models.map((m) => m.name)];
-          setLoadingText(`Analyzing with ${activeModelNames.join(', ')}...`);
-          await new Promise((r) => setTimeout(r, 800));
-          const demoAnalyzed = selection.map((m) => getDemoAnalyzedMail(m, activeModelNames));
-          const merged = mergeAnalyzedMails(analyzedMails, demoAnalyzed);
-          setAnalyzedMails(merged);
-          setSelectedFetchedIds(new Set());
-          setActiveTab('analyzed');
-          toast.success(
-            `${demoAnalyzed.length} mail(s) analyzed with ${activeModelNames.length} AI model(s) (Demo)`
-          );
-          if (store) {
-            toast.success(`${demoAnalyzed.length} stored encrypted in DB (Demo)`);
-          }
-          return;
-        }
-        const result = await performGroqMailAnalysisAction(selection);
-        if (!result.ok || !result.analyzedMails) {
-          toast.error(result.error ?? 'Groq analysis failed');
-          return;
-        }
-        const merged = mergeAnalyzedMails(analyzedMails, result.analyzedMails);
-        setAnalyzedMails(merged);
-        setSelectedFetchedIds(new Set());
-        setActiveTab('analyzed');
-        toast.success(`${result.analyzedMails.length} mail(s) analyzed with Groq AI`);
-
-        if (store) {
-          const syncResult = await syncEncryptedMailsToDb(result.analyzedMails);
-          if (syncResult.ok) toast.success(`${result.analyzedMails.length} stored encrypted in DB`);
-          else toast.error(syncResult.error ?? 'Store failed');
-        }
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Analysis failed';
-        toast.error(msg);
-      } finally {
-        setAnalyzing(false);
-        setLoadingText('');
-      }
-    })();
+  const handleAnalyzeSelected = (store: boolean, selectedModel?: AnalysisModel | null) => {
+    const selection = selectedFetchedMails;
+    if (selection.length === 0) {
+      toast.error('Select fetched mails to analyze');
+      return;
+    }
+    const isHardcoded = !selectedModel || selectedModel.id === 'hardcoded-llama-70b';
+    if (isHardcoded && selection.length > 2) {
+      toast.error('Default model is limited to 2 mails at a time. Select your own AI model to analyze more.');
+      return;
+    }
+    const modelLabel = selectedModel?.name ?? 'AI Model';
+    console.log('Analyze mails triggered (Analysis API call paused for now):', {
+      selectedCount: selection.length,
+      selection,
+      selectedModel,
+      store,
+    });
+    toast.success(`${selection.length} mail(s) selected with ${modelLabel} (Analysis call disabled for now)`);
   };
 
   const tabMails = useMemo(() => {
@@ -263,11 +236,6 @@ export default function Home({
     if (activeTab !== 'fetched') return;
     if (filteredMails.every((m) => selectedFetchedIds.has(m.id))) {
       setSelectedFetchedIds(new Set());
-      return;
-    }
-    if (filteredMails.length > 2) {
-      toast.error('You can select at most 2 mails for analysis');
-      setSelectedFetchedIds(new Set(filteredMails.slice(0, 2).map((m) => m.id)));
       return;
     }
     setSelectedFetchedIds(new Set(filteredMails.map((m) => m.id)));
@@ -338,12 +306,13 @@ export default function Home({
           loading={loading}
           onAccount={() => setAccountDialogOpen(true)}
           onAnalyze={openAnalyzeDialog}
-          analyzeDisabled={selectedFetchedIds.size === 0 || selectedFetchedIds.size > 2}
+          analyzeDisabled={selectedFetchedIds.size === 0}
           onFetch={() => setFetchDialogOpen(true)}
           onLoadDataFromDatabase={() => setLoadDialogOpen(true)}
           onStartTour={isDemo ? () => setTutorialOpen(true) : undefined}
           sessionUserEmail={sessionUserEmail}
           hasCategories={hasCategories}
+          isJaneDoe={isJaneDoe}
         />
         <AnimatePresence>
           {(loading || analyzing) && (
@@ -354,8 +323,7 @@ export default function Home({
               transition={{ duration: 0.2 }}
               className="flex items-center justify-center gap-2.5 [html.light_&]:text-black dark:text-white text-xs sm:text-sm font-medium mt-4 mb-2 sm:mt-6 sm:mb-3 py-2"
             >
-              <RefreshCw className="w-4 h-4 sm:w-4.5 sm:h-4.5 animate-spin [html.light_&]:text-black dark:text-white shrink-0" />
-              <span className="[html.light_&]:text-black dark:text-white font-semibold">{loadingText || 'Processing request...'}</span>
+              <LoaderCircleIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 animate-spin [html.light_&]:text-black dark:text-white shrink-0" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -372,13 +340,11 @@ export default function Home({
               onGoToFetched={() => setActiveTab('fetched')}
               onStartTutorial={() => setTutorialOpen(true)}
               isDemo={isDemo}
+              isJaneDoe={isJaneDoe}
+              onAnalyzeMail={handleAnalyzeSingleMail}
               selectedIds={activeTab === 'fetched' ? selectedFetchedIds : activeTab === 'encrypted' ? selectedEncryptedIds : selectedAnalyzedIds}
               onToggleSelect={(id) => {
                 if (activeTab === 'fetched') {
-                  if (!selectedFetchedIds.has(id) && selectedFetchedIds.size >= 2) {
-                    toast.error('You can analyze at most 2 mails at a time');
-                    return;
-                  }
                   setSelectedFetchedIds((p) => toggleInSet(p, id));
                 } else if (activeTab === 'encrypted') {
                   setSelectedEncryptedIds((p) => toggleInSet(p, id));
@@ -389,10 +355,6 @@ export default function Home({
               onToggleAll={activeTab === 'fetched' ? toggleAllFetched : activeTab === 'encrypted' ? toggleAllEncrypted : toggleAllAnalyzed}
               onRowHoldSelect={(mail) => {
                 if (activeTab === 'fetched') {
-                  if (!selectedFetchedIds.has(mail.id) && selectedFetchedIds.size >= 2) {
-                    toast.error('You can analyze at most 2 mails at a time');
-                    return;
-                  }
                   setSelectedFetchedIds((p) => toggleInSet(p, mail.id));
                 } else if (activeTab === 'encrypted') {
                   setSelectedEncryptedIds((p) => toggleInSet(p, mail.id));

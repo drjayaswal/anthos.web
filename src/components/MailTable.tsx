@@ -39,6 +39,7 @@ interface MailTableProps {
   onToggleAll?: () => void;
   onRowHoldSelect?: (mail: Mail) => void;
   onStoreEncryptedMail?: (mail: Mail) => void;
+  onAnalyzeMail?: (mail: Mail) => void;
   hasCategories?: boolean;
   activeTab?: MailInboxTab;
   onFetch?: () => void;
@@ -46,6 +47,7 @@ interface MailTableProps {
   onGoToFetched?: () => void;
   onStartTutorial?: () => void;
   isDemo?: boolean;
+  isJaneDoe?: boolean;
 }
 
 export default function MailTable({
@@ -58,6 +60,7 @@ export default function MailTable({
   onToggleAll,
   onRowHoldSelect,
   onStoreEncryptedMail,
+  onAnalyzeMail,
   hasCategories = true,
   activeTab = 'fetched',
   onFetch,
@@ -65,6 +68,7 @@ export default function MailTable({
   onGoToFetched,
   onStartTutorial,
   isDemo = false,
+  isJaneDoe = false,
 }: MailTableProps) {
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdFired = useRef(false);
@@ -195,32 +199,7 @@ export default function MailTable({
         <TableBody>
           <AnimatePresence mode="popLayout">
             {loading ? (
-              Array.from({ length: 6 }).map((_, i) => (
-                <TableRow key={`skeleton-${i}`} className="border-b border-black/5">
-                  {selectable ? (
-                    <TableCell className="w-10 sm:w-12 px-2 sm:px-3">
-                      <div className="flex items-center justify-center">
-                        <Skeleton className="h-4 w-4 bg-black/10 rounded" />
-                      </div>
-                    </TableCell>
-                  ) : null}
-                  <TableCell className="w-20 sm:w-24 px-2">
-                    <Skeleton className="h-4 w-14 sm:w-16 bg-black/10 rounded-full" />
-                  </TableCell>
-                  <TableCell className="w-[30%] sm:w-[24%] md:w-[18%] px-2">
-                    <Skeleton className="h-4 w-24 sm:w-32 bg-black/10 rounded" />
-                  </TableCell>
-                  <TableCell className="w-[50%] sm:w-[56%] md:w-[32%] px-2">
-                    <Skeleton className="h-4 w-32 sm:w-48 bg-black/10 rounded" />
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell md:w-[38%] px-2">
-                    <Skeleton className="h-4 w-40 sm:w-64 bg-black/10 rounded" />
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 text-right">
-                    <Skeleton className="ml-auto h-4 w-16 sm:w-20 bg-black/10 rounded" />
-                  </TableCell>
-                </TableRow>
-              ))
+              null
             ) : (
               mails.map((mail) => {
                 const selected = selectedIds?.has(mail.id) ?? false;
@@ -260,7 +239,7 @@ export default function MailTable({
                       }
                     }}
                   >
-                    {selectable ? (
+                    {selectable && !loading ? (
                       <TableCell className="w-10 sm:w-12 px-2 sm:px-3 py-2.5 sm:py-3.5" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-center">
                           <Checkbox
@@ -308,21 +287,20 @@ export default function MailTable({
             className="fixed z-70 w-56 rounded-4xl rounded-tl-none [html.light_&]:bg-white dark:bg-accent backdrop-blur-2xl border [html.light_&]:border-gray-200/80 dark:border-white/20 shadow-2xl p-1.5 ring-1 ring-black/5 flex flex-col gap-0.5 text-zinc-800"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="px-3 py-1.5 text-[10px] font-bold text-zinc-400 uppercase tracking-wider truncate border-b border-zinc-100 mb-1">
-              {contextMenu.mail.subject || 'Mail Options'}
-            </div>
-
-            {hasCategories && (
+            {hasCategories && !isJaneDoe && (
               <button
                 type="button"
-                disabled
+                onClick={() => {
+                  const targetMail = contextMenu.mail;
+                  setContextMenu(null);
+                  onAnalyzeMail?.(targetMail);
+                }}
                 className="group flex w-full items-center justify-between px-3 py-2 rounded-xl text-xs font-medium [html.light_&]:hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
                   <Sparkles className="w-4 h-4 [html.light_&]:text-black dark:text-white" />
                   <span className="[html.light_&]:text-black dark:text-white">Analyze</span>
                 </div>
-                <span className="text-[9px] [html.light_&]:bg-black/20 [html.light_&]:text-black dark:bg-white/20 dark:text-white px-1.5 py-0.5 rounded font-semibold uppercase">NA</span>
               </button>
             )}
 
@@ -338,21 +316,20 @@ export default function MailTable({
               <span className='[html.light_&]:text-black dark:text-white'>Refresh Page</span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                const targetMail = contextMenu.mail;
-                setContextMenu(null);
-                onStoreEncryptedMail?.(targetMail);
-              }}
-              disabled
-              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium [html.light_&]:hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
-            >
-              <ShieldCheck className="w-4 h-4 [html.light_&]:text-black dark:text-white" />
-              <span className="[html.light_&]:text-black dark:text-white">Store</span>
-                <span className="text-[9px] [html.light_&]:bg-black/20 [html.light_&]:text-black dark:bg-white/20 dark:text-white px-1.5 py-0.5 rounded font-semibold uppercase">NA</span>
-
-            </button>
+            {!isJaneDoe && (
+              <button
+                type="button"
+                onClick={() => {
+                  const targetMail = contextMenu.mail;
+                  setContextMenu(null);
+                  onStoreEncryptedMail?.(targetMail);
+                }}
+                className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium [html.light_&]:hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+              >
+                <ShieldCheck className="w-4 h-4 [html.light_&]:text-black dark:text-white" />
+                <span className="[html.light_&]:text-black dark:text-white">Store</span>
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
