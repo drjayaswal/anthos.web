@@ -13,6 +13,7 @@ import {
   deleteModelFromSettings,
   type UserSettings,
 } from "@/app/api/_db/settings";
+import { isSupportedProvider, getProviderByName } from "@/lib/providers";
 
 
 export async function fetchMailsAction(options: FetchOptions): Promise<{
@@ -215,9 +216,21 @@ export async function addModelSettingAction(input: {
       return { ok: false, error: "Unauthorized" };
     }
     if (!input.name.trim() || !input.modelName.trim() || !input.apiKey.trim()) {
-      return { ok: false, error: "Name, Model Name, and API Key are all required" };
+      return { ok: false, error: "Provider Name, Model Name, and API Key are all required" };
     }
-    const updatedSettings = await addModelToSettings(session.user.id, input);
+    if (!isSupportedProvider(input.name)) {
+      return {
+        ok: false,
+        error: `Provider "${input.name}" is not supported. Please select one of the 10 supported providers.`,
+      };
+    }
+    const matchedProvider = getProviderByName(input.name);
+    const normalizedInput = {
+      ...input,
+      name: matchedProvider ? matchedProvider.name : input.name.trim(),
+      logo: input.logo?.trim() || matchedProvider?.logo || undefined,
+    };
+    const updatedSettings = await addModelToSettings(session.user.id, normalizedInput);
     revalidatePath("/settings");
     return { ok: true, settings: updatedSettings };
   } catch (err: unknown) {
@@ -245,9 +258,21 @@ export async function updateModelSettingAction(
       return { ok: false, error: "Unauthorized" };
     }
     if (!modelId || !input.name.trim() || !input.modelName.trim() || !input.apiKey.trim()) {
-      return { ok: false, error: "Model ID, Name, Model Name, and API Key are required" };
+      return { ok: false, error: "Model ID, Provider Name, Model Name, and API Key are required" };
     }
-    const updatedSettings = await updateModelInSettings(session.user.id, modelId, input);
+    if (!isSupportedProvider(input.name)) {
+      return {
+        ok: false,
+        error: `Provider "${input.name}" is not supported. Please select one of the 10 supported providers.`,
+      };
+    }
+    const matchedProvider = getProviderByName(input.name);
+    const normalizedInput = {
+      ...input,
+      name: matchedProvider ? matchedProvider.name : input.name.trim(),
+      logo: input.logo?.trim() || matchedProvider?.logo || undefined,
+    };
+    const updatedSettings = await updateModelInSettings(session.user.id, modelId, normalizedInput);
     revalidatePath("/settings");
     return { ok: true, settings: updatedSettings };
   } catch (err: unknown) {

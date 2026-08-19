@@ -22,16 +22,8 @@ import { toast } from '@/lib/toast';
 import Loader from './Loader';
 import LoadDialog from './LoadDialog';
 import AccountDialog from './AccountDialog';
-import DemoTutorial from './DemoTutorial';
 import { useRouter } from 'next/navigation';
 import { LoaderCircleIcon } from 'lucide-react';
-import { useDemoMode } from '@/lib/demo-context';
-import {
-  DEMO_CATEGORIES,
-  DEMO_GMAIL_MAILS,
-  DEMO_DB_MAILS,
-  DEMO_USER,
-} from '@/lib/demo-data';
 
 export function toggleInSet(prev: Set<string>, id: string): Set<string> {
   const next = new Set(prev);
@@ -47,8 +39,6 @@ export default function Analyze({
   sessionUserEmail?: string | null;
   sessionUserId?: string | null;
 }) {
-  const { isDemo, exitDemo } = useDemoMode();
-  const isJaneDoe = isDemo || sessionUserEmail === DEMO_USER.email || sessionUserId === DEMO_USER.id;
   const [appLoading, setAppLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<MailInboxTab>('fetched');
   const [fetchedMails, setFetchedMails] = useState<Mail[]>([]);
@@ -63,7 +53,6 @@ export default function Analyze({
   const [loadDialogOpen, setLoadDialogOpen] = useState(false);
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
   const [analyzeDialogOpen, setAnalyzeDialogOpen] = useState(false);
-  const [tutorialOpen, setTutorialOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [loadingText, setLoadingText] = useState<string>('');
   const [detailMail, setDetailMail] = useState<Mail | null>(null);
@@ -71,17 +60,13 @@ export default function Analyze({
   const router = useRouter();
 
   useEffect(() => {
-    if (isDemo) {
-      setCategories(DEMO_CATEGORIES);
-      return;
-    }
     (async () => {
       const res = await getCategoriesAction();
       if (res.ok && res.categories) {
         setCategories(res.categories);
       }
     })();
-  }, [isDemo]);
+  }, []);
 
   const hasCategories = categories.length > 0;
 
@@ -91,14 +76,6 @@ export default function Analyze({
       setLoadingText('Fetching latest emails from Gmail...');
       setActiveTab('fetched');
       try {
-        if (isDemo) {
-          await new Promise((r) => setTimeout(r, 600));
-          const count = opts.count ? Math.min(Math.max(opts.count, 1), DEMO_GMAIL_MAILS.length) : DEMO_GMAIL_MAILS.length;
-          const fetched = DEMO_GMAIL_MAILS.slice(0, count);
-          setFetchedMails(fetched);
-          toast.success(`${fetched.length} Message${fetched.length > 1 ? 's' : ''} Fetched (Demo)`);
-          return;
-        }
         const result = await fetchMailsAction(opts);
         if (!result.ok || !result.mails) {
           toast.error(result.error ?? 'Fetch failed');
@@ -118,10 +95,6 @@ export default function Analyze({
     setLoadingText('Signing out...');
     setAnalyzing(true);
     await new Promise((r) => setTimeout(r, 400));
-    if (isDemo) {
-      exitDemo();
-      return;
-    }
     await authClient.signOut();
     setLoading(false);
     setLoadingText('');
@@ -168,14 +141,6 @@ export default function Analyze({
       setLoadingText('Loading saved mails from Database...');
       setActiveTab('encrypted');
       try {
-        if (isDemo) {
-          await new Promise((r) => setTimeout(r, 600));
-          const count = opts.count ? Math.min(Math.max(opts.count, 1), DEMO_DB_MAILS.length) : DEMO_DB_MAILS.length;
-          const loaded = DEMO_DB_MAILS.slice(0, count);
-          setEncryptedMails(loaded);
-          toast.success(`${loaded.length} Message${loaded.length > 1 ? 's' : ''} Loaded (Demo)`);
-          return;
-        }
         const result = await loadMailsFromDatabaseAction(opts);
         if (!result.ok || !result.mails) {
           toast.error(result.error ?? 'Load failed');
@@ -253,10 +218,6 @@ export default function Analyze({
   };
 
   const handleStoreSingleEncrypted = (mail: Mail) => {
-    if (isDemo) {
-      toast.success('Mail stored encrypted in database (Demo)');
-      return;
-    }
     void (async () => {
       setLoading(true);
       setLoadingText('Encrypting & storing mail in database...');
@@ -305,10 +266,8 @@ export default function Analyze({
           analyzeDisabled={selectedFetchedIds.size === 0}
           onFetch={() => setFetchDialogOpen(true)}
           onLoadDataFromDatabase={() => setLoadDialogOpen(true)}
-          onStartTour={isDemo ? () => setTutorialOpen(true) : undefined}
           sessionUserEmail={sessionUserEmail}
           hasCategories={hasCategories}
-          isJaneDoe={isJaneDoe}
         />
         <AnimatePresence>
           {(loading || analyzing) && (
@@ -334,9 +293,6 @@ export default function Analyze({
               onFetch={() => setFetchDialogOpen(true)}
               onLoadDataFromDatabase={() => setLoadDialogOpen(true)}
               onGoToFetched={() => setActiveTab('fetched')}
-              onStartTutorial={() => setTutorialOpen(true)}
-              isDemo={isDemo}
-              isJaneDoe={isJaneDoe}
               onAnalyzeMail={handleAnalyzeSingleMail}
               selectedIds={activeTab === 'fetched' ? selectedFetchedIds : activeTab === 'encrypted' ? selectedEncryptedIds : selectedAnalyzedIds}
               onToggleSelect={(id) => {
@@ -381,7 +337,6 @@ export default function Analyze({
         open={accountDialogOpen}
         onOpenChange={setAccountDialogOpen}
         onSignOut={handleSignOut}
-        demoMode={isDemo}
       />
       <LoadDialog
         sessionUserId={sessionUserId}
@@ -395,12 +350,6 @@ export default function Analyze({
         selectedCount={selectedFetchedIds.size}
         onAnalyze={handleAnalyzeSelected}
       />
-      {isDemo && (
-        <DemoTutorial
-          isOpen={tutorialOpen}
-          onClose={() => setTutorialOpen(false)}
-        />
-      )}
     </div>
   );
 }

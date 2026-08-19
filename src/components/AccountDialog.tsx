@@ -10,16 +10,14 @@ import {
 } from '@/components/ui/dialog';
 import { UserIcon, MailIcon, CalendarIcon, ChevronsRightIcon, X } from 'lucide-react';
 import { fetchUserDetails } from '@/app/actions';
-import { DEMO_USER } from '@/lib/demo-data';
 
 interface AccountDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSignOut: () => void;
-  demoMode?: boolean;
 }
 
-export default function AccountDialog({ open, onOpenChange, onSignOut, demoMode }: AccountDialogProps) {
+export default function AccountDialog({ open, onOpenChange, onSignOut }: AccountDialogProps) {
   const [data, setData] = useState<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [maxSwipe, setMaxSwipe] = useState(220);
@@ -38,14 +36,6 @@ export default function AccountDialog({ open, onOpenChange, onSignOut, demoMode 
   useEffect(() => {
     async function loadData() {
       if (open) {
-        if (demoMode) {
-          setData({
-            email: DEMO_USER.email,
-            totalEncryptedMails: 1,
-            createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-          });
-          return;
-        }
         const result = await fetchUserDetails();
         if (result.ok && result.data) {
           setData(result.data);
@@ -53,7 +43,7 @@ export default function AccountDialog({ open, onOpenChange, onSignOut, demoMode 
       }
     }
     loadData();
-  }, [open, demoMode]);
+  }, [open]);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -65,7 +55,7 @@ export default function AccountDialog({ open, onOpenChange, onSignOut, demoMode 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="w-full sm:w-80 rounded-t-4xl sm:rounded-2xl bg-[#2c0237] border border-white/10 [html.light_&]:bg-white [html.light_&]:border-black/10 text-white shadow-2xl p-0 gap-0 overflow-hidden"
+        className="w-full sm:w-80 rounded-t-4xl sm:rounded-2xl bg-[#2c0237] border sm:border-b border-b-0 border-white/10 [html.light_&]:bg-white [html.light_&]:border-black/10 text-white shadow-2xl p-0 gap-0 overflow-hidden"
       >
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-white/10 [html.light_&]:border-black/10">
           <div>
@@ -76,7 +66,7 @@ export default function AccountDialog({ open, onOpenChange, onSignOut, demoMode 
             type="button"
             onClick={() => onOpenChange(false)}
             title="Close dialog"
-            className="rounded cursor-pointer p-1 text-white/50 hover:text-white transition"
+            className="rounded cursor-pointer p-1 text-white/50 hover:text-red-600! transition"
           >
             <X className="h-3.5 w-3.5" />
           </button>

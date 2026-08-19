@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
 import { Toaster } from "@/components/Toaster";
-import { DemoProvider } from "@/lib/demo-context";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://anthos-opensource.vercel.app"),
@@ -67,14 +66,12 @@ export default function RootLayout({
         />
       </head>
       <body className="flex flex-col select-none">
-        <DemoProvider>
-          <Toaster />
-          <Suspense fallback={null}>
-            <main className="flex-1">
-              {children}
-            </main>
-          </Suspense>
-        </DemoProvider>
+        <Toaster />
+        <Suspense fallback={null}>
+          <main className="flex-1">
+            {children}
+          </main>
+        </Suspense>
       </body>
     </html>
   );

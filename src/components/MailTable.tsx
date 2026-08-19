@@ -44,9 +44,6 @@ interface MailTableProps {
   onFetch?: () => void;
   onLoadDataFromDatabase?: () => void;
   onGoToFetched?: () => void;
-  onStartTutorial?: () => void;
-  isDemo?: boolean;
-  isJaneDoe?: boolean;
 }
 
 export default function MailTable({
@@ -65,9 +62,6 @@ export default function MailTable({
   onFetch,
   onLoadDataFromDatabase,
   onGoToFetched,
-  onStartTutorial,
-  isDemo = false,
-  isJaneDoe = false,
 }: MailTableProps) {
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdFired = useRef(false);
@@ -157,14 +151,6 @@ export default function MailTable({
               </CustomButton>
             </div>
           ) : null}
-
-          {isDemo && onStartTutorial && (
-              <CustomButton onClick={onStartTutorial}>
-
-                <HelpCircle className="w-3.5 h-3.5" />
-                <span>Take a Quick Tour</span>
-              </CustomButton>
-          )}
         </div>
       </div>
     );
@@ -286,7 +272,7 @@ export default function MailTable({
             className="fixed z-70 w-56 rounded-4xl rounded-tl-none [html.light_&]:bg-white dark:bg-accent backdrop-blur-2xl border [html.light_&]:border-gray-200/80 dark:border-white/20 shadow-2xl p-1.5 ring-1 ring-black/5 flex flex-col gap-0.5 text-zinc-800"
             onClick={(e) => e.stopPropagation()}
           >
-            {hasCategories && !isJaneDoe && (
+            {hasCategories && (
               <button
                 type="button"
                 onClick={() => {
@@ -315,20 +301,18 @@ export default function MailTable({
               <span className='[html.light_&]:text-black dark:text-white'>Refresh Page</span>
             </button>
 
-            {!isJaneDoe && (
-              <button
-                type="button"
-                onClick={() => {
-                  const targetMail = contextMenu.mail;
-                  setContextMenu(null);
-                  onStoreEncryptedMail?.(targetMail);
-                }}
-                className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium [html.light_&]:hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
-              >
-                <ShieldCheck className="w-4 h-4 [html.light_&]:text-black dark:text-white" />
-                <span className="[html.light_&]:text-black dark:text-white">Store</span>
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                const targetMail = contextMenu.mail;
+                setContextMenu(null);
+                onStoreEncryptedMail?.(targetMail);
+              }}
+              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium [html.light_&]:hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+            >
+              <ShieldCheck className="w-4 h-4 [html.light_&]:text-black dark:text-white" />
+              <span className="[html.light_&]:text-black dark:text-white">Store</span>
+            </button>
           </motion.div>
         )}
       </AnimatePresence>

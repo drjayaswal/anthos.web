@@ -1,14 +1,16 @@
 import { getSession } from "@/lib/auth";
-import DemoGate from "@/components/DemoGate";
+import { redirect } from "next/navigation";
 import Analyze from "@/components/Analyze";
 
 export default async function AnalyzePage() {
   const session = await getSession();
-  if (!session) return <DemoGate />;
+  if (!session?.user?.id) {
+    redirect("/connect");
+  }
   return (
     <Analyze
-      sessionUserId={session.user?.id ?? null}
-      sessionUserEmail={session.user?.email ?? null}
+      sessionUserId={session.user.id}
+      sessionUserEmail={session.user.email ?? null}
     />
   );
 }

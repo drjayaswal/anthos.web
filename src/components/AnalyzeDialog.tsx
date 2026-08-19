@@ -155,7 +155,7 @@ export default function AnalyzeDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="w-full sm:w-96 rounded-t-4xl sm:rounded-2xl bg-[#2c0237] border border-white/30 border-b-0 [html.light_&]:bg-white [html.light_&]:border-black/10 text-white shadow-2xl p-0 gap-0 overflow-hidden"
+        className="w-full sm:w-96 rounded-t-4xl sm:rounded-2xl bg-[#2c0237] border sm:border-b border-white/10 border-b-0 [html.light_&]:bg-white [html.light_&]:border-black/10 text-white shadow-2xl p-0 gap-0 overflow-hidden"
       >
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-white/10 [html.light_&]:border-black/10">
           <div>
@@ -167,7 +167,7 @@ export default function AnalyzeDialog({
             type="button"
             onClick={() => onOpenChange(false)}
             title="Close dialog"
-            className="rounded cursor-pointer p-1 text-white/50 hover:text-white [html.light_&]:text-black/50 [html.light_&]:hover:text-black transition"
+            className="rounded cursor-pointer p-1 text-white/50 hover:text-red-600!"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -339,13 +339,14 @@ export default function AnalyzeDialog({
           </div>
 
           <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-white/10 [html.light_&]:border-black/10">
-            <CustomButton
+            <button
               type="submit"
               disabled={isSubmitDisabled}
+              className="inline-flex items-center gap-1.5 rounded-lg cursor-pointer bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-green-600/90 active:scale-95"
             >
-              <Sparkles className="h-3.5 w-3.5" />
+              <Sparkles className="h-3.5 w-3.5 dark:fill-white [html.light_&]:fill-black" />
               <span>Analyze</span>
-            </CustomButton>
+            </button>
           </div>
         </form>
       </DialogContent>

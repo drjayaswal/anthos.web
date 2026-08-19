@@ -1,135 +1,26 @@
 'use client';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
+import { CustomButton } from '@/components/ui/button';
+import { authClient } from '@/lib/auth-client';
 
-interface Provider {
-  id: string;
-  name: string;
-  logo: string;
-  logoClassName?: string;
-  logoWrapperClassName?: string;
-  models: string[];
-  description: string;
-  badge: string;
-  speed: string;
-}
-
-const PROVIDERS: Provider[] = [
-  {
-    id: 'anthropic',
-    name: 'Anthropic',
-    logo: '/providers/anthropic.png',
-    logoWrapperClassName: 'w-10 h-10',
-    logoClassName: 'w-6 h-6',
-    models: ['Claude 3.7 Sonnet', 'Claude 3.5 Haiku', 'Claude Opus'],
-    description: 'Deep reasoning, nuanced human-like summarization, and exceptional instruction following.',
-    badge: 'State-of-the-Art Reasoning',
-    speed: '200k Context Window',
-  },
-  {
-    id: 'openai',
-    name: 'OpenAI',
-    logo: '/providers/openai.png',
-    logoWrapperClassName: 'h-10 px-3 min-w-[80px]',
-    logoClassName: 'h-5 w-auto max-w-[85px]',
-    models: ['GPT-4o', 'GPT-4o mini', 'o1', 'o3-mini'],
-    description: 'Industry-standard versatility, multimodal understanding, and reliable structured outputs.',
-    badge: 'Universal Intelligence',
-    speed: 'High Throughput',
-  },
-  {
-    id: 'google',
-    name: 'Google',
-    logo: '/providers/google.png',
-    logoWrapperClassName: 'h-10 px-3 min-w-[75px]',
-    logoClassName: 'h-4.5 w-auto max-w-[75px]',
-    models: ['Gemini 2.5 Pro', 'Gemini 2.0 Flash'],
-    description: 'Massive 1M+ token context windows for processing huge email threads and attachments.',
-    badge: '1M+ Token Context',
-    speed: 'Ultra-Fast Flash',
-  },
-  {
-    id: 'bedrock',
-    name: 'Amazon Bedrock',
-    logo: '/providers/amazon-bedrock.png',
-    logoWrapperClassName: 'h-10 px-2.5 min-w-[65px]',
-    logoClassName: 'h-7 w-auto max-w-[65px]',
-    models: ['Claude on AWS', 'Llama 3 on Bedrock', 'Amazon Titan'],
-    description: 'Enterprise VPC compliance, SOC2 certification, and managed cloud infrastructure.',
-    badge: 'AWS Enterprise VPC',
-    speed: 'Enterprise SLA',
-  },
-  {
-    id: 'openrouter',
-    name: 'OpenRouter',
-    logo: '/providers/openrouter.png',
-    logoWrapperClassName: 'w-10 h-10',
-    logoClassName: 'w-6 h-6',
-    models: ['200+ Models', 'Dynamic Auto-Routing', 'Cost Optimizer'],
-    description: 'Single unified API key accessing over 200 foundation models with automatic fallback.',
-    badge: '200+ Unified Models',
-    speed: 'Smart Auto-Routing',
-  },
-  {
-    id: 'perplexity',
-    name: 'Perplexity',
-    logo: '/providers/perplexity.png',
-    logoWrapperClassName: 'w-10 h-10',
-    logoClassName: 'w-6 h-6',
-    models: ['Sonar Pro', 'Sonar Online', 'Sonar Medium'],
-    description: 'Live web-grounded email context and citation synthesis for market news and background.',
-    badge: 'Web-Grounded Context',
-    speed: 'Live Citations',
-  },
-  {
-    id: 'nvidia',
-    name: 'NVIDIA',
-    logo: '/providers/nvidia.png',
-    logoWrapperClassName: 'h-10 px-2 min-w-[55px]',
-    logoClassName: 'h-7 w-auto max-w-[55px]',
-    models: ['NVIDIA NIM', 'Llama 3 on TensorRT-LLM', 'DGX Cloud'],
-    description: 'Ultra-low latency GPU microservices optimized for extreme high-frequency mail triage.',
-    badge: 'TensorRT-LLM Powered',
-    speed: '< 50ms Latency',
-  },
-  {
-    id: 'groq',
-    name: 'Groq',
-    logo: '/providers/groq.png',
-    logoWrapperClassName: 'h-10 px-3 min-w-[70px]',
-    logoClassName: 'h-5 w-auto max-w-[70px]',
-    models: ['Llama 3.3 70B Versatile', 'Mixtral 8x7B', 'Gemma 2'],
-    description: 'Blazing-fast LPU inference engine delivering 500+ tokens/second for instantaneous inbox scoring.',
-    badge: '500+ Tokens/Sec',
-    speed: 'Instantaneous Scoring',
-  },
-  {
-    id: 'ollama',
-    name: 'Ollama',
-    logo: '/providers/ollama.png',
-    logoWrapperClassName: 'w-10 h-10',
-    logoClassName: 'w-6 h-6',
-    models: ['Local Llama 3.3', 'Local Mistral', 'Local Qwen 2.5'],
-    description: '100% offline, local-first on your machine. Zero email data ever leaves your computer.',
-    badge: '100% Local & Offline',
-    speed: 'Zero Data Leaves Device',
-  },
-  {
-    id: 'deepseek',
-    name: 'DeepSeek',
-    logo: '/providers/deepseek.png',
-    logoWrapperClassName: 'h-10 px-3 min-w-[85px]',
-    logoClassName: 'h-4.5 w-auto max-w-[90px]',
-    models: ['DeepSeek-V3', 'DeepSeek-R1 (Reasoning)'],
-    description: 'Breakthrough open-weights reasoning model with chain-of-thought email prioritization.',
-    badge: 'Open Weights Reasoning',
-    speed: 'Chain-of-Thought',
-  },
-];
+import { PROVIDERS } from '@/lib/providers';
 
 export default function HomePage() {
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
+
+  const handleContinue = () => {
+    if (session?.user) {
+      router.push('/analyze');
+    } else {
+      router.push('/connect');
+    }
+  };
+
   return (
     <div className="min-h-screen w-full sm:mt-0 mt-10 bg-[#2c0237] dark:text-white [html.light_&]:bg-gray-50 [html.light_&]:text-black transition-colors duration-300 overflow-x-hidden selection:bg-purple-500/30 selection:text-white">
       <section className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-16 text-center">
@@ -154,51 +45,54 @@ export default function HomePage() {
         >
           Anthos brings continuous priority scoring (<code className="text-white font-mono font-bold">-1.0</code> to <code className="text-white font-mono font-bold">+1.0</code>), custom category mapping, and client-side zero-knowledge encryption across your Gmail communications.
         </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mt-8 flex items-center justify-center gap-3"
+        >
+          <CustomButton
+            onClick={handleContinue}
+            className="cursor-pointer p-6 text-xl! rounded-2xl"
+          >
+            <span>Continue with Anthos</span>
+          </CustomButton>
+        </motion.div>
       </section>
 
-      <section id="providers" className="relative z-10 w-full py-16 overflow-hidden border-y border-dashed dark:border-white/20 [html.light_&]:border-black/20 dark:bg-white/2 [html.light_&]:bg-white/60 backdrop-blur-xs">
+      <section id="providers" className="relative z-10 w-full py-16 overflow-hidden border-y border-dashed dark:border-white/20 [html.light_&]:border-black/20 dark:bg-white/2 [html.light_&]:bg-black/2 backdrop-blur-xs">
         <div className="max-w-7xl mx-auto px-4 text-center mb-8">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight dark:text-white [html.light_&]:text-black">
             Supported AI Providers
           </h2>
           <p className="mt-2 text-xs sm:text-sm text-white/60 [html.light_&]:text-black/60 font-mono max-w-xl mx-auto">
-            Connect any model with your own API keys or run completely offline with air-gapped local models
+          Connect any model with your own API keys with BYOK architecture
           </p>
         </div>
-        <div className="relative w-full overflow-hidden mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)">
+        <div className="relative w-full overflow-hidden dark:bg-white [html.light_&]:bg-white/90 border-y-6 border-double border-accent">
           <motion.div
-            className="flex gap-4 w-max items-center py-2"
+            className="flex gap-8 sm:gap-12 w-max items-center py-4"
             animate={{ x: ['0%', '-50%'] }}
             transition={{ repeat: Infinity, ease: 'linear', duration: 32 }}
           >
             {[...PROVIDERS, ...PROVIDERS].map((provider, idx) => (
               <div
                 key={`${provider.id}-${idx}`}
-                className="flex items-center gap-3.5 px-4 py-2.5 rounded-2xl dark:bg-white/5 [html.light_&]:bg-black/1 border dark:border-white/10 [html.light_&]:border-black/5 transition-all duration-300 backdrop-blur-md shrink-0 shadow-sm group cursor-default"
+                className="flex items-center justify-center shrink-0 px-2"
+                title={provider.name}
               >
-                <div
-                  className={`rounded-xl bg-white flex items-center justify-center p-1.5 shadow-sm border border-black/5 ${
-                    provider.logoWrapperClassName || 'w-10 h-10'
-                  }`}
-                >
+                <div className="h-11 sm:h-12 flex items-center justify-center">
                   <Image
                     src={provider.logo}
                     alt={provider.name}
-                    width={120}
-                    height={40}
-                    className={`object-contain transition-transform duration-300 group-hover:scale-105 ${
-                      provider.logoClassName || 'w-6 h-6'
+                    width={180}
+                    height={48}
+                    className={`w-auto object-contain transition-all duration-300 ${provider.id == "bedrock" && "scale-150"} select-none ${
+                      provider.logoClassName || 'h-6'
                     }`}
                     unoptimized
                   />
-                </div>
-                <div className="flex flex-col text-left pr-1">
-                  <span className="text-xs sm:text-sm font-bold text-white [html.light_&]:text-black tracking-tight whitespace-nowrap">
-                    {provider.name}
-                  </span>
-                  <span className="text-[10px] font-mono text-purple-300 [html.light_&]:text-purple-700 whitespace-nowrap">
-                    {provider.badge}
-                  </span>
                 </div>
               </div>
             ))}
@@ -220,7 +114,7 @@ export default function HomePage() {
               Connect & Fetch
             </h3>
             <p className="mt-2 text-xs sm:text-sm text-white/70 [html.light_&]:text-black/70 leading-relaxed">
-              Log in with Gmail or explore with simulated demo data. Pull recent or unread emails with full thread metadata.
+              Log in with Gmail. Pull recent or unread emails with full thread metadata.
             </p>
           </div>
 

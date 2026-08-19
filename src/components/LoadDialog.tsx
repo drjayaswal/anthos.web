@@ -36,7 +36,7 @@ export default function LoadDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="w-full sm:w-80 rounded-t-4xl sm:rounded-2xl bg-[#2c0237] border border-b-0 border-white/30 [html.light_&]:bg-white [html.light_&]:border-black/30 text-white shadow-2xl p-0 gap-0 overflow-hidden"
+        className="w-full sm:w-80 rounded-t-4xl sm:rounded-2xl bg-[#2c0237] sm:border-b border border-b-0 border-white/10 [html.light_&]:bg-white [html.light_&]:border-black/10 text-white shadow-2xl p-0 gap-0 overflow-hidden"
       >
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-white/10 [html.light_&]:border-black/10">
           <div>
@@ -47,7 +47,7 @@ export default function LoadDialog({
             type="button"
             onClick={() => onOpenChange(false)}
             title="Close dialog"
-            className="rounded cursor-pointer p-1 text-white/50 hover:text-white transition"
+            className="rounded cursor-pointer p-1 text-white/50 hover:text-red-600! transition"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -61,7 +61,7 @@ export default function LoadDialog({
           <button
             type="button"
             onClick={handleLoad}
-            className="inline-flex items-center gap-1.5 rounded-lg cursor-pointer bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-green-600/90 active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-lg cursor-pointer bg-amber-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-amber-600/90 active:scale-95"
           >
             <DatabaseZapIcon className="h-3.5 w-3.5" />
             Load Mails

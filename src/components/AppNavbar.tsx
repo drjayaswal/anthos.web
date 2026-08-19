@@ -52,7 +52,13 @@ export default function AppNavbar({
     return null;
   }
 
-  if (pathname === '/thank-you' || pathname?.startsWith('/thank-you')) {
+  if (
+    pathname === '/' ||
+    pathname === '/connect' ||
+    pathname?.startsWith('/connect') ||
+    pathname === '/thank-you' ||
+    pathname?.startsWith('/thank-you')
+  ) {
     return null;
   }
 

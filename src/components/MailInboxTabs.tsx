@@ -43,7 +43,7 @@ export default function MailInboxTabs({
             {isActive && (
               <motion.div
                 layoutId="active-mail-inbox-tab"
-                className="absolute inset-0 rounded-full shadow-inner dark:backdrop-blur-md dark:bg-white/5 [html.light_&]:bg-black"
+                className="absolute inset-0 rounded-full dark:backdrop-blur-md dark:bg-white/5 [html.light_&]:bg-white shadow-sm"
                 transition={{ type: 'spring', stiffness: 380, damping: 28 }}
               />
             )}
@@ -52,6 +52,7 @@ export default function MailInboxTabs({
               <span
                 className={cn(
                   'absolute top-0 right-1 z-10 h-2 w-2 -mr-1 text-[10px] font-bold rounded-full transition-colors duration-200',
+                  isActive || "animate-pulse",
                   tab.id === 'fetched' && 'bg-blue-600',
                   tab.id === 'analyzed' && 'bg-green-600',
                   tab.id === 'encrypted' && 'bg-teal-600'

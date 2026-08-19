@@ -2,18 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Loader2Icon, PlayIcon } from 'lucide-react';
+import { Loader2Icon } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
-import { CustomButton } from './ui/button';
 import { toast } from '@/lib/toast';
 import { useSearchParams } from 'next/navigation';
-import { useDemoMode } from '@/lib/demo-context';
 
 export default function Auth() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
-  const [redirectTo, setRedirectTo] = useState("/");
-  const { enterDemo } = useDemoMode();
+  const [redirectTo, setRedirectTo] = useState("/analyze");
 
   useEffect(() => {
     const redirectParam = searchParams.get("redirect");
@@ -78,13 +75,6 @@ export default function Auth() {
             )}
             {loading ? 'Redirecting…' : 'Continue with Google'}
           </button>
-          <CustomButton
-            onClick={enterDemo}
-            className="mt-3"
-          >
-            <PlayIcon className="fill-current h-3.5 w-3.5" />
-            <span>Try Demo</span>
-          </CustomButton>
         </div>
       </div>
     </div>
