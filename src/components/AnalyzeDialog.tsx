@@ -302,8 +302,6 @@ export default function AnalyzeDialog({
                 </AnimatePresence>
               </div>
             </div>
-
-            {/* Store in DB Option */}
             <div className="flex items-center space-x-2.5 rounded-xl bg-white/5 [html.light_&]:bg-black/5 p-3 border border-white/5 [html.light_&]:border-black/5">
               <Checkbox
                 id="store"
@@ -341,8 +339,8 @@ export default function AnalyzeDialog({
           <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-white/10 [html.light_&]:border-black/10">
             <button
               type="submit"
-              disabled={isSubmitDisabled}
-              className="inline-flex items-center gap-1.5 rounded-lg cursor-pointer bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-green-600/90 active:scale-95"
+              disabled={isSubmitDisabled || loadingModels}
+              className="inline-flex items-center gap-1.5 rounded-lg cursor-pointer bg-white px-3 py-1.5 text-xs font-medium text-accent transition hover:bg-white/90 active:scale-95"
             >
               <Sparkles className="h-3.5 w-3.5 dark:fill-white [html.light_&]:fill-black" />
               <span>Analyze</span>

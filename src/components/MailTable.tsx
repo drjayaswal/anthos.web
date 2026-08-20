@@ -100,6 +100,7 @@ export default function MailTable({
       onRowHoldSelect(mail);
     }, HOLD_MS);
   };
+  console.log(mails)
 
   if (!loading && mails.length === 0) {
     return (

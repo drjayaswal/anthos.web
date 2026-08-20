@@ -73,18 +73,6 @@ function parseSenderName(sender: string): string {
   return sender.split('<')[0].trim() || sender;
 }
 
-function getDynamicStyles(index: number) {
-  const h = (index * 137.5) % 360;
-  return {
-    main: `hsl(${h}, 85%, 55%)`,
-    bg: `hsla(${h}, 85%, 55%, 0.15)`,
-    border: `hsla(${h}, 85%, 55%, 0.3)`,
-    shadow: `hsla(${h}, 85%, 55%, 0.5)`,
-    ring: `hsla(${h}, 85%, 55%, 0.6)`,
-    text: `hsl(${h}, 90%, 65%)`,
-  };
-}
-
 function getPriorityStyles(pri: number) {
   const val = Number(pri);
   let h = 0;

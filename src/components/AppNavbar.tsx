@@ -47,21 +47,6 @@ export default function AppNavbar({
   isAdmin: boolean;
 }) {
   const pathname = usePathname();
-
-  if (!authenticated) {
-    return null;
-  }
-
-  if (
-    pathname === '/' ||
-    pathname === '/connect' ||
-    pathname?.startsWith('/connect') ||
-    pathname === '/thank-you' ||
-    pathname?.startsWith('/thank-you')
-  ) {
-    return null;
-  }
-
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const isDesktop = useIsDesktop();
@@ -159,15 +144,27 @@ export default function AppNavbar({
         icon: LockIcon,
       },
       {
-        href: '/terms-condition',
-        label: 'Terms & Conditions',
-        description: 'Terms and conditions of use',
+        href: '/terms-of-service',
+        label: 'Terms of Service',
+        description: 'Rules & terms for using Anthos',
         show: true,
         icon: FileText,
       },
     ],
-    [authenticated, isAdmin],
+    [authenticated, isAdmin]
   );
+
+  const isHiddenRoute =
+    !authenticated ||
+    pathname === '/' ||
+    pathname === '/connect' ||
+    pathname?.startsWith('/connect') ||
+    pathname === '/thank-you' ||
+    pathname?.startsWith('/thank-you');
+
+  if (isHiddenRoute) {
+    return null;
+  }
 
   const visibleItems = items.filter((item) => item.show);
 

@@ -63,7 +63,7 @@ export default function FetchDialog({
           <button
             type="button"
             onClick={handleFetch}
-            className="inline-flex items-center gap-1.5 rounded-lg cursor-pointer bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-blue-600/90 active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-lg cursor-pointer bg-white px-3 py-1.5 text-xs font-medium text-accent transition hover:bg-white/90 active:scale-95"
           >
             <CloudDownloadIcon className="h-3.5 w-3.5" />
             Fetch Mails

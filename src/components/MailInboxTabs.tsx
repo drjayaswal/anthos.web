@@ -27,7 +27,7 @@ export default function MailInboxTabs({
   ];
 
   return (
-    <div data-tour="inbox-tabs" className="fixed sm:top-3 [html.light_&]:bg-black/5 backdrop-blur-md rounded-4xl dark:bg-white/10 top-13 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1.5 transition-all duration-300">
+    <div data-tour="inbox-tabs" className="fixed sm:top-3 [html.light_&]:bg-black/5 backdrop-blur-md rounded-4xl dark:bg-white/10 top-13 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1.5 transition-all duration-300 shadow-inner">
       {tabs.map((tab) => {
         const isActive = active === tab.id;
 

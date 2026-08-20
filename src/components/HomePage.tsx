@@ -5,20 +5,14 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
 import { CustomButton } from '@/components/ui/button';
-import { authClient } from '@/lib/auth-client';
 
 import { PROVIDERS } from '@/lib/providers';
 
 export default function HomePage() {
   const router = useRouter();
-  const { data: session } = authClient.useSession();
 
   const handleContinue = () => {
-    if (session?.user) {
-      router.push('/analyze');
-    } else {
-      router.push('/connect');
-    }
+    router.push('/analyze');
   };
 
   return (
