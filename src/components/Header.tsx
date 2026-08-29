@@ -57,7 +57,7 @@ export default function Header({
   return (
     <>
       <header className="flex w-full items-center justify-between gap-3">
-        {!optionsOpen && (
+        {!optionsOpen && !loading && (
           <div data-tour="options-button" className="fixed top-2 right-2 z-40">
             <button
               type="button"
@@ -73,7 +73,7 @@ export default function Header({
       </header>
 
       <AnimatePresence>
-        {optionsOpen && (
+        {optionsOpen && !loading && (
           <>
             <motion.div
               key="options-backdrop"
@@ -102,7 +102,7 @@ export default function Header({
                     closeOptions();
                   }}
                   disabled={analyzing || analyzeDisabled}
-                  className="px-3.5 py-1.5 disabled:cursor-not-allowed rounded-full text-xs font-semibold text-black bg-white border border-black/10 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40"
+                  className="px-3.5 py-1.5 disabled:cursor-not-allowed rounded-full text-xs font-semibold text-black bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40"
                   aria-label="Analyze Mails"
                 >
                   {analyzing ? 'Analyzing…' : 'Analysis'}
@@ -117,10 +117,10 @@ export default function Header({
                   closeOptions();
                 }}
                 disabled={loading}
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-white border border-black/10 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
                 aria-label="Fetch from Gmail"
               >
-                {loading ? 'Fetching…' : 'Gmail'}
+                {loading ? 'Fetching…' : 'Providers'}
               </motion.button>
 
               <motion.button
@@ -131,7 +131,7 @@ export default function Header({
                   closeOptions();
                 }}
                 disabled={loading}
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-white border border-black/10 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
                 aria-label="Load from Database"
               >
                 {loading ? 'Loading…' : 'Database'}
@@ -144,7 +144,7 @@ export default function Header({
                   onAccount();
                   closeOptions();
                 }}
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-white border border-black/10 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
                 aria-label="Account Settings"
               >
                 Account

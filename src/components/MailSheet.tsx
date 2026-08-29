@@ -58,17 +58,17 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
                   onClose();
                 }
               }}
-              className="w-full sm:w-140 md:w-155 sm:max-w-sm max-h-[70dvh] sm:max-h-[50vh] flex flex-col rounded-t-4xl sm:rounded-4xl border border-b-0 sm:border-b border-black/20 bg-white text-black shadow-2xl overflow-hidden pointer-events-auto"
+              className="w-full sm:w-140 md:w-155 sm:max-w-sm max-h-[70dvh] sm:max-h-[50vh] flex flex-col rounded-t-4xl sm:rounded-4xl border border-b-0 sm:border-b bg-white text-black shadow-2xl overflow-hidden pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="sm:hidden flex shrink-0 justify-center pt-3 pb-1.5 cursor-grab active:cursor-grabbing touch-none select-none">
                 <div className="h-1.5 w-12 rounded-full bg-black/25" />
               </div>
 
-              <div className="shrink-0 px-4 sm:px-5 pt-3 sm:pt-4 pb-3 border-b border-black/10">
+              <div className="shrink-0 px-4 sm:px-5 pt-3 sm:pt-4 pb-3 border-b">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-linear-to-br from-purple-600 via-purple-400 to-purple-200 flex items-center justify-center">
+                    <div className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-linear-to-br from-red-600 via-red-400 to-red-200 flex items-center justify-center">
                       <span className="text-xs sm:text-sm font-semibold text-white">{initials}</span>
                     </div>
 
@@ -109,12 +109,12 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
                 )}
               </div>
 
-              <div className="shrink-0 px-4 sm:px-5 py-3 border-b border-black/10 bg-black/2">
+              <div className="shrink-0 px-4 sm:px-5 py-3 border-b bg-black/2">
                 <h2 className="text-base sm:text-sm font-semibold leading-snug text-black wrap-break-word">
                   {mail.subject}
                 </h2>
                 {mail.summary && (
-                  <div className="mt-2 p-2.5 rounded-xl bg-black/5 border border-black/5">
+                  <div className="mt-2 p-2.5 rounded-xl bg-black/5 border">
                     <p className="text-[10px] font-medium uppercase tracking-wider text-black/50 mb-1">
                       AI Summary
                     </p>

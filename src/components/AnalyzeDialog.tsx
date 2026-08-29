@@ -145,9 +145,9 @@ export default function AnalyzeDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="w-full sm:w-96 rounded-t-4xl sm:rounded-2xl bg-white border sm:border-b border-black/10 border-b-0 text-black shadow-2xl p-0 gap-0 overflow-hidden"
+        className="w-full sm:w-96 rounded-t-4xl sm:rounded-2xl bg-white border sm:border-b border-b-0 text-black shadow-2xl p-0 gap-0 overflow-hidden"
       >
-        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-black/10">
+        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b">
           <div>
             <DialogTitle className="text-xs font-semibold text-black">
               Analyze Selected
@@ -181,7 +181,7 @@ export default function AnalyzeDialog({
                 <button
                   type="button"
                   onClick={() => setDropdownOpen((prev) => !prev)}
-                  className="w-full flex items-center justify-between p-2.5 rounded-xl bg-black/5 border border-black/10 hover:border-black/20 transition cursor-pointer text-left"
+                  className="w-full flex items-center justify-between p-2.5 rounded-xl bg-black/5 border round hover:border-black/20 transition cursor-pointer text-left"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className="w-6 h-6 rounded-lg bg-black/10 flex items-center justify-center shrink-0 overflow-hidden">
@@ -222,7 +222,7 @@ export default function AnalyzeDialog({
                     >
                       <div
                         data-prevent-drawer-drag
-                        className="rounded-xl bg-gray-50 border border-black/10 shadow-xl p-1.5 max-h-48 overflow-y-auto overscroll-contain touch-pan-y space-y-1"
+                        className="rounded-xl bg-gray-50 border shadow-xl p-1.5 max-h-48 overflow-y-auto overscroll-contain touch-pan-y space-y-1"
                       >
                         {availableModels.map((model) => {
                           const isSelected = model.id === selectedModelId;
@@ -241,13 +241,12 @@ export default function AnalyzeDialog({
                                 }
                               }}
                               data-prevent-drawer-drag
-                              className={`w-full flex items-center justify-between p-2 rounded-lg transition-colors text-left ${
-                                isModelDisabled
-                                  ? 'opacity-40 cursor-not-allowed bg-black/5'
-                                  : isSelected
+                              className={`w-full flex items-center justify-between p-2 rounded-lg transition-colors text-left ${isModelDisabled
+                                ? 'opacity-40 cursor-not-allowed bg-black/5'
+                                : isSelected
                                   ? 'bg-black/10 font-semibold cursor-pointer'
                                   : 'hover:bg-black/5 cursor-pointer'
-                              }`}
+                                }`}
                             >
                               <div className="flex items-center gap-2 min-w-0">
                                 <div className="w-5 h-5 rounded-md bg-black/10 flex items-center justify-center shrink-0 overflow-hidden">
@@ -292,7 +291,7 @@ export default function AnalyzeDialog({
                 </AnimatePresence>
               </div>
             </div>
-            <div className="flex items-center space-x-2.5 rounded-xl bg-black/5 p-3 border border-black/5">
+            <div className="flex items-center space-x-2.5 rounded-xl bg-black/5 p-3 border">
               <Checkbox
                 id="store"
                 checked={store}
@@ -325,7 +324,7 @@ export default function AnalyzeDialog({
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-black/10">
+          <div className="flex items-center justify-end gap-2 px-4 py-3 border-t">
             <button
               type="submit"
               disabled={isSubmitDisabled || loadingModels}

@@ -37,9 +37,9 @@ export default function LoadDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="w-full sm:w-80 rounded-t-4xl sm:rounded-2xl bg-white sm:border-b border border-b-0 border-black/10 text-black shadow-2xl p-0 gap-0 overflow-hidden"
+        className="w-full sm:w-80 rounded-t-4xl sm:rounded-2xl bg-white sm:border-b border border-b-0 text-black shadow-2xl p-0 gap-0 overflow-hidden"
       >
-        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-black/10">
+        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b">
           <div>
             <DialogTitle className="text-sm font-semibold text-black">Load Mails</DialogTitle>
             <DialogDescription className="text-[10px] text-black/50">Query encrypted mails from database</DialogDescription>
@@ -58,7 +58,7 @@ export default function LoadDialog({
           <DatabaseQueryFields {...fields} />
         </div>
 
-        <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-black/10">
+        <div className="flex items-center justify-end gap-2 px-4 py-3 border-t">
           <CustomButton onClick={handleLoad}>
             <DatabaseZapIcon className="w-3.5 h-3.5" />
             <span>Load Mails</span>

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ShieldIcon, UserIcon } from "lucide-react";
+import { ShieldIcon } from "lucide-react";
 import type { UserProfile } from "@/app/api/_db/profile";
 import { parseUserAgent } from "@/lib/utils";
 
@@ -68,22 +68,16 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
           </p>
         </div>
 
-        <section className="overflow-hidden rounded-4xl bg-white border border-black/10 shadow-sm">
-          <div className="flex items-center gap-3 border-b border-black/10 p-3 sm:gap-4 sm:p-4">
-            <div className={profile.emailVerified ? "p-0.5 rounded-full ring-2 ring-black/20 shrink-0" : "shrink-0"}>
-              {profile.image ? (
-                <Image
-                  src={profile.image}
-                  alt=""
-                  width={48}
-                  height={48}
-                  className="h-11 w-11 rounded-full object-cover sm:h-12 sm:w-12"
-                />
-              ) : (
-                <div className="flex h-11 w-11 items-center justify-center rounded-full text-black/40 sm:h-12 sm:w-12">
-                  <UserIcon className="h-5 w-5 text-black sm:h-6 sm:w-6" />
-                </div>
-              )}
+        <section className="overflow-hidden rounded-4xl bg-white border shadow-sm">
+          <div className="flex items-center gap-3 border-b p-3 sm:gap-4 sm:p-4">
+            <div className={profile.emailVerified ? "p-0.5 rounded-full ring-2 ring-green-600 shrink-0" : "shrink-0"}>
+              <Image
+                src={profile.image || "/anthos.png"}
+                alt=""
+                width={48}
+                height={48}
+                className="h-11 w-11 rounded-full object-cover sm:h-12 sm:w-12"
+              />
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium sm:text-base text-black">
@@ -116,8 +110,8 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
           </dl>
         </section>
 
-        <section className="mt-3 overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm sm:mt-4">
-          <div className="border-b border-black/10 px-3 py-2 sm:px-4 sm:py-2.5">
+        <section className="mt-3 overflow-hidden rounded-2xl border bg-white shadow-sm sm:mt-4">
+          <div className="border-b px-3 py-2 sm:px-4 sm:py-2.5">
             <h2 className="flex items-center gap-1.5 text-xs font-medium sm:text-sm text-black">
               <ShieldIcon className="h-3.5 w-3.5 text-black/50" />
               Sign-in &amp; access
@@ -151,7 +145,7 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
                 mono
               />
             )}
-            <div className="col-span-1 sm:col-span-2 space-y-1.5 border-b border-black/10 py-2.5 last:border-0 sm:py-3">
+            <div className="col-span-1 sm:col-span-2 space-y-1.5 border-b py-2.5 last:border-0 sm:py-3">
               <dt className="text-[10px] font-medium uppercase tracking-wider text-black/50 sm:text-xs">
                 Permissions
               </dt>
@@ -176,13 +170,13 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
           </dl>
         </section>
 
-        <section className="mt-3 overflow-hidden rounded-2xl bg-white border border-black/10 shadow-sm sm:mt-4">
-          <div className="border-b border-black/10 px-3 py-2 sm:px-4 sm:py-2.5">
+        <section className="mt-3 overflow-hidden rounded-2xl bg-white border shadow-sm sm:mt-4">
+          <div className="border-b px-3 py-2 sm:px-4 sm:py-2.5">
             <h2 className="text-xs font-medium sm:text-sm text-black">Active Sessions</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[10px] sm:text-xs">
-              <thead className="border-b border-black/10 uppercase text-black/50">
+              <thead className="border-b uppercase text-black/50">
                 <tr>
                   <th className="px-3 py-2 font-medium">Session ID</th>
                   <th className="px-3 py-2 font-medium">IP Address</th>

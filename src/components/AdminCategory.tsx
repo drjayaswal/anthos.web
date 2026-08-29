@@ -1,17 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Button, CustomButton } from "@/components/ui/button";
+import { CustomButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   CheckIcon,
   Edit2Icon,
@@ -163,7 +155,7 @@ export default function AdminCategories() {
         </p>
       </div>
 
-      <section className="rounded-4xl bg-white border border-black/10 p-5 shadow-sm sm:p-5">
+      <section className="rounded-4xl bg-white border p-5 shadow-sm sm:p-5">
         <h2 className="text-xs font-medium text-black sm:text-sm">
           {editingId ? "Edit category" : "Add category"}
         </h2>
@@ -199,7 +191,7 @@ export default function AdminCategories() {
           <div className="flex flex-wrap gap-2">
             <CustomButton
               type="submit"
-              className={editingId ? "hover:bg-green-600!" : "hover:bg-[#9333ea]"}
+              color={editingId ? "green" : "red"}
               disabled={saving || !form.name.trim()}
             >
               {saving ? (
@@ -215,7 +207,6 @@ export default function AdminCategories() {
               <CustomButton
                 type="button"
                 onClick={resetForm}
-                className="hover:bg-red-600!"
                 disabled={saving}
               >
                 <XIcon className="h-4 w-4 sm:block hidden" />
@@ -226,9 +217,14 @@ export default function AdminCategories() {
         </form>
       </section>
 
-      <section className="overflow-hidden rounded-4xl bg-white border border-black/10 sm:py-2 p-2 shadow-sm">
-        <div className="border-b border-black/10 px-3 py-2.5 sm:px-6 sm:py-4">
-          <h2 className="text-xs font-medium text-black sm:text-sm">All categories</h2>
+      <section className="space-y-3 sm:space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm sm:text-base font-semibold tracking-tight text-black">
+            All categories
+          </h2>
+          <span className="text-[11px] sm:text-xs text-black/50 font-mono">
+            {items.length} {items.length === 1 ? "Category" : "Categories"}
+          </span>
         </div>
 
         {loading ? (
@@ -237,65 +233,58 @@ export default function AdminCategories() {
             Loading…
           </div>
         ) : items.length === 0 ? (
-          <p className="p-4 text-center text-xs text-black sm:px-6 sm:py-12 sm:text-sm">No categories yet.</p>
+          <div className="rounded-3xl bg-white border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] p-6 text-center text-xs text-black sm:text-sm">
+            No categories yet.
+          </div>
         ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader className="border-b border-black/10">
-                <TableRow className="border-b border-black/10 hover:bg-transparent">
-                  <TableHead className="px-4 py-3 text-[10px] text-black sm:px-6 sm:py-3.5 sm:text-xs">Name</TableHead>
-                  <TableHead className="hidden px-4 py-3 text-[10px] text-black md:table-cell sm:px-6 sm:py-3.5 sm:text-xs">Description</TableHead>
-                  <TableHead className="w-24 px-4 py-3 text-right text-[10px] text-black sm:w-32 sm:px-6 sm:py-3.5 sm:text-xs">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {items.map((cat) => (
-                  <TableRow
-                    key={cat.id}
-                    className={`border-b border-black/10 transition-colors ${editingId === cat.id
-                      ? "bg-black/5"
-                      : "hover:bg-black/5"
-                      }`}
+          <div className="grid grid-cols-1 gap-2.5 sm:gap-3">
+            {items.map((cat) => (
+              <div
+                key={cat.id}
+                className={`overflow-hidden rounded-3xl bg-white border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] transition-all duration-200 p-3.5 sm:px-5 sm:py-3 flex items-center justify-between gap-3 text-black ${
+                  editingId === cat.id ? "bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]" : ""
+                }`}
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs sm:text-sm font-semibold text-black truncate">
+                      {cat.name}
+                    </span>
+                  </div>
+                  {cat.description && (
+                    <p className="text-[11px] sm:text-xs text-black/50 truncate mt-0.5">
+                      {cat.description}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <CustomButton
+                    size="xs"
+                    color="blue"
+                    onClick={() => startEdit(cat)}
+                    aria-label={`Edit ${cat.name}`}
                   >
-                    <TableCell className="max-w-[52vw] truncate px-4 py-3 text-xs font-medium text-black sm:max-w-none sm:px-6 sm:py-4 sm:text-sm">{cat.name}</TableCell>
-                    <TableCell className="hidden max-w-xs truncate px-4 py-3 text-xs text-black/50 md:table-cell sm:px-6 sm:py-4 sm:text-sm">
-                      {cat.description || "—"}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-right sm:px-6 sm:py-4">
-                      <div className="flex justify-end gap-1.5">
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          className="text-black/70 rounded-lg hover:text-white hover:bg-blue-600 border-0 px-2.5 py-1 text-xs cursor-pointer"
-                          onClick={() => startEdit(cat)}
-                          aria-label={`Edit ${cat.name}`}
-                        >
-                          <Edit2Icon className="h-4 w-4 sm:block hidden" />
-                          Edit
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="text-black/70 rounded-lg hover:text-white hover:bg-red-600 border-0 px-2.5 py-1 text-xs cursor-pointer"
-                          disabled={deletingId === cat.id}
-                          onClick={() => handleDelete(cat.id, cat.name)}
-                          aria-label={`Delete ${cat.name}`}
-                        >
-                          {deletingId === cat.id ? (
-                            <Loader2Icon className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Trash2Icon className="h-4 w-4 sm:block hidden" />
-                          )}
-                          <div>Delete</div>
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    <Edit2Icon className="h-3 w-3 sm:block hidden" />
+                    <span>Edit</span>
+                  </CustomButton>
+                  <CustomButton
+                    size="xs"
+                    color="red"
+                    disabled={deletingId === cat.id}
+                    onClick={() => handleDelete(cat.id, cat.name)}
+                    aria-label={`Delete ${cat.name}`}
+                  >
+                    {deletingId === cat.id ? (
+                      <Loader2Icon className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Trash2Icon className="h-3 w-3 sm:block hidden" />
+                    )}
+                    <span>Delete</span>
+                  </CustomButton>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </section>

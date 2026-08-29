@@ -140,10 +140,10 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
   const filteredMails = useMemo(() =>
     activeCat
       ? mails.filter((m) => {
-          if (!m.categories) return false;
-          if (Array.isArray(m.categories)) return m.categories.includes(activeCat);
-          return (m.categories as unknown as string) === activeCat;
-        })
+        if (!m.categories) return false;
+        if (Array.isArray(m.categories)) return m.categories.includes(activeCat);
+        return (m.categories as unknown as string) === activeCat;
+      })
       : [],
     [mails, activeCat]
   );
@@ -369,7 +369,7 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
       <AnimatePresence>
         {preview && (
           <Dialog open onOpenChange={(o) => !o && setPreview(null)}>
-            <DialogContent className="sm:max-w-md w-full rounded-t-4xl sm:rounded-2xl p-5! bg-white border border-black/10 text-black shadow-2xl">
+            <DialogContent className="sm:max-w-md w-full rounded-t-4xl sm:rounded-2xl p-5! bg-white border text-black shadow-2xl">
               <DialogHeader>
                 <DialogTitle className="text-black line-clamp-1 pr-8">{parseSenderName(preview.sender)}</DialogTitle>
                 <DialogDescription className="text-left text-xs text-black/50">
@@ -399,7 +399,7 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                         return (
                           <div
                             key={`${cat}-${idx}`}
-                            className="flex items-center justify-between py-1 border-b border-black/10 last:border-0"
+                            className="flex items-center justify-between py-1 border-b last:border-0"
                           >
                             <Badge
                               variant="outline"

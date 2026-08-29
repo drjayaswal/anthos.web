@@ -35,7 +35,7 @@ export default function PrivacyPolicy() {
   return (
     <div className="min-h-0 text-black">
       <main className="sm:mx-auto mx-2 max-w-4xl sm:mt-0 mt-10 px-4 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8">
-        <div className="flex flex-row items-center justify-between gap-3 border-b border-dashed border-black/15 pb-4 sm:pb-5">
+        <div className="flex flex-row items-center justify-between gap-3 border-b border-dashed pb-4 sm:pb-5">
           <div className="space-y-0.5 min-w-0">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center text-black shrink-0">

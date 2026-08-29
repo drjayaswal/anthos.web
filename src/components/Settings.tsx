@@ -75,41 +75,45 @@ function ModelCard({
 
   const actionButtons = isReadOnly ? null : (
     <>
-      <button
+      <CustomButton
+        size="xs"
+        color="amber"
         onClick={(e) => { e.stopPropagation(); onToggleKey?.(model.id); }}
-        className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium text-black/70 hover:text-white hover:bg-amber-500"
         title={isKeyVisible ? "Hide Key" : "Show Key"}
       >
         {isKeyVisible ? "Hide" : "Show"}
-      </button>
-      <button
+      </CustomButton>
+      <CustomButton
+        size="xs"
+        color="green"
         onClick={(e) => { e.stopPropagation(); onCopy?.(model.apiKey, model.id); }}
-        className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium text-black/70 hover:text-white hover:bg-green-600"
         title="Copy Key"
       >
         {copiedId === model.id ? "Copied!" : "Copy"}
-      </button>
-      <button
+      </CustomButton>
+      <CustomButton
+        size="xs"
+        color="blue"
         onClick={(e) => { e.stopPropagation(); onEdit?.(model); }}
         title="Edit model"
-        className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium text-black/70 hover:text-white hover:bg-blue-600"
       >
         Edit
-      </button>
-      <button
+      </CustomButton>
+      <CustomButton
+        size="xs"
+        color="red"
         onClick={(e) => { e.stopPropagation(); onDelete?.(model); }}
         disabled={isDeleting}
         title="Delete model"
-        className="rounded-md cursor-pointer px-2 py-1 transition text-[10px] font-medium disabled:opacity-50 text-black/70 hover:text-white hover:bg-red-600"
       >
         {isDeleting ? "…" : "Delete"}
-      </button>
+      </CustomButton>
     </>
   );
 
   return (
     <div
-      className={`overflow-hidden ${!isReadOnly ? "rounded-3xl bg-white border border-black/10 shadow-sm" : "grayscale cursor-not-allowed"
+      className={`overflow-hidden sm:pb-0 pb-1 ${isReadOnly ? "cursor-not-allowed" : "rounded-3xl bg-white border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] transition-all duration-200"
         } text-black`}
       onMouseEnter={() => !isReadOnly && setIsModelHovered(true)}
       onMouseLeave={() => !isReadOnly && setIsModelHovered(false)}
@@ -129,7 +133,7 @@ function ModelCard({
 
         <div className="flex items-center gap-1.5 min-w-0 shrink-0">
           <span className="text-xs font-semibold truncate max-w-28 text-black">{model.name}</span>
-          <span className="inline-flex items-center rounded-sm bg-black/10 px-1 py-px text-[9px] font-mono text-black/60 truncate">
+          <span className="inline-flex items-center rounded-sm bg-green-600/10 px-1 py-px text-[9px] font-mono text-green-600 truncate">
             {model.modelName}
           </span>
         </div>
@@ -144,7 +148,7 @@ function ModelCard({
           </div>
           {actionButtons && (
             <div
-              className={`flex items-center gap-0.5 shrink-0 transition-all duration-200 ${isModelHovered ? "opacity-100 translate-x-0" : "opacity-0 pointer-events-none translate-x-2"
+              className={`flex items-center gap-2 shrink-0 transition-all duration-200 ${isModelHovered ? "opacity-100 translate-x-0" : "opacity-0 pointer-events-none translate-x-2"
                 }`}
             >
               {actionButtons}
@@ -348,7 +352,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
   return (
     <div className="min-h-0 text-black">
       <main className="sm:mx-auto mx-2 max-w-4xl sm:mt-0 mt-10 px-3 sm:px-6 py-4 sm:py-10 space-y-4 sm:space-y-6">
-        <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 border-b border-dashed border-black/20 pb-4 sm:pb-5">
+        <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 border-b border-dashed pb-4 sm:pb-5">
           <div className="space-y-0.5 min-w-0">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center text-black shrink-0">
@@ -422,9 +426,9 @@ export default function Settings({ settings: initialSettings }: { settings: User
       <Dialog open={isProvidersListOpen} onOpenChange={setIsProvidersListOpen}>
         <DialogContent
           showCloseButton={false}
-          className="w-full sm:max-w-lg max-h-[85vh] flex flex-col rounded-t-4xl sm:rounded-2xl bg-white border border-black/10 text-black shadow-2xl p-0 gap-0 overflow-hidden"
+          className="w-full sm:max-w-lg max-h-[85vh] flex flex-col rounded-t-4xl sm:rounded-2xl bg-white border text-black shadow-2xl p-0 gap-0 overflow-hidden"
         >
-          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-black/10 shrink-0">
+          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b shrink-0">
             <div className="flex items-center gap-2">
               <Layers className="h-4 w-4 text-black" />
               <DialogTitle className="text-sm font-semibold text-black">
@@ -487,9 +491,9 @@ export default function Settings({ settings: initialSettings }: { settings: User
       >
         <DialogContent
           showCloseButton={false}
-          className="w-full sm:max-w-md max-h-[90vh] flex flex-col rounded-t-4xl sm:rounded-2xl bg-white border border-black/10 text-black shadow-2xl p-0 gap-0 overflow-hidden"
+          className="w-full sm:max-w-md max-h-[90vh] flex flex-col rounded-t-4xl sm:rounded-2xl bg-white border text-black shadow-2xl p-0 gap-0 overflow-hidden"
         >
-          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-black/10 shrink-0">
+          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b shrink-0">
             <div className="flex items-center gap-2">
               <Sparkles className="h-3.5 w-3.5 fill-black" />
               <DialogTitle className="text-xs font-semibold text-black">
@@ -667,7 +671,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
               />
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-black/10">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t">
               <CustomButton>
                 {isSubmitting ? <Loader2 className="h-3 w-3 animate-spin" /> : <PlusIcon className="h-3 w-3" />}
                 {editingModel ? "Save Model" : "Add Model"}

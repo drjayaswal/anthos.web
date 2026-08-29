@@ -98,7 +98,6 @@ export default function MailTable({
       onRowHoldSelect(mail);
     }, HOLD_MS);
   };
-  console.log(mails)
 
   if (!loading && mails.length === 0) {
     return (
@@ -117,23 +116,24 @@ export default function MailTable({
           {activeTab === 'encrypted'
             ? 'No Encrypted Mails Loaded'
             : activeTab === 'analyzed'
-            ? 'No Prioritized Mails Yet'
-            : 'Your Inbox is Ready'}
+              ? 'No Prioritized Mails Yet'
+              : 'Your Inbox is Ready'}
         </h3>
 
         <p className="text-xs sm:text-sm text-black/60 max-w-md leading-relaxed mb-5">
           {activeTab === 'encrypted'
             ? 'Load your securely stored emails from database with AES-256 client-side decryption.'
             : activeTab === 'analyzed'
-            ? 'Select fetched emails and run AI Priority Analysis to classify topics and calculate priority scores.'
-            : 'Fetch your latest emails from Gmail to view, categorize, and run AI Priority Analysis.'}
+              ? 'Select fetched emails and run AI Priority Analysis to classify topics and calculate priority scores.'
+              : 'Fetch your latest emails from Gmail to view, categorize, and run AI Priority Analysis.'}
         </p>
 
         <div className="flex items-center gap-3 flex-wrap justify-center">
           {activeTab === 'encrypted' && onLoadDataFromDatabase ? (
             <div data-tour="load-action-btn">
               <CustomButton onClick={onLoadDataFromDatabase} color='green'>
-                <span>Load from Database</span>
+                <DatabaseBackup className="w-3.5 h-3.5" />
+                <span>Load Mails</span>
               </CustomButton>
             </div>
           ) : activeTab === 'analyzed' ? (
@@ -142,7 +142,7 @@ export default function MailTable({
             <div data-tour="fetch-action-btn">
               <CustomButton onClick={onFetch} color='red'>
                 <CloudDownload className="w-3.5 h-3.5" />
-                <span>Fetch from Gmail</span>
+                <span>Fetch Mails</span>
               </CustomButton>
             </div>
           ) : null}
@@ -155,7 +155,7 @@ export default function MailTable({
     <div className="w-full sm:m-0 mt-10 overflow-x-auto no-scrollbar">
       <Table className="w-full min-w-125 sm:min-w-full table-fixed">
         <TableHeader>
-          <TableRow className="border-b border-black/5 hover:bg-transparent">
+          <TableRow className="border-b hover:bg-transparent">
             {selectable ? (
               <TableHead className="w-10 sm:w-12 px-2 sm:px-3 text-center">
                 <div className="flex items-center justify-center">

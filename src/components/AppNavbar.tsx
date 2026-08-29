@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   HelpCircle,
   FileText,
-  ChevronRight,
   SettingsIcon,
   LockIcon,
 } from 'lucide-react';
@@ -114,8 +113,8 @@ export default function AppNavbar({
         icon: LockIcon,
       },
       {
-        href: '/terms-of-service',
-        label: 'Terms of Service',
+        href: '/terms-condition',
+        label: 'Terms & Conditions',
         description: 'Rules & terms for using Anthos',
         show: true,
         icon: FileText,
@@ -156,28 +155,19 @@ export default function AppNavbar({
 
   return (
     <>
-      <header data-tour="navbar-menu" className="fixed top-2 left-12 -translate-x-1/2 z-40">
+      <header data-tour="navbar-menu" className="fixed top-2 left-10 -translate-x-1/2 z-40">
         <button
           type="button"
           onClick={() => setMenuOpen((o) => !o)}
           aria-expanded={menuOpen}
           aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
           className={cn(
-            'group relative flex items-center justify-center gap-2 px-3 py-2 rounded-full transition-all duration-300 outline-none cursor-pointer',
-            'backdrop-blur-md'
+            'relative px-3 py-2 cursor-pointer',
           )}
         >
-          <div className="flex items-center gap-1">
-            <span className="text-xs font-semibold tracking-tight text-black transition-colors">
+            <div className="text-xs font-semibold tracking-tight text-black transition-colors">
               Menu
-            </span>
-            <ChevronRight
-              className={cn(
-                'w-4 h-4 transition-transform duration-300',
-                menuOpen ? 'rotate-90' : 'text-black -translate-x-0.5 group-hover:translate-x-0.5'
-              )}
-            />
-          </div>
+            </div>
         </button>
       </header>
 
@@ -200,13 +190,13 @@ export default function AppNavbar({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-              className="fixed top-0 left-0 bottom-0 z-70 w-80 sm:w-70 bg-white border-r border-black/10 shadow-2xl flex flex-col overflow-hidden"
+              className="fixed top-0 left-0 bottom-0 z-70 w-80 sm:w-65 bg-white shadow-2xl flex flex-col overflow-hidden"
             >
               <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
-                className="flex-1 overflow-y-auto p-3 space-y-1"
+                className="flex-1 overflow-y-auto p-3 pr-0 space-y-1"
               >
                 {visibleItems.map((item) => {
                   const active =
@@ -220,16 +210,16 @@ export default function AppNavbar({
                         href={item.href}
                         onClick={closeMenu}
                         className={cn(
-                          'group flex items-center justify-between p-2 rounded-3xl transition-all duration-200',
-                          active ? "bg-black/5" : ""
+                          'group flex items-center border border-transparent justify-between p-2 rounded-l-full transition-all duration-200',
+                          active ? "bg-black/5 border-r-0 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]" : ""
                         )}
                       >
                         <div className="flex items-center gap-3">
                           <div
                             className={cn(
-                              'p-2.5 rounded-2xl transition-colors',
+                              'p-2.5 rounded-full transition-colors',
                               active
-                                ? 'text-white bg-[#9333ea]'
+                                ? 'text-white bg-red-600'
                                 : 'text-black/50 group-hover:text-black transition-colors'
                             )}
                           >
@@ -256,7 +246,6 @@ export default function AppNavbar({
                             </div>
                           </div>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-black/50 group-hover:translate-x-1 -translate-x-1 group-hover:text-black transition-all" />
                       </Link>
                     </motion.div>
                   );

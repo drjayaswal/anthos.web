@@ -43,7 +43,7 @@ export const Toaster = () => {
                 damping: 30,
                 mass: 1
               }}
-              className="pointer-events-auto flex items-center gap-3 overflow-hidden bg-white border border-black/10 pl-4 pr-3 py-2 rounded-xl shadow-2xl min-w-70"
+              className="pointer-events-auto flex items-center gap-3 overflow-hidden bg-white border pl-4 pr-3 py-2.5 rounded-2xl shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] min-w-70"
             >
               <p className="text-black text-sm tracking-tight z-10 flex-1">
                 {t.message}

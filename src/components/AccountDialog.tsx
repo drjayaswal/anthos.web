@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useTransform, type PanInfo } from 'framer-motion';
 import {
   Dialog,
   DialogContent,
@@ -30,7 +30,7 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
   const [maxSwipe, setMaxSwipe] = useState(220);
   const x = useMotionValue(0);
 
-  const bg = useTransform(x, [0, maxSwipe || 220], ['#9333ea', '#9333ea']);
+  const bg = useTransform(x, [0, maxSwipe || 220], ['#DC2626', '#F87171']);
   const iconColor = useTransform(x, [0, maxSwipe || 220], ['#ffffff', '#ffffff']);
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
@@ -90,7 +90,7 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
                 </div>
               </div>
 
-              <div className="rounded-lg p-2.5 border border-black/5 flex items-center gap-3">
+              <div className="rounded-lg p-2.5 border flex items-center gap-3">
                 <MailIcon size={15} className="text-black/50 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-[9px] font-medium text-black/50 uppercase tracking-wide">Encrypted Mails</p>
@@ -98,7 +98,7 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
                 </div>
               </div>
 
-              <div className="rounded-lg p-2.5 border border-black/5 flex items-center gap-3">
+              <div className="rounded-lg p-2.5 border flex items-center gap-3">
                 <CalendarIcon size={15} className="text-black/50 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-[9px] font-medium text-black/50 uppercase tracking-wide">Joined</p>
@@ -115,7 +115,7 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
           )}
         </div>
 
-        <div className="p-3 border-t border-black/10">
+        <div className="p-3 border-t">
           <div
             ref={containerRef}
             className="relative w-full h-11 rounded-full overflow-hidden border shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] bg-black/5 flex items-center p-1"

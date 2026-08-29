@@ -5,33 +5,34 @@ import { Slot } from "radix-ui"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button cursor-pointer inline-flex shrink-0 items-center justify-center rounded-md! border border-transparent bg-clip-padding text-sm whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] active:not-aria-[haspopup]:translate-y-px active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button cursor-pointer inline-flex shrink-0 items-center justify-center rounded-md! border-0! bg-clip-padding text-sm whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         custom_button:
-          "bg-white text-black border border-dashed border-black/20 hover:border-transparent rounded-xl duration-200 active:scale-95 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)]",
+          "bg-white text-black border border-dashed hover:border-transparent rounded-xl duration-200 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
         custom:
-          "bg-white text-black border border-dashed border-black/20 hover:border-transparent rounded-xl duration-200 active:scale-95 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)]",
-        light: "border border-gray-200/75 bg-white hover:-translate-y-px active:translate-y-px hover:shadow-sm text-black rounded-xl",
-        classic: "bg-white hover:opacity-85 text-black active:scale-98 active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0",
-        classic_accent: "bg-white hover:bg-accent hover:text-black text-black active:scale-98 active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0",
-        accent: "bg-accent text-white hover:opacity-90 active:scale-98 active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0",
-        ghost: "bg-transparent border border-black/15 text-black active:scale-98 active:translate-y-0.5 rounded-xl",
-        no_outline: "bg-transparent text-foreground active:scale-98 active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0 shadow-none",
-        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
+          "bg-white text-black border border-dashed hover:border-transparent rounded-xl duration-200 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
+        light: "border border-gray-200/75 bg-white hover:-translate-y-px active:translate-y-0.5 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] text-black rounded-xl",
+        classic: "bg-white hover:opacity-85 text-black hover:-translate-y-px active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)]",
+        classic_accent: "bg-white hover:bg-accent hover:text-black text-black hover:-translate-y-px active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)]",
+        accent: "bg-accent text-white hover:opacity-90 hover:-translate-y-px active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.25),0_2px_4px_rgba(0,0,0,0.1)]",
+        ghost: "bg-transparent border text-black hover:-translate-y-px active:translate-y-0.5 rounded-xl shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)]",
+        no_outline: "bg-transparent text-foreground active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0 shadow-none",
+        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.3),0_2px_4px_rgba(0,0,0,0.1)] hover:-translate-y-px active:translate-y-0.5",
         outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground",
+          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground shadow-[inset_0_-3px_6px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.05)] hover:-translate-y-px active:translate-y-0.5",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground shadow-[inset_0_-3px_6px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.05)] hover:-translate-y-px active:translate-y-0.5",
         destructive:
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20",
+          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.15)] hover:-translate-y-px active:translate-y-0.5",
         link: "text-primary underline-offset-4 hover:underline shadow-none",
       },
       color: {
         purple: "hover:bg-purple-600 hover:text-white",
         red: "hover:bg-red-600 hover:text-white",
         yellow: "hover:bg-yellow-600 hover:text-white",
+        amber: "hover:bg-amber-500 hover:text-white",
         blue: "hover:bg-blue-600 hover:text-white",
         teal: "hover:bg-teal-600 hover:text-white",
         green: "hover:bg-green-600 hover:text-white",
@@ -55,7 +56,7 @@ const buttonVariants = cva(
     defaultVariants: {
       variant: "default",
       size: "default",
-      color: "purple",
+      color: "red",
     },
   }
 )
@@ -64,7 +65,9 @@ export type ButtonColor =
   | "purple"
   | "red"
   | "yellow"
+  | "amber"
   | "blue"
+  | "teal"
   | "green"
   | "black";
 
@@ -72,7 +75,7 @@ function Button({
   className,
   variant = "default",
   size = "default",
-  color = "purple",
+  color = "red",
   asChild = false,
   ...props
 }: React.ComponentProps<"button"> &
@@ -97,7 +100,7 @@ function CustomButton({
   className,
   variant = "custom_button",
   size = "default",
-  color = "purple",
+  color = "red",
   ...props
 }: React.ComponentProps<typeof Button>) {
   return (
