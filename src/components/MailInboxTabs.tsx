@@ -27,7 +27,7 @@ export default function MailInboxTabs({
   ];
 
   return (
-    <div data-tour="inbox-tabs" className="fixed sm:top-3 [html.light_&]:bg-black/5 backdrop-blur-md rounded-4xl dark:bg-white/10 top-13 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1.5 transition-all duration-300 shadow-inner">
+    <div data-tour="inbox-tabs" className="fixed sm:top-3 bg-black/5 backdrop-blur-md rounded-4xl top-13 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1.5 transition-all duration-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]">
       {tabs.map((tab) => {
         const isActive = active === tab.id;
 
@@ -37,13 +37,13 @@ export default function MailInboxTabs({
             type="button"
             onClick={() => onChange(tab.id)}
             className={cn(
-              'relative flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors duration-200 cursor-pointer outline-none select-none [html.light_&]:text-black dark:text-white'
+              'relative flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold transition-colors duration-200 cursor-pointer outline-none select-none text-black'
             )}
           >
             {isActive && (
               <motion.div
                 layoutId="active-mail-inbox-tab"
-                className="absolute inset-0 rounded-full dark:backdrop-blur-md dark:bg-white/5 [html.light_&]:bg-white shadow-sm"
+                className="absolute inset-0 rounded-full bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)]"
                 transition={{ type: 'spring', stiffness: 380, damping: 28 }}
               />
             )}
@@ -52,10 +52,7 @@ export default function MailInboxTabs({
               <span
                 className={cn(
                   'absolute top-0 right-1 z-10 h-2 w-2 -mr-1 text-[10px] font-bold rounded-full transition-colors duration-200',
-                  isActive || "animate-pulse",
-                  tab.id === 'fetched' && 'bg-blue-600',
-                  tab.id === 'analyzed' && 'bg-green-600',
-                  tab.id === 'encrypted' && 'bg-teal-600'
+                  tab.count > 0 && isActive ? 'bg-green-600' : 'bg-rose-600 animate-pulse'
                 )}
               />
             )}

@@ -15,12 +15,12 @@ export function proxy(request: NextRequest) {
     request.cookies.has('__Secure-better-auth.session_token');
 
   if (isProtectedRoute && !hasSessionToken) {
-    const connectUrl = new URL('/connect', request.url);
-    connectUrl.searchParams.set('redirect', `${pathname}${search}`);
-    return NextResponse.redirect(connectUrl);
+    const loginUrl = new URL('/', request.url);
+    loginUrl.searchParams.set('redirect', `${pathname}${search}`);
+    return NextResponse.redirect(loginUrl);
   }
 
-  if (pathname === '/connect' && hasSessionToken) {
+  if (pathname === '/' && hasSessionToken) {
     const redirectTarget = request.nextUrl.searchParams.get('redirect') || '/analyze';
     return NextResponse.redirect(new URL(redirectTarget, request.url));
   }
@@ -34,6 +34,6 @@ export const config = {
     '/profile/:path*',
     '/settings/:path*',
     '/admin/:path*',
-    '/connect',
+    '/',
   ],
 };

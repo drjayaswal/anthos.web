@@ -33,19 +33,19 @@ export default function PrivacyPolicy() {
   ];
 
   return (
-    <div className="min-h-0 text-white">
+    <div className="min-h-0 text-black">
       <main className="sm:mx-auto mx-2 max-w-4xl sm:mt-0 mt-10 px-4 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8">
-        <div className="flex flex-row items-center justify-between gap-3 border-b border-dashed border-white/15 pb-4 sm:pb-5">
+        <div className="flex flex-row items-center justify-between gap-3 border-b border-dashed border-black/15 pb-4 sm:pb-5">
           <div className="space-y-0.5 min-w-0">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center text-white shrink-0">
+              <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center text-black shrink-0">
                 <Lock className="h-5 w-5 sm:h-6 sm:w-6" />
               </div>
-              <h1 className="text-lg font-semibold tracking-tight text-white sm:text-2xl truncate">
+              <h1 className="text-lg font-semibold tracking-tight text-black sm:text-2xl truncate">
                 Privacy Policy
               </h1>
             </div>
-            <p className="text-xs text-white/50 sm:text-sm truncate">
+            <p className="text-xs text-black/50 sm:text-sm truncate">
               Our data protection practices, encryption guarantees, and privacy commitments.
             </p>
           </div>
@@ -59,12 +59,12 @@ export default function PrivacyPolicy() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: idx * 0.04 }}
-                className="text-white space-y-1.5"
+                className="text-black space-y-1.5"
               >
-                <h2 className="text-xs sm:text-sm font-semibold text-white">
+                <h2 className="text-xs sm:text-sm font-semibold text-black">
                   {section.title}
                 </h2>
-                <p className="text-[11px] sm:text-xs text-white/60 leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-black/60 leading-relaxed">
                   {section.content}
                 </p>
               </motion.div>

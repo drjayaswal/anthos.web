@@ -13,8 +13,6 @@ import {
   ChevronRight,
   SettingsIcon,
   LockIcon,
-  Sun,
-  Moon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -48,35 +46,7 @@ export default function AppNavbar({
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const isDesktop = useIsDesktop();
-
-  useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    const isLight = saved === 'light' || document.documentElement.classList.contains('light');
-    setTheme(isLight ? 'light' : 'dark');
-    if (isLight) {
-      document.documentElement.classList.add('light');
-      document.documentElement.setAttribute('data-theme', 'light');
-      document.body.classList.add('light');
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    if (nextTheme === 'light') {
-      document.documentElement.classList.add('light');
-      document.documentElement.setAttribute('data-theme', 'light');
-      document.body.classList.add('light');
-      localStorage.setItem('theme', 'light');
-    } else {
-      document.documentElement.classList.remove('light');
-      document.documentElement.removeAttribute('data-theme');
-      document.body.classList.remove('light');
-      localStorage.setItem('theme', 'dark');
-    }
-  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -157,8 +127,6 @@ export default function AppNavbar({
   const isHiddenRoute =
     !authenticated ||
     pathname === '/' ||
-    pathname === '/connect' ||
-    pathname?.startsWith('/connect') ||
     pathname === '/thank-you' ||
     pathname?.startsWith('/thank-you');
 
@@ -200,13 +168,13 @@ export default function AppNavbar({
           )}
         >
           <div className="flex items-center gap-1">
-            <span className="text-xs font-semibold tracking-tight text-white [html.light_&]:text-black transition-colors">
+            <span className="text-xs font-semibold tracking-tight text-black transition-colors">
               Menu
             </span>
             <ChevronRight
               className={cn(
                 'w-4 h-4 transition-transform duration-300',
-                menuOpen ? 'rotate-90' : 'text-white [html.light_&]:text-black -translate-x-0.5 group-hover:translate-x-0.5'
+                menuOpen ? 'rotate-90' : 'text-black -translate-x-0.5 group-hover:translate-x-0.5'
               )}
             />
           </div>
@@ -232,7 +200,7 @@ export default function AppNavbar({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-              className="fixed top-0 left-0 bottom-0 z-70 w-80 sm:w-70 bg-[#2c0237] border-r border-white/10 shadow-2xl flex flex-col overflow-hidden"
+              className="fixed top-0 left-0 bottom-0 z-70 w-80 sm:w-70 bg-white border-r border-black/10 shadow-2xl flex flex-col overflow-hidden"
             >
               <motion.div
                 variants={containerVariants}
@@ -253,7 +221,7 @@ export default function AppNavbar({
                         onClick={closeMenu}
                         className={cn(
                           'group flex items-center justify-between p-2 rounded-3xl transition-all duration-200',
-                          active ? "bg-white/10" : ""
+                          active ? "bg-black/5" : ""
                         )}
                       >
                         <div className="flex items-center gap-3">
@@ -261,82 +229,39 @@ export default function AppNavbar({
                             className={cn(
                               'p-2.5 rounded-2xl transition-colors',
                               active
-                                ? 'text-white bg-white/10'
-                                : 'text-white/50 group-hover:text-white transition-colors'
+                                ? 'text-white bg-[#9333ea]'
+                                : 'text-black/50 group-hover:text-black transition-colors'
                             )}
                           >
                             <Icon className="w-5 h-5" />
                           </div>
                           <div>
                             <div className={cn(
-                              "font-medium text-sm text-white/50 group-hover:text-white transition-colors",
+                              "font-medium text-sm transition-colors",
                               active
-                                ? 'text-white'
-                                : 'text-white/50 group-hover:text-white transition-colors'
+                                ? 'text-black'
+                                : 'text-black/50 group-hover:text-black transition-colors'
                             )}
                             >
                               {item.label}
                             </div>
                             <div className={cn(
-                              "font-medium text-[9px] text-white/50 group-hover:text-white transition-colors",
+                              "font-medium text-[9px] transition-colors",
                               active
-                                ? 'text-white'
-                                : 'text-white/50 group-hover:text-white transition-colors'
+                                ? 'text-black/70'
+                                : 'text-black/50 group-hover:text-black transition-colors'
                             )}
                             >
                               {item.description}
                             </div>
                           </div>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-white/50 group-hover:translate-x-1 -translate-x-1 group-hover:text-white transition-all" />
+                        <ChevronRight className="w-4 h-4 text-black/50 group-hover:translate-x-1 -translate-x-1 group-hover:text-black transition-all" />
                       </Link>
                     </motion.div>
                   );
                 })}
               </motion.div>
-
-              <div className="p-3 border-t border-dashed border-white/20 shrink-0">
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="w-full group flex items-center justify-between p-2 cursor-pointer outline-none"
-                  aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-                >
-                  <div className="flex items-center gap-3">
-                    <motion.div
-                      key={theme}
-                      initial={{ scale: 0.8, rotate: -20 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                      className="p-2 text-white/70 group-hover:text-white transition-colors"
-                    >
-                      {theme === 'light' ? <Sun className="w-4 h-4 text-black" /> : <Moon className="w-4 h-4 text-purple-300" />}
-                    </motion.div>
-                    <div className="text-left">
-                      <div className="text-xs font-semibold text-white/90 group-hover:text-white transition-colors">
-                        {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
-                      </div>
-                      <div className="text-[9px] text-white/40 group-hover:text-white/60 transition-colors">
-                        {theme === 'light' ? 'Switch to Dark' : 'Switch to Light'}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="relative w-12 h-7 p-0.5 rounded-full dark:bg-white/10 shadow-inner [html.light_&]:bg-black/3 border border-white/10 [html.light_&]:border-black/10 flex items-center shrink-0">
-                    <motion.div
-                      className="w-5.75 h-5.75 rounded-full border border-gray-200 bg-white shadow-md flex items-center justify-center text-black"
-                      animate={{
-                        x: theme === 'light' ? 20 : 0,
-                      }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 500,
-                        damping: 30,
-                      }}
-                    />
-                  </div>
-                </button>
-              </div>
             </motion.div>
           </>
         )}

@@ -39,11 +39,11 @@ function Field({
 }) {
   return (
     <div className="space-y-0.5 py-2.5 border-0 sm:py-3 flex flex-col w-full">
-      <dt className="text-[10px] font-medium uppercase tracking-wider text-white/50 sm:text-xs">
+      <dt className="text-[10px] font-medium uppercase tracking-wider text-black/50 sm:text-xs">
         {label}
       </dt>
       <dd
-        className={`text-xs text-white/50 sm:text-sm ${mono ? "break-all font-mono text-[11px] sm:text-xs" : "wrap-break-word"}`}
+        className={`text-xs text-black/70 sm:text-sm ${mono ? "break-all font-mono text-[11px] sm:text-xs" : "wrap-break-word"}`}
       >
         {value}
       </dd>
@@ -57,20 +57,20 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
     : [];
 
   return (
-    <div className="min-h-0 text-white sm:mt-0 mt-10 mx-2">
+    <div className="min-h-0 text-black sm:mt-0 mt-10 mx-2">
       <main className="mx-auto max-w-2xl px-3 py-4 sm:p-6">
         <div className="mb-4 space-y-1 sm:mb-6">
-          <h1 className="text-lg font-semibold tracking-tight sm:text-xl">
+          <h1 className="text-lg font-semibold tracking-tight sm:text-xl text-black">
             Your profile
           </h1>
-          <p className="text-xs text-white/50 sm:text-sm">
-            Account details from your sign-in. This is read-only information and can't be edited.
+          <p className="text-xs text-black/50 sm:text-sm">
+            Account details from your sign-in. This is read-only information and cannot be edited.
           </p>
         </div>
 
-        <section className="overflow-hidden rounded-4xl bg-white [html.light_&]:border dark:border-0 dark:bg-white/10 shadow-sm">
+        <section className="overflow-hidden rounded-4xl bg-white border border-black/10 shadow-sm">
           <div className="flex items-center gap-3 border-b border-black/10 p-3 sm:gap-4 sm:p-4">
-            <div className={profile.emailVerified ? "p-0.5 rounded-full ring-2 ring-white/30 shrink-0" : "shrink-0"}>
+            <div className={profile.emailVerified ? "p-0.5 rounded-full ring-2 ring-black/20 shrink-0" : "shrink-0"}>
               {profile.image ? (
                 <Image
                   src={profile.image}
@@ -80,19 +80,18 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
                   className="h-11 w-11 rounded-full object-cover sm:h-12 sm:w-12"
                 />
               ) : (
-                <div className="flex h-11 w-11 items-center justify-center rounded-full text-white/40 sm:h-12 sm:w-12">
-                  <UserIcon className="h-5 w-5 text-white sm:h-6 sm:w-6" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-full text-black/40 sm:h-12 sm:w-12">
+                  <UserIcon className="h-5 w-5 text-black sm:h-6 sm:w-6" />
                 </div>
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium sm:text-base">
+              <p className="truncate text-sm font-medium sm:text-base text-black">
                 {profile.name}
               </p>
-              <p className="truncate text-xs text-white/50 sm:text-sm">
+              <p className="truncate text-xs text-black/50 sm:text-sm">
                 {profile.email}
               </p>
-
             </div>
           </div>
 
@@ -117,10 +116,10 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
           </dl>
         </section>
 
-        <section className="mt-3 overflow-hidden rounded-2xl [html.light_&]:border bg-white dark:bg-white/10 shadow-sm sm:mt-4">
-          <div className="border-b border-white/10 px-3 py-2 sm:px-4 sm:py-2.5">
-            <h2 className="flex items-center gap-1.5 text-xs font-medium sm:text-sm">
-              <ShieldIcon className="h-3.5 w-3.5 text-white/50" />
+        <section className="mt-3 overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm sm:mt-4">
+          <div className="border-b border-black/10 px-3 py-2 sm:px-4 sm:py-2.5">
+            <h2 className="flex items-center gap-1.5 text-xs font-medium sm:text-sm text-black">
+              <ShieldIcon className="h-3.5 w-3.5 text-black/50" />
               Sign-in &amp; access
             </h2>
           </div>
@@ -152,8 +151,8 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
                 mono
               />
             )}
-            <div className="col-span-1 sm:col-span-2 space-y-1.5 border-b border-white/10 py-2.5 last:border-0 sm:py-3">
-              <dt className="text-[10px] font-medium uppercase tracking-wider text-white/50 sm:text-xs">
+            <div className="col-span-1 sm:col-span-2 space-y-1.5 border-b border-black/10 py-2.5 last:border-0 sm:py-3">
+              <dt className="text-[10px] font-medium uppercase tracking-wider text-black/50 sm:text-xs">
                 Permissions
               </dt>
               <dd className="flex flex-wrap gap-1">
@@ -164,26 +163,26 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
                       href={`https://www.google.com/search?q=${scope}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-block max-w-full truncate rounded-md bg-white/10 px-1.5 py-0.5 font-mono text-[9px] text-white/70 hover:text-white transition-colors sm:text-[10px]"
+                      className="inline-block max-w-full truncate rounded-md bg-black/5 px-1.5 py-0.5 font-mono text-[9px] text-black/70 hover:text-black transition-colors sm:text-[10px]"
                     >
                       {scope}
                     </a>
                   ))
                 ) : (
-                  <span className="text-xs text-white/50 sm:text-sm">—</span>
+                  <span className="text-xs text-black/50 sm:text-sm">—</span>
                 )}
               </dd>
             </div>
           </dl>
         </section>
 
-        <section className="mt-3 overflow-hidden rounded-2xl bg-white [html.light_&]:border dark:bg-white/10 shadow-sm sm:mt-4">
-          <div className="border-b border-white/10 px-3 py-2 sm:px-4 sm:py-2.5">
-            <h2 className="text-xs font-medium sm:text-sm">Active Sessions</h2>
+        <section className="mt-3 overflow-hidden rounded-2xl bg-white border border-black/10 shadow-sm sm:mt-4">
+          <div className="border-b border-black/10 px-3 py-2 sm:px-4 sm:py-2.5">
+            <h2 className="text-xs font-medium sm:text-sm text-black">Active Sessions</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[10px] sm:text-xs">
-              <thead className="border-b border-white/10 uppercase text-white/50">
+              <thead className="border-b border-black/10 uppercase text-black/50">
                 <tr>
                   <th className="px-3 py-2 font-medium">Session ID</th>
                   <th className="px-3 py-2 font-medium">IP Address</th>
@@ -191,17 +190,17 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
                   <th className="px-3 py-2 font-medium">Expires</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/10">
+              <tbody className="divide-y divide-black/10">
                 {profile.sessions.map((sess) => (
-                  <tr key={sess.id} className="hover:bg-white/5 transition-colors">
+                  <tr key={sess.id} className="hover:bg-black/5 transition-colors">
                     <td
-                      className="px-3 py-2 font-mono text-white/60 cursor-pointer hover:text-white transition-colors"
+                      className="px-3 py-2 font-mono text-black/60 cursor-pointer hover:text-black transition-colors"
                       onClick={() => navigator.clipboard.writeText(sess.id)}
                     >
                       {sess.id.slice(0, 8)}...{sess.id.slice(-4)}
                     </td>
                     <td
-                      className="px-3 py-2 font-mono text-white/60 cursor-pointer hover:text-white transition-colors"
+                      className="px-3 py-2 font-mono text-black/60 cursor-pointer hover:text-black transition-colors"
                       onClick={() =>
                         sess.ipAddress &&
                         navigator.clipboard.writeText(sess.ipAddress)
@@ -209,10 +208,10 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
                     >
                       {sess.ipAddress ? `${sess.ipAddress.slice(0, 8)}...${sess.ipAddress.slice(-4)}` : "—"}
                     </td>
-                    <td className="px-3 py-2 text-white/50">
+                    <td className="px-3 py-2 text-black/50">
                       {parseUserAgent(sess.userAgent || "").split(" ")[0] || "—"}
                     </td>
-                    <td className="px-3 py-2 text-white/50">
+                    <td className="px-3 py-2 text-black/50">
                       {new Date(sess.expiresAt).toLocaleDateString()}
                     </td>
                   </tr>
@@ -222,7 +221,7 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
           </div>
         </section>
 
-        <p className="mt-4 flex items-start gap-2 text-[10px] leading-relaxed text-white/50 sm:text-xs">
+        <p className="mt-4 flex items-start gap-2 text-[10px] leading-relaxed text-black/50 sm:text-xs">
           Profile data is tied to your Anthos account and Anthos records.
         </p>
       </main>

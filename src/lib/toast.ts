@@ -1,6 +1,6 @@
-type ToastType = 'success' | 'error' | 'info' | 'warning' | 'loading';
+export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'loading';
 
-interface ToastOptions {
+export interface ToastOptions {
   id: number;
   type: ToastType;
   message: string;

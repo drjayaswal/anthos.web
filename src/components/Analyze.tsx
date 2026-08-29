@@ -42,7 +42,7 @@ export default function Analyze({
   const [appLoading, setAppLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<MailInboxTab>('fetched');
   const [fetchedMails, setFetchedMails] = useState<Mail[]>([]);
-  const [analyzedMails, setAnalyzedMails] = useState<Mail[]>([]);
+  const [analyzedMails] = useState<Mail[]>([]);
   const [categories, setCategories] = useState<{ name: string }[]>([]);
   const [selectedFetchedIds, setSelectedFetchedIds] = useState<Set<string>>(new Set());
   const [selectedAnalyzedIds, setSelectedAnalyzedIds] = useState<Set<string>>(new Set());
@@ -54,7 +54,6 @@ export default function Analyze({
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
   const [analyzeDialogOpen, setAnalyzeDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [loadingText, setLoadingText] = useState<string>('');
   const [detailMail, setDetailMail] = useState<Mail | null>(null);
   const [encryptedMails, setEncryptedMails] = useState<Mail[]>([]);
   const router = useRouter();
@@ -73,7 +72,6 @@ export default function Analyze({
   const handleFetchFromCloud = (opts: FetchOptions) => {
     void (async () => {
       setLoading(true);
-      setLoadingText('Fetching latest emails from Gmail...');
       setActiveTab('fetched');
       try {
         const result = await fetchMailsAction(opts);
@@ -85,19 +83,16 @@ export default function Analyze({
         toast.success(`${result.mails.length > 0 ? result.mails.length : 'No'} Messages Fetched`);
       } finally {
         setLoading(false);
-        setLoadingText('');
       }
     })();
   };
 
   const handleSignOut = async () => {
     setLoading(true);
-    setLoadingText('Signing out...');
     setAnalyzing(true);
     await new Promise((r) => setTimeout(r, 400));
     await authClient.signOut();
     setLoading(false);
-    setLoadingText('');
     setAccountDialogOpen(false);
     setAnalyzing(false);
     router.push("/thank-you");
@@ -138,7 +133,6 @@ export default function Analyze({
   const handleLoadFromDatabase = (opts: LoadOptions) => {
     void (async () => {
       setLoading(true);
-      setLoadingText('Loading saved mails from Database...');
       setActiveTab('encrypted');
       try {
         const result = await loadMailsFromDatabaseAction(opts);
@@ -150,7 +144,6 @@ export default function Analyze({
         toast.success(`${result.mails.length > 0 ? result.mails.length : 'No'} Messages Loaded`);
       } finally {
         setLoading(false);
-        setLoadingText('');
       }
     })();
   };
@@ -220,7 +213,6 @@ export default function Analyze({
   const handleStoreSingleEncrypted = (mail: Mail) => {
     void (async () => {
       setLoading(true);
-      setLoadingText('Encrypting & storing mail in database...');
       try {
         const res = await syncEncryptedMailsToDb([mail]);
         if (res.ok) {
@@ -232,7 +224,6 @@ export default function Analyze({
         toast.error('Failed to store encrypted mail');
       } finally {
         setLoading(false);
-        setLoadingText('');
       }
     })();
   };
@@ -276,9 +267,9 @@ export default function Analyze({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
               transition={{ duration: 0.2 }}
-              className="flex items-center justify-center gap-2.5 [html.light_&]:text-black dark:text-white text-xs sm:text-sm font-medium mt-4 mb-2 sm:mt-6 sm:mb-3 py-2"
+              className="flex items-center justify-center gap-2.5 text-black text-xs sm:text-sm font-medium mt-4 mb-2 sm:mt-6 sm:mb-3 py-2"
             >
-              <LoaderCircleIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 animate-spin [html.light_&]:text-black dark:text-white shrink-0" />
+              <LoaderCircleIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 animate-spin text-black shrink-0" />
             </motion.div>
           )}
         </AnimatePresence>

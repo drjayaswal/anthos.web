@@ -1,7 +1,6 @@
 'use client';
 
 import { useRef } from 'react';
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -38,10 +37,10 @@ function FlagRow({
   tip?: string;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-lg bg-white/5 [html.light_&]:bg-black/5 p-2 border border-white/5 [html.light_&]:border-black/5">
+    <div className="flex items-center justify-between rounded-lg p-2 border">
       <div className="flex items-center space-x-2">
-        <Checkbox id={id} checked={checked} onCheckedChange={(c) => onCheckedChange(c === true)} className="[html.light_&]:data-checked:border-green-600"/>
-        <Label htmlFor={id} className="cursor-pointer text-xs font-medium text-white select-none">
+        <Checkbox id={id} checked={checked} onCheckedChange={(c) => onCheckedChange(c === true)} />
+        <Label htmlFor={id} className="cursor-pointer text-xs font-medium text-black select-none">
           {label}
         </Label>
       </div>
@@ -49,7 +48,7 @@ function FlagRow({
         <TooltipProvider>
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
-              <Info className="h-3 w-3 cursor-help text-white/40 hover:text-white/80 transition-colors" strokeWidth={2.5} />
+              <Info className="h-3 w-3 cursor-help text-black/40 hover:text-black/80 transition-colors" strokeWidth={2.5} />
             </TooltipTrigger>
             <TooltipContent side="top" className="max-w-70 border-border bg-blue-600 text-[10px] text-white">
               <p>{tip}</p>
@@ -127,7 +126,7 @@ function Counter({
     <div className="flex items-center gap-2">
       <button
         type="button"
-        className="h-6 w-6 rounded-md bg-white/10 [html.light_&]:bg-black/5 hover:bg-white/20 [html.light_&]:hover:bg-black/10 text-white flex items-center justify-center cursor-pointer transition disabled:opacity-30 disabled:pointer-events-none select-none"
+        className="h-6 w-6 rounded-md bg-black/5 hover:bg-black/10 text-black flex items-center justify-center cursor-pointer transition disabled:opacity-30 disabled:pointer-events-none select-none"
         onMouseDown={handleMinusStart}
         onTouchStart={handleMinusStart}
         onMouseUp={handleMinusEnd}
@@ -137,10 +136,10 @@ function Counter({
       >
         <Minus className="h-3 w-3" />
       </button>
-      <span className="w-5 text-center font-mono text-xs font-semibold text-white select-none">{value}</span>
+      <span className="w-5 text-center font-mono text-xs font-semibold text-black select-none">{value}</span>
       <button
         type="button"
-        className="h-6 w-6 rounded-md bg-white/10 [html.light_&]:bg-black/5 hover:bg-white/20 [html.light_&]:hover:bg-black/10 text-white flex items-center justify-center cursor-pointer transition disabled:opacity-30 disabled:pointer-events-none select-none"
+        className="h-6 w-6 rounded-md bg-black/5 hover:bg-black/10 text-black flex items-center justify-center cursor-pointer transition disabled:opacity-30 disabled:pointer-events-none select-none"
         onMouseDown={handlePlusStart}
         onTouchStart={handlePlusStart}
         onMouseUp={handlePlusEnd}
@@ -158,31 +157,31 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
   return (
     <div className="space-y-3">
       <div className="space-y-2">
-        <div className="rounded-lg bg-white/5 [html.light_&]:bg-black/5 px-3 py-2 border border-white/5 [html.light_&]:border-black/5 flex items-center justify-between">
-          <Label className="text-xs font-medium text-white/80">Emails Count</Label>
+        <div className="rounded-lg px-3 py-2 border flex items-center justify-between">
+          <Label className="text-xs font-medium text-black/80">Emails Count</Label>
           <Counter value={p.count} min={1} max={10} onChange={p.setCount} />
         </div>
 
-        <div className="rounded-lg bg-white/5 [html.light_&]:bg-black/5 px-3 py-2 border border-white/5 [html.light_&]:border-black/5 flex items-center justify-between">
-          <Label className="text-xs font-medium text-white/80">Lookback Days</Label>
+        <div className="rounded-lg px-3 py-2 border flex items-center justify-between">
+          <Label className="text-xs font-medium text-black/80">Lookback Days</Label>
           <Counter value={p.days} min={1} max={7} onChange={p.setDays} />
         </div>
       </div>
 
       <div className="space-y-1.5 pt-1">
-        <label className="block text-[10px] font-medium text-white/60 uppercase tracking-wide">
+        <label className="block text-[10px] font-medium text-black/60 uppercase tracking-wide">
           Status &amp; Flags
         </label>
         <div className="grid grid-cols-2 gap-2">
-          <div onClick={() => p.setUnread(true)} className="flex items-center space-x-2 rounded-lg bg-white/5 [html.light_&]:bg-black/5 p-2 border border-white/5 [html.light_&]:border-black/5">
-            <Checkbox id="unread" checked={p.unread} onCheckedChange={() => p.setUnread(true)} className="[html.light_&]:data-checked:border-green-600"/>
-            <Label htmlFor="unread" className="cursor-pointer text-xs font-medium text-white select-none">
+          <div onClick={() => p.setUnread(true)} className="flex items-center space-x-2 rounded-lg p-2 border">
+            <Checkbox id="unread" checked={p.unread} onCheckedChange={() => p.setUnread(true)} />
+            <Label htmlFor="unread" className="cursor-pointer text-xs font-medium text-black select-none">
               Unread
             </Label>
           </div>
-          <div onClick={() => p.setUnread(false)} className="flex items-center space-x-2 rounded-lg bg-white/5 [html.light_&]:bg-black/5 p-2 border border-white/5 [html.light_&]:border-black/5">
-            <Checkbox id="read" checked={!p.unread} onCheckedChange={() => p.setUnread(false)} className="[html.light_&]:data-checked:border-green-600"/>
-            <Label htmlFor="read" className="cursor-pointer text-xs font-medium text-white select-none">
+          <div onClick={() => p.setUnread(false)} className="flex items-center space-x-2 rounded-lg p-2 border">
+            <Checkbox id="read" checked={!p.unread} onCheckedChange={() => p.setUnread(false)} />
+            <Label htmlFor="read" className="cursor-pointer text-xs font-medium text-black select-none">
               Read
             </Label>
           </div>
@@ -197,8 +196,8 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
 export function DatabaseQueryFields(p: DatabaseQueryFieldsProps) {
   return (
     <div className="space-y-3">
-      <div className="rounded-lg bg-white/5 [html.light_&]:bg-black/5 px-3 py-2 border border-white/5 [html.light_&]:border-black/5 flex items-center justify-between">
-        <Label className="text-xs font-medium text-white/80">Emails Count</Label>
+      <div className="rounded-lg px-3 py-2 border flex items-center justify-between">
+        <Label className="text-xs font-medium text-black/80">Emails Count</Label>
         <Counter value={p.count} min={1} max={10} onChange={p.setCount} />
       </div>
     </div>

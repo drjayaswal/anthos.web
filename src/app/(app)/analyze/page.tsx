@@ -5,7 +5,7 @@ import Analyze from "@/components/Analyze";
 export default async function AnalyzePage() {
   const session = await getSession();
   if (!session?.user?.id) {
-    redirect("/connect");
+    redirect("/");
   }
   return (
     <Analyze

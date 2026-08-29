@@ -1,19 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  RefreshCw,
-  User,
-  DatabaseBackupIcon,
-  CloudDownloadIcon,
-  Sparkles,
-} from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
 
 interface HeaderProps {
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
+  searchTerm?: string;
+  setSearchTerm?: (term: string) => void;
   analyzing: boolean;
   loading: boolean;
   onAnalyze: () => void;
@@ -33,11 +25,13 @@ export default function Header({
   analyzeDisabled = false,
   onAccount,
   onFetch,
-  sessionUserEmail,
   hasCategories = true,
 }: HeaderProps) {
   const [optionsOpen, setOptionsOpen] = useState(false);
-  const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
+
+  const closeOptions = () => {
+    setOptionsOpen(false);
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -60,11 +54,6 @@ export default function Header({
     };
   }, [optionsOpen]);
 
-  const closeOptions = () => {
-    setOptionsOpen(false);
-    setHoveredTooltip(null);
-  };
-
   return (
     <>
       <header className="flex w-full items-center justify-between gap-3">
@@ -75,15 +64,9 @@ export default function Header({
               onClick={() => setOptionsOpen(true)}
               aria-expanded={optionsOpen}
               aria-label="Open options menu"
-              className={cn(
-                'group relative flex items-center justify-center gap-2 px-3 py-2 rounded-full transition-all duration-300 outline-none cursor-pointer'
-              )}
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black transition-all duration-300 outline-none cursor-pointer select-none"
             >
-              <div className="flex items-center gap-1">
-                <span className="text-xs font-semibold tracking-tight text-white [html.light_&]:text-black transition-colors">
-                  Options
-                </span>
-              </div>
+              Options
             </button>
           </div>
         )}
@@ -104,107 +87,68 @@ export default function Header({
 
             <motion.div
               key="options-dock"
-              initial={{ opacity: 0, scale: 0.8, x: 20 }}
-              animate={{ opacity: 1, scale: 1, x: 0 }}
-              exit={{ opacity: 0, scale: 0.8, x: 20 }}
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 40 }}
               transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-              className="fixed top-2 right-2 z-50 backdrop-blur-md rounded-3xl [html.light_&]:bg-black/5 dark:bg-white/5 flex items-center gap-2 px-2 py-1.25"
-              onMouseLeave={() => setHoveredTooltip(null)}
+              className="fixed top-2 right-2 z-50 bg-black/5 backdrop-blur-md rounded-4xl flex items-center gap-1 p-1.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]"
             >
               {hasCategories && (
-                <div className="relative">
-                  <motion.button
-                    type="button"
-                    whileHover={{ scale: 1.2, y: -2 }}
-                    whileTap={{ scale: 0.92 }}
-                    onClick={() => {
-                      onAnalyze();
-                      closeOptions();
-                    }}
-                    onMouseEnter={() => setHoveredTooltip('Analyze Mails')}
-                    onMouseLeave={() => setHoveredTooltip(null)}
-                    disabled={analyzing || analyzeDisabled}
-                    className="flex items-center justify-center w-10 h-10 rounded-2xl [html.light_&]:text-black dark:text-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
-                    aria-label="Analyze Mails"
-                  >
-                    <Sparkles className="w-5 h-5" />
-                  </motion.button>
-                </div>
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    onAnalyze();
+                    closeOptions();
+                  }}
+                  disabled={analyzing || analyzeDisabled}
+                  className="px-3.5 py-1.5 disabled:cursor-not-allowed rounded-full text-xs font-semibold text-black bg-white border border-black/10 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40"
+                  aria-label="Analyze Mails"
+                >
+                  {analyzing ? 'Analyzing…' : 'Analysis'}
+                </motion.button>
               )}
 
-              <div className="relative">
-                <motion.button
-                  type="button"
-                  whileHover={{ scale: 1.2, y: -2 }}
-                  whileTap={{ scale: 0.92 }}
-                  onClick={() => {
-                    onFetch();
-                    closeOptions();
-                  }}
-                  onMouseEnter={() => setHoveredTooltip(loading ? 'Fetching...' : 'Fetch from Gmail')}
-                  onMouseLeave={() => setHoveredTooltip(null)}
-                  disabled={loading}
-                  className="flex items-center justify-center w-10 h-10 rounded-2xl [html.light_&]:text-black dark:text-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
-                  aria-label="Fetch from Gmail"
-                >
-                  {loading ? (
-                    <RefreshCw className="w-5 h-5 animate-spin text-[#2c0237]" />
-                  ) : (
-                    <CloudDownloadIcon className="w-5 h-5" />
-                  )}
-                </motion.button>
-              </div>
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  onFetch();
+                  closeOptions();
+                }}
+                disabled={loading}
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-white border border-black/10 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
+                aria-label="Fetch from Gmail"
+              >
+                {loading ? 'Fetching…' : 'Gmail'}
+              </motion.button>
 
-              <div className="relative">
-                <motion.button
-                  type="button"
-                  whileHover={{ scale: 1.2, y: -2 }}
-                  whileTap={{ scale: 0.92 }}
-                  onClick={() => {
-                    onLoadDataFromDatabase();
-                    closeOptions();
-                  }}
-                  onMouseEnter={() => setHoveredTooltip(loading ? 'Loading...' : 'Load Database')}
-                  onMouseLeave={() => setHoveredTooltip(null)}
-                  disabled={loading}
-                  className="flex items-center justify-center w-10 h-10 rounded-2xl [html.light_&]:text-black dark:text-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
-                  aria-label="Load from Database"
-                >
-                  <DatabaseBackupIcon className={`w-5 h-5 ${loading ? 'animate-pulse' : ''}`} />
-                </motion.button>
-              </div>
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  onLoadDataFromDatabase();
+                  closeOptions();
+                }}
+                disabled={loading}
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-white border border-black/10 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
+                aria-label="Load from Database"
+              >
+                {loading ? 'Loading…' : 'Database'}
+              </motion.button>
 
-              <div className="relative">
-                <motion.button
-                  type="button"
-                  whileHover={{ scale: 1.2, y: -2 }}
-                  whileTap={{ scale: 0.92 }}
-                  onClick={() => {
-                    onAccount();
-                    closeOptions();
-                  }}
-                  onMouseEnter={() => setHoveredTooltip('Account')}
-                  onMouseLeave={() => setHoveredTooltip(null)}
-                  className="flex items-center justify-center w-10 h-10 rounded-2xl [html.light_&]:text-black dark:text-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none transition-colors"
-                  aria-label="Account Settings"
-                >
-                  <User className="w-5 h-5" />
-                </motion.button>
-              </div>
-
-              <AnimatePresence>
-                {hoveredTooltip && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute top-14 right-2 pointer-events-none z-60 whitespace-nowrap bg-blue-600 text-white text-[11px] font-medium px-2.5 py-1 rounded-lg"
-                  >
-                    {hoveredTooltip}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  onAccount();
+                  closeOptions();
+                }}
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-white border border-black/10 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
+                aria-label="Account Settings"
+              >
+                Account
+              </motion.button>
             </motion.div>
           </>
         )}

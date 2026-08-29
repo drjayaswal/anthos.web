@@ -17,17 +17,15 @@ export const metadata: Metadata = {
     icon: [
       { url: "/icons/favicon.ico" },
       { url: "/icons/favicon.svg", type: "image/svg+xml" },
-      { url: "/icons/favicon-96x96.png", type: "image/png", sizes: "96x96" },
+      { url: "/icons/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      { url: "/icons/favicon-32x32.png", type: "image/png", sizes: "32x32" },
     ],
     shortcut: "/icons/favicon.ico",
-    apple: "/icons/apple-touch-icon.png",
-    other: [
-      {
-        rel: "manifest",
-        url: "/icons/site.webmanifest",
-      },
+    apple: [
+      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
   },
+  manifest: "/icons/site.webmanifest",
 
   openGraph: {
     title: "Anthos",
@@ -50,21 +48,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                if (localStorage.getItem('theme') === 'light') {
-                  document.documentElement.classList.add('light');
-                } else {
-                  document.documentElement.classList.remove('light');
-                }
-              } catch (_) {}
-            `,
-          }}
-        />
-      </head>
       <body className="flex flex-col select-none">
         <Toaster />
         <Suspense fallback={null}>

@@ -9,7 +9,6 @@ import {
   CloudDownload,
   DatabaseBackup,
   Inbox,
-  HelpCircle,
 } from 'lucide-react';
 import {
   Table,
@@ -61,7 +60,6 @@ export default function MailTable({
   activeTab = 'fetched',
   onFetch,
   onLoadDataFromDatabase,
-  onGoToFetched,
 }: MailTableProps) {
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdFired = useRef(false);
@@ -105,17 +103,17 @@ export default function MailTable({
   if (!loading && mails.length === 0) {
     return (
       <div data-tour="empty-state-card" className="w-full flex flex-col items-center justify-center py-12 sm:py-16 px-4 text-center">
-        <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center mb-4 text-white/70 [html.light_&]:text-black/70">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center mb-4 text-black/70">
           {activeTab === 'encrypted' ? (
             <DatabaseBackup className="w-6 h-6 sm:w-10 sm:h-10" />
           ) : activeTab === 'analyzed' ? (
-            <Sparkles className="w-6 h-6 sm:w-10 sm:h-10" />
+            <Sparkles className="w-6 h-6 sm:w-10 fill-border sm:h-10" />
           ) : (
             <Inbox className="w-6 h-6 sm:w-10 sm:h-10" />
           )}
         </div>
 
-        <h3 className="text-base sm:text-lg font-bold text-white [html.light_&]:text-black tracking-tight mb-1.5">
+        <h3 className="text-base sm:text-lg font-bold text-black tracking-tight mb-1.5">
           {activeTab === 'encrypted'
             ? 'No Encrypted Mails Loaded'
             : activeTab === 'analyzed'
@@ -123,7 +121,7 @@ export default function MailTable({
             : 'Your Inbox is Ready'}
         </h3>
 
-        <p className="text-xs sm:text-sm text-white/60 [html.light_&]:text-black/60 max-w-md leading-relaxed mb-5">
+        <p className="text-xs sm:text-sm text-black/60 max-w-md leading-relaxed mb-5">
           {activeTab === 'encrypted'
             ? 'Load your securely stored emails from database with AES-256 client-side decryption.'
             : activeTab === 'analyzed'
@@ -134,19 +132,15 @@ export default function MailTable({
         <div className="flex items-center gap-3 flex-wrap justify-center">
           {activeTab === 'encrypted' && onLoadDataFromDatabase ? (
             <div data-tour="load-action-btn">
-              <CustomButton onClick={onLoadDataFromDatabase}>
-                <DatabaseBackup className="w-3.5 h-3.5" />
+              <CustomButton onClick={onLoadDataFromDatabase} color='green'>
                 <span>Load from Database</span>
               </CustomButton>
             </div>
           ) : activeTab === 'analyzed' ? (
-            <CustomButton onClick={() => onGoToFetched?.()}>
-              <Inbox className="w-3.5 h-3.5" />
-              <span>Go to Fetched Mails</span>
-            </CustomButton>
+            null
           ) : onFetch ? (
             <div data-tour="fetch-action-btn">
-              <CustomButton onClick={onFetch}>
+              <CustomButton onClick={onFetch} color='red'>
                 <CloudDownload className="w-3.5 h-3.5" />
                 <span>Fetch from Gmail</span>
               </CustomButton>
@@ -166,18 +160,17 @@ export default function MailTable({
               <TableHead className="w-10 sm:w-12 px-2 sm:px-3 text-center">
                 <div className="flex items-center justify-center">
                   <Checkbox checked={allSelected}
-                    className="[html.light_&]:data-checked:border-green-600"
                     onCheckedChange={() => onToggleAll?.()} aria-label="Select all" />
                 </div>
               </TableHead>
             ) : null}
             {mails.length !== 0 &&
               <>
-                <TableHead className="w-20 sm:w-24 px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest dark:text-white [html.light_&]:text-black font-semibold">Status</TableHead>
-                <TableHead className="w-[30%] sm:w-[24%] md:w-[18%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest dark:text-white [html.light_&]:text-black font-semibold">Origin</TableHead>
-                <TableHead className="w-[50%] sm:w-[56%] md:w-[32%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest dark:text-white [html.light_&]:text-black font-semibold">Subject</TableHead>
-                <TableHead className="hidden md:table-cell md:w-[38%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest dark:text-white [html.light_&]:text-black font-semibold">Body</TableHead>
-                <TableHead className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 text-right text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest dark:text-white [html.light_&]:text-black font-semibold">Time</TableHead>
+                <TableHead className="w-20 sm:w-24 px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Status</TableHead>
+                <TableHead className="w-[30%] sm:w-[24%] md:w-[18%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Origin</TableHead>
+                <TableHead className="w-[50%] sm:w-[56%] md:w-[32%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Subject</TableHead>
+                <TableHead className="hidden md:table-cell md:w-[38%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Body</TableHead>
+                <TableHead className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 text-right text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Time</TableHead>
               </>
             }
           </TableRow>
@@ -199,7 +192,7 @@ export default function MailTable({
                     exit={{ opacity: 0, scale: 0.98 }}
                     key={mail.id}
                     className={cn(
-                      'group cursor-pointer rounded-xl transition-colors dark:text-white hover:bg-black/5'
+                      'group cursor-pointer rounded-xl transition-colors text-black hover:bg-black/5'
                     )}
                     onContextMenu={(e) => {
                       e.preventDefault();
@@ -230,7 +223,6 @@ export default function MailTable({
                         <div className="flex items-center justify-center">
                           <Checkbox
                             checked={selected}
-                            className="[html.light_&]:data-checked:border-green-600"
                             onCheckedChange={() => onToggleSelect?.(mail.id)}
                             aria-label={`Select ${mail.subject}`}
                           />
@@ -243,15 +235,15 @@ export default function MailTable({
                       </Badge>
                     </TableCell>
                     <TableCell className="w-[30%] sm:w-[24%] md:w-[18%] px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden">
-                      <span className="block truncate font-semibold dark:text-white/75 [html.light_&]:text-black/75">{mail.sender.split('<')[0]}</span>
+                      <span className="block truncate font-semibold text-black/75">{mail.sender.split('<')[0]}</span>
                     </TableCell>
                     <TableCell className="w-[50%] sm:w-[56%] md:w-[32%] px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden">
-                      <span className="block truncate font-semibold dark:text-white/75 [html.light_&]:text-black/75">{mail.subject}</span>
+                      <span className="block truncate font-semibold text-black/75">{mail.subject}</span>
                     </TableCell>
                     <TableCell className="hidden md:table-cell md:w-[38%] px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden">
-                      <span className="block truncate font-semibold dark:text-white/75 [html.light_&]:text-black/75">{formatEmailContent(mail.body)}</span>
+                      <span className="block truncate font-semibold text-black/75">{formatEmailContent(mail.body)}</span>
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 py-2.5 text-right text-[10px] dark:text-white/75 [html.light_&]:text-black/75 sm:py-3.5 sm:text-xs">
+                    <TableCell className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 py-2.5 text-right text-[10px] text-black/75 sm:py-3.5 sm:text-xs">
                       {new Date(mail.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                     </TableCell>
                   </motion.tr>
@@ -270,7 +262,7 @@ export default function MailTable({
             exit={{ opacity: 0, scale: 0.95, y: -4 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
             style={{ left: contextMenu.x, top: contextMenu.y }}
-            className="fixed z-70 w-56 rounded-4xl rounded-tl-none [html.light_&]:bg-white dark:bg-accent backdrop-blur-2xl border [html.light_&]:border-gray-200/80 dark:border-white/20 shadow-2xl p-1.5 ring-1 ring-black/5 flex flex-col gap-0.5 text-zinc-800"
+            className="fixed z-70 w-56 rounded-4xl rounded-tl-none bg-white backdrop-blur-2xl border border-gray-200/80 shadow-2xl p-1.5 ring-1 ring-black/5 flex flex-col gap-0.5 text-zinc-800"
             onClick={(e) => e.stopPropagation()}
           >
             {hasCategories && (
@@ -281,11 +273,11 @@ export default function MailTable({
                   setContextMenu(null);
                   onAnalyzeMail?.(targetMail);
                 }}
-                className="group flex w-full items-center justify-between px-3 py-2 rounded-xl text-xs font-medium [html.light_&]:hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                className="group flex w-full items-center justify-between px-3 py-2 rounded-xl text-xs font-medium hover:bg-black/5 cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
-                  <Sparkles className="w-4 h-4 [html.light_&]:text-black dark:text-white" />
-                  <span className="[html.light_&]:text-black dark:text-white">Analyze</span>
+                  <Sparkles className="w-4 h-4 text-black" />
+                  <span className="text-black">Analyze</span>
                 </div>
               </button>
             )}
@@ -296,10 +288,10 @@ export default function MailTable({
                 setContextMenu(null);
                 window.location.reload();
               }}
-              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium [html.light_&]:hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium hover:bg-black/5 cursor-pointer"
             >
-              <RotateCw className="w-4 h-4 [html.light_&]:text-black dark:text-white" />
-              <span className='[html.light_&]:text-black dark:text-white'>Refresh Page</span>
+              <RotateCw className="w-4 h-4 text-black" />
+              <span className='text-black'>Refresh Page</span>
             </button>
 
             <button
@@ -309,10 +301,10 @@ export default function MailTable({
                 setContextMenu(null);
                 onStoreEncryptedMail?.(targetMail);
               }}
-              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium [html.light_&]:hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium hover:bg-black/5 cursor-pointer"
             >
-              <ShieldCheck className="w-4 h-4 [html.light_&]:text-black dark:text-white" />
-              <span className="[html.light_&]:text-black dark:text-white">Store</span>
+              <ShieldCheck className="w-4 h-4 text-black" />
+              <span className="text-black">Store</span>
             </button>
           </motion.div>
         )}

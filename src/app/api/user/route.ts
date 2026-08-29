@@ -26,7 +26,7 @@ export async function GET() {
       ok: true,
       data: userData[0] || {}
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ ok: false, error: 'Failed to fetch' }, { status: 500 });
   }
 }

@@ -132,13 +132,13 @@ function DialogContent({
         {...props}
       >
         <div className="sm:hidden flex shrink-0 justify-center -mt-1 pb-1 cursor-grab active:cursor-grabbing select-none touch-none">
-          <div className="mt-3 h-1.5 w-12 rounded-full bg-white/25 [html.light_&]:bg-black/25" />
+          <div className="mt-3 h-1.5 w-12 rounded-full bg-black/25" />
         </div>
         {children}
         <DialogPrimitive.Close ref={closeBtnRef} data-slot="dialog-close" asChild>
           {showCloseButton ? (
             <Button
-              className="[html.light_&]:bg-white dark:bg-transparent dark:text-white absolute hover:text-red-600 sm:text-black text-red-600 top-2 right-2"
+              className="bg-white text-black hover:text-red-600 absolute top-2 right-2"
               size="icon-sm"
             >
               <XIcon />

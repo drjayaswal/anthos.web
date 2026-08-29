@@ -1,22 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
-import { toast } from '@/lib/toast';
-import { cn } from '@/lib/utils';
+import { toast, type ToastOptions } from '@/lib/toast';
 import { XIcon } from 'lucide-react';
 
-const statusConfig = {
-  success: { src: '/status-logos/logo-green.svg' },
-  error: { src: '/status-logos/logo-red.svg' },
-  info: { src: '/status-logos/logo-blue.svg' },
-  warning: { src: '/status-logos/logo-amber.svg' },
-  loading: { src: '/logo.svg' }
-};
-
 export const Toaster = () => {
-  const [toasts, setToasts] = useState<any[]>([]);
+  const [toasts, setToasts] = useState<ToastOptions[]>([]);
 
   useEffect(() => {
     return toast.subscribe(setToasts);
@@ -28,26 +18,24 @@ export const Toaster = () => {
     <div className="fixed bottom-5 right-5 z-50 flex flex-col-reverse items-end gap-3 pointer-events-none">
       <AnimatePresence mode="popLayout" initial={false}>
         {reversedToasts.map((t, idx) => {
-          const config = statusConfig[t.type as keyof typeof statusConfig] || statusConfig.loading;
-          
           return (
             <motion.div
               key={t.id}
               layout
               initial={{ opacity: 0, y: 50, scale: 0.8, filter: "blur(10px)" }}
-              animate={{ 
+              animate={{
                 opacity: 1 - idx * 0.2,
                 y: 0,
                 scale: 1 - idx * 0.05,
                 filter: `blur(${idx * 2}px)`,
                 zIndex: reversedToasts.length - idx,
               }}
-              exit={{ 
-                opacity: 0, 
-                scale: 0.9, 
+              exit={{
+                opacity: 0,
+                scale: 0.9,
                 y: -20,
                 filter: "blur(10px)",
-                transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] } 
+                transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] }
               }}
               transition={{
                 type: "spring",
@@ -61,11 +49,11 @@ export const Toaster = () => {
                 {t.message}
               </p>
 
-              <button 
+              <button
                 onClick={() => toast.remove(t.id)}
                 className="ml-auto text-black hover:text-red-600 opacity-50 hover:opacity-100 mr-1 transition-colors cursor-pointer z-10"
               >
-                <XIcon className='w-4 h-4'/>
+                <XIcon className='w-4 h-4' />
               </button>
             </motion.div>
           );

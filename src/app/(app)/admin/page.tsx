@@ -7,7 +7,7 @@ import Restriction from "@/components/Restriction";
 export default async function AdminPage() {
   const session = await getSession();
   if (!session?.user?.id) {
-    redirect("/connect");
+    redirect("/");
   }
   if (!isAdminEmail(session.user.email)) return <Restriction />;
   return <Admin />;

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { Mail } from '@/types';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button, CustomButton } from '@/components/ui/button';
+import { CustomButton } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn, formatEmailContent } from '@/lib/utils';
 import { formatMailPriorityDisplay, getPriorityColor, getPriorityMessage, parseMailPriority } from '@/lib/mail-priority';
@@ -37,7 +37,7 @@ function PriorityLegend() {
       {legendItems.map((item) => (
         <div key={item.label} className="flex items-center gap-1.5">
           <div className={`size-2.5 rounded-full ${item.color}`} />
-          <span className="text-[10px] uppercase tracking-wider font-semibold dark:text-white/50 [html.light_&]:text-black/50">
+          <span className="text-[10px] uppercase tracking-wider font-semibold text-black/50">
             {item.label}
           </span>
         </div>
@@ -46,7 +46,7 @@ function PriorityLegend() {
   );
 }
 
-function getPriorityForCategory(mail: Mail, catName: string): any {
+function getPriorityForCategory(mail: Mail, catName: string): string | number | null | undefined {
   const cats = mail.categories;
   const pris = mail.priority;
   if (!cats || !pris) return null;
@@ -134,13 +134,8 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
     [allCategories, mails]
   );
 
-  useEffect(() => {
-    if (activeTab >= validCategories.length && validCategories.length > 0) {
-      setActiveTab(0);
-    }
-  }, [validCategories.length, activeTab]);
-
-  const activeCat = validCategories[activeTab]?.name ?? null;
+  const safeActiveTab = validCategories.length > 0 ? Math.min(activeTab, validCategories.length - 1) : 0;
+  const activeCat = validCategories[safeActiveTab]?.name ?? null;
 
   const filteredMails = useMemo(() =>
     activeCat
@@ -207,14 +202,12 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
 
   if (mails.length === 0) return null;
 
-
-
   return (
     <>
       <section className="px-4 py-5 sm:px-6 space-y-4">
         <div className="flex items-center gap-3">
-          <p className="text-sm font-medium dark:text-white [html.light_&]:text-black">Priority Analysis</p>
-          <p className="text-xs dark:text-white/70 [html.light_&]:text-black/40">{filteredMails.length} mail{filteredMails.length !== 1 ? 's' : ''}</p>
+          <p className="text-sm font-medium text-black">Priority Analysis</p>
+          <p className="text-xs text-black/40">{filteredMails.length} mail{filteredMails.length !== 1 ? 's' : ''}</p>
         </div>
         <PriorityLegend />
         {validCategories.length > 0 && (
@@ -227,14 +220,14 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                   onClick={() => setActiveTab(idx)}
                   className={cn(
                     'relative cursor-pointer py-1.5 text-xs font-medium transition-colors duration-200 truncate max-w-35 whitespace-nowrap snap-start shrink-0',
-                    activeTab === idx ? '[html.light_&]:text-black dark:text-white' : '[html.light_&]:text-black/40 dark:text-white/40'
+                    activeTab === idx ? 'text-black' : 'text-black/40'
                   )}
                 >
                   {cat.name}
                   {activeTab === idx && (
                     <motion.span
                       layoutId="tab-glide-line"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 w-full rounded-full [html.light_&]:bg-black dark:bg-white"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 w-full rounded-full bg-black"
                       transition={{ type: 'spring', damping: 24, stiffness: 300 }}
                     />
                   )}
@@ -277,7 +270,7 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                   key={seg.id}
                   x1={seg.x1} y1={seg.y1}
                   x2={seg.x2} y2={seg.y2}
-                  className={"dark:stroke-white/30 [html.light_&]:stroke-black/30"}
+                  className={"stroke-black/30"}
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   initial={{ opacity: 0, pathLength: 0 }}
@@ -289,7 +282,7 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
             </AnimatePresence>
           </svg>
           <div className="absolute bottom-6 left-[8%] right-[8%] pointer-events-none">
-            <div className="w-full h-px [html.light_&]:bg-black/50 dark:bg-white/50 relative mb-1" />
+            <div className="w-full h-px bg-black/50 relative mb-1" />
             <div className="flex justify-between w-full relative">
               {['-1', '0', '+1'].map((l, index) => {
                 const alignmentClass =
@@ -307,8 +300,8 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                       transform: index === 1 ? 'translateX(-50%)' : 'none'
                     }}
                   >
-                    <div className="h-1.5 w-px [html.light_&]:bg-black dark:bg-white -mt-2 mb-1" />
-                    <span className="text-[10px] font-medium text-white tabular-nums">
+                    <div className="h-1.5 w-px bg-black -mt-2 mb-1" />
+                    <span className="text-[10px] font-medium text-black tabular-nums">
                       {l}
                     </span>
                   </div>
@@ -325,7 +318,7 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                   className="absolute -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none"
                   style={{ left: `${left}%`, top: `${top}%` }}
                 >
-                  <span className="sm:hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-1 text-[10px] font-mono font-bold leading-none dark:text-white [html.light_&]:text-black whitespace-nowrap select-none drop-shadow-sm pointer-events-none">
+                  <span className="sm:hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-1 text-[10px] font-mono font-bold leading-none text-black whitespace-nowrap select-none drop-shadow-sm pointer-events-none">
                     {formatMailPriorityDisplay(rawPriority ? String(rawPriority) : String(priorityVal))}
                   </span>
 
@@ -355,7 +348,7 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                     </TooltipTrigger>
                     <TooltipContent side="top" className="hidden sm:block px-2 bg-transparent relative rounded-t-none">
                       <div className={`absolute h-0.5 w-full ${getPriorityColor(priorityVal)} top-0 left-0`} />
-                      <span className="text-[12px] [html.light_&]:text-black dark:text-white">
+                      <span className="text-[12px] text-black">
                         {getPriorityMessage(priorityVal)} with {rawPriority}
                       </span>
                     </TooltipContent>
@@ -376,22 +369,22 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
       <AnimatePresence>
         {preview && (
           <Dialog open onOpenChange={(o) => !o && setPreview(null)}>
-            <DialogContent className="sm:max-w-md w-full rounded-t-4xl sm:rounded-2xl p-5! bg-[#2c0237] border border-white/10 [html.light_&]:bg-white [html.light_&]:border-black/10 text-white [html.light_&]:text-black shadow-2xl">
+            <DialogContent className="sm:max-w-md w-full rounded-t-4xl sm:rounded-2xl p-5! bg-white border border-black/10 text-black shadow-2xl">
               <DialogHeader>
-                <DialogTitle className="text-white [html.light_&]:text-black line-clamp-1 pr-8">{parseSenderName(preview.sender)}</DialogTitle>
-                <DialogDescription className="text-left text-xs text-white/50 [html.light_&]:text-black/50">
+                <DialogTitle className="text-black line-clamp-1 pr-8">{parseSenderName(preview.sender)}</DialogTitle>
+                <DialogDescription className="text-left text-xs text-black/50">
                   {new Date(preview.createdAt).toLocaleString()}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-4 text-sm">
                 <div className="space-y-1.5">
-                  <p className="text-[11px] font-medium text-white/50 [html.light_&]:text-black/50">Subject</p>
-                  <p className="text-sm text-white [html.light_&]:text-black line-clamp-2">{preview.subject}</p>
+                  <p className="text-[11px] font-medium text-black/50">Subject</p>
+                  <p className="text-sm text-black line-clamp-2">{preview.subject}</p>
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-[11px] font-medium text-white/50 [html.light_&]:text-black/50">
+                  <p className="text-[11px] font-medium text-black/50">
                     Classifications & Priorities
                   </p>
                   <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
@@ -406,30 +399,30 @@ export default function AnalyzedMailsPriorityGraph({ mails, onOpenDetail, catego
                         return (
                           <div
                             key={`${cat}-${idx}`}
-                            className="flex items-center justify-between py-1 border-b border-white/10 [html.light_&]:border-black/10 last:border-0"
+                            className="flex items-center justify-between py-1 border-b border-black/10 last:border-0"
                           >
                             <Badge
                               variant="outline"
                               className={cn(
-                                'text-[11px] font-normal border-0 bg-white/10 [html.light_&]:bg-black/8 text-white [html.light_&]:text-black rounded-md px-2',
+                                'text-[11px] font-normal border-0 bg-black/8 text-black rounded-md px-2',
                               )}>
                               {cat}
                             </Badge>
-                            <span className="text-xs tabular-nums font-mono text-white [html.light_&]:text-black">
+                            <span className="text-xs tabular-nums font-mono text-black">
                               {pri ? formatMailPriorityDisplay(pri) : 'N/A'}
                             </span>
                           </div>
                         );
                       })
                     ) : (
-                      <p className="text-xs text-white/50 [html.light_&]:text-black/50">No classifications</p>
+                      <p className="text-xs text-black/50">No classifications</p>
                     )}
                   </div>
                 </div>
 
                 <div className="pt-2">
-                  <p className="text-[11px] font-medium text-white/50 [html.light_&]:text-black/50 mb-1.5">Preview</p>
-                  <p className="text-xs text-white/80 [html.light_&]:text-black/80 line-clamp-3 leading-relaxed">
+                  <p className="text-[11px] font-medium text-black/50 mb-1.5">Preview</p>
+                  <p className="text-xs text-black/80 line-clamp-3 leading-relaxed">
                     {formatEmailContent(preview.body).slice(0, 220)}
                     {(preview.body?.length ?? 0) > 220 ? '…' : ''}
                   </p>

@@ -39,7 +39,7 @@ export async function fetchMailsAction(options: FetchOptions): Promise<{
 
 export async function fetchUserDetails(): Promise<{
   ok: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
 }> {
   try {

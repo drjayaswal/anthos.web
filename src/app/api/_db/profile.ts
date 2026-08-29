@@ -63,11 +63,14 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
     providerAccountId: googleAccount[0]?.accountId ?? null,
     scopes: googleAccount[0]?.scope ?? null,
     providerLinkedAt: googleAccount[0]?.createdAt?.toISOString() ?? null,
-    sessions: sessions.map(({ token, ...rest }) => ({
-      ...rest,
-      expiresAt: rest.expiresAt.toISOString(),
-      createdAt: rest.createdAt.toISOString(),
-      updatedAt: rest.updatedAt.toISOString(),
+    sessions: sessions.map((sess) => ({
+      id: sess.id,
+      userId: sess.userId,
+      userAgent: sess.userAgent,
+      ipAddress: sess.ipAddress,
+      expiresAt: sess.expiresAt.toISOString(),
+      createdAt: sess.createdAt.toISOString(),
+      updatedAt: sess.updatedAt.toISOString(),
     })),
   };
 }

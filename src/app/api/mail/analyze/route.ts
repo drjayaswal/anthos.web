@@ -63,7 +63,6 @@ export async function POST(req: Request): Promise<NextResponse<MailAnalyzeRespon
         }
       }
     } catch {
-      // Fallback to default Groq
     }
   }
 
@@ -119,7 +118,7 @@ Output MUST be a valid JSON object matching this schema strictly:
       analyzedMails.push({
         ...mail,
         categories: [assignedCategory],
-        priority: [priorityVal] as any,
+        priority: [String(priorityVal)],
         summary: parsed.summary || mail.subject,
       });
     }

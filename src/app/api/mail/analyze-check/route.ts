@@ -6,7 +6,6 @@ import {
   getExistingGmailMessageIdsForUser,
 } from "@/app/api/_db/encrypted-mail";
 import type { AnalyzeCheckRequest, Mail } from "@/types";
-import { DEFAULT_MAIL_PRIORITY } from "@/lib/mail-priority";
 
 export type AnalyzeCheckResponse =
   | { ok: true; existingInDb: Mail[]; missingInDb: Mail[] }

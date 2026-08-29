@@ -14,8 +14,10 @@ import {
 } from "@/components/ui/table";
 import {
   CheckIcon,
+  Edit2Icon,
   Loader2Icon,
   PlusIcon,
+  Trash2Icon,
   XIcon,
 } from "lucide-react";
 import { toast } from "@/lib/toast";
@@ -54,8 +56,29 @@ export default function AdminCategories() {
   }, []);
 
   useEffect(() => {
-    loadCategories();
-  }, [loadCategories]);
+    let ignore = false;
+    async function fetchCats() {
+      try {
+        const res = await fetch("/api/category/admin");
+        const data = await res.json();
+        if (!ignore) {
+          if (data.ok) {
+            setItems(data.categories ?? []);
+          } else {
+            toast.error(data.error || "Failed to load categories");
+          }
+        }
+      } catch {
+        if (!ignore) toast.error("Could not load categories");
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+    fetchCats();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const resetForm = () => {
     setForm(emptyForm);
@@ -134,33 +157,33 @@ export default function AdminCategories() {
   return (
     <div className="mx-auto sm:mt-0 mt-10 max-w-3xl px-4 sm:px-6 py-4 sm:py-0 space-y-4 sm:space-y-8">
       <div className="space-y-0.5 sm:space-y-1">
-        <h1 className="text-lg font-semibold tracking-tight text-white sm:text-2xl">Categories</h1>
-        <p className="text-xs text-white/50 sm:text-sm">
+        <h1 className="text-lg font-semibold tracking-tight text-black sm:text-2xl">Categories</h1>
+        <p className="text-xs text-black/50 sm:text-sm">
           Manage labels used to classify encrypted mail. Changes apply for all users.
         </p>
       </div>
 
-      <section className="rounded-4xl bg-white dark:bg-white/10 [html.light_&]:border [html.light_&]:border-black/10 border-0 p-5 shadow-sm sm:p-5">
-        <h2 className="text-xs font-medium text-white sm:text-sm">
+      <section className="rounded-4xl bg-white border border-black/10 p-5 shadow-sm sm:p-5">
+        <h2 className="text-xs font-medium text-black sm:text-sm">
           {editingId ? "Edit category" : "Add category"}
         </h2>
 
         <form onSubmit={handleSubmit} className="mt-3 space-y-3 sm:mt-4 sm:space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2 sm:col-span-1">
-              <Label htmlFor="category-name" className="text-white/70">Name</Label>
+              <Label htmlFor="category-name" className="text-black/70">Name</Label>
               <Input
                 id="category-name"
                 required
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 placeholder="Category Name"
-                className="h-9 px-2.5 text-sm text-white bg-transparent! border-0 placeholder:text-white/50 focus:ring-0 sm:h-10 sm:px-3"
+                className="h-9 px-2.5 text-sm text-black bg-transparent! border-0 placeholder:text-black/50 focus:ring-0 sm:h-10 sm:px-3"
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="category-description" className="text-white/70">
-                Description <span className="font-normal text-white/50">(optional)</span>
+              <Label htmlFor="category-description" className="text-black/70">
+                Description <span className="font-normal text-black/50">(optional)</span>
               </Label>
               <textarea
                 id="category-description"
@@ -168,7 +191,7 @@ export default function AdminCategories() {
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="What belongs in this category?"
                 rows={2}
-                className="w-full resize-none rounded-xl bg-transparent! border-0 px-2.5 py-1.5 text-xs text-white placeholder:text-white/50 outline-0 sm:px-3 sm:py-2 sm:text-sm"
+                className="w-full resize-none rounded-xl bg-transparent! border-0 px-2.5 py-1.5 text-xs text-black placeholder:text-black/50 outline-0 sm:px-3 sm:py-2 sm:text-sm"
               />
             </div>
           </div>
@@ -176,14 +199,15 @@ export default function AdminCategories() {
           <div className="flex flex-wrap gap-2">
             <CustomButton
               type="submit"
+              className={editingId ? "hover:bg-green-600!" : "hover:bg-[#9333ea]"}
               disabled={saving || !form.name.trim()}
             >
               {saving ? (
                 <Loader2Icon className="h-4 w-4 animate-spin" />
               ) : editingId ? (
-                <CheckIcon className="h-4 w-4" />
+                <CheckIcon className="h-4 w-4 sm:block hidden" />
               ) : (
-                <PlusIcon className="h-4 w-4" />
+                <PlusIcon className="h-4 w-4 sm:block hidden" />
               )}
               <span>{editingId ? "Save" : "Add"}</span>
             </CustomButton>
@@ -191,9 +215,10 @@ export default function AdminCategories() {
               <CustomButton
                 type="button"
                 onClick={resetForm}
+                className="hover:bg-red-600!"
                 disabled={saving}
               >
-                <XIcon className="h-4 w-4" />
+                <XIcon className="h-4 w-4 sm:block hidden" />
                 <span>Cancel</span>
               </CustomButton>
             )}
@@ -201,39 +226,39 @@ export default function AdminCategories() {
         </form>
       </section>
 
-      <section className="overflow-hidden rounded-4xl bg-white dark:bg-white/10 [html.light_&]:border [html.light_&]:border-black/10 border-0 sm:py-2 p-2 shadow-sm">
-        <div className="border-b border-black/10 dark:border-white/10 px-3 py-2.5 sm:px-6 sm:py-4">
-          <h2 className="text-xs font-medium text-white sm:text-sm">All categories</h2>
+      <section className="overflow-hidden rounded-4xl bg-white border border-black/10 sm:py-2 p-2 shadow-sm">
+        <div className="border-b border-black/10 px-3 py-2.5 sm:px-6 sm:py-4">
+          <h2 className="text-xs font-medium text-black sm:text-sm">All categories</h2>
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center gap-2 py-8 text-xs text-white sm:py-12 sm:text-sm">
+          <div className="flex items-center justify-center gap-2 py-8 text-xs text-black sm:py-12 sm:text-sm">
             <Loader2Icon className="h-4 w-4 animate-spin" />
             Loading…
           </div>
         ) : items.length === 0 ? (
-          <p className="p-4 text-center text-xs text-white sm:px-6 sm:py-12 sm:text-sm">No categories yet.</p>
+          <p className="p-4 text-center text-xs text-black sm:px-6 sm:py-12 sm:text-sm">No categories yet.</p>
         ) : (
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader className="border-b border-black/10 dark:border-white/10">
-                <TableRow className="border-b border-black/10 dark:border-white/10 hover:bg-transparent">
-                  <TableHead className="px-4 py-3 text-[10px] text-white sm:px-6 sm:py-3.5 sm:text-xs">Name</TableHead>
-                  <TableHead className="hidden px-4 py-3 text-[10px] text-white md:table-cell sm:px-6 sm:py-3.5 sm:text-xs">Description</TableHead>
-                  <TableHead className="w-24 px-4 py-3 text-right text-[10px] text-white sm:w-32 sm:px-6 sm:py-3.5 sm:text-xs">Actions</TableHead>
+              <TableHeader className="border-b border-black/10">
+                <TableRow className="border-b border-black/10 hover:bg-transparent">
+                  <TableHead className="px-4 py-3 text-[10px] text-black sm:px-6 sm:py-3.5 sm:text-xs">Name</TableHead>
+                  <TableHead className="hidden px-4 py-3 text-[10px] text-black md:table-cell sm:px-6 sm:py-3.5 sm:text-xs">Description</TableHead>
+                  <TableHead className="w-24 px-4 py-3 text-right text-[10px] text-black sm:w-32 sm:px-6 sm:py-3.5 sm:text-xs">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {items.map((cat) => (
                   <TableRow
                     key={cat.id}
-                    className={`border-b border-black/10 dark:border-white/10 transition-colors ${editingId === cat.id
-                        ? "bg-black/5 dark:bg-white/15"
-                        : "hover:bg-black/5 dark:hover:bg-white/5"
+                    className={`border-b border-black/10 transition-colors ${editingId === cat.id
+                      ? "bg-black/5"
+                      : "hover:bg-black/5"
                       }`}
                   >
-                    <TableCell className="max-w-[52vw] truncate px-4 py-3 text-xs font-medium text-white sm:max-w-none sm:px-6 sm:py-4 sm:text-sm">{cat.name}</TableCell>
-                    <TableCell className="hidden max-w-xs truncate px-4 py-3 text-xs text-white/50 md:table-cell sm:px-6 sm:py-4 sm:text-sm">
+                    <TableCell className="max-w-[52vw] truncate px-4 py-3 text-xs font-medium text-black sm:max-w-none sm:px-6 sm:py-4 sm:text-sm">{cat.name}</TableCell>
+                    <TableCell className="hidden max-w-xs truncate px-4 py-3 text-xs text-black/50 md:table-cell sm:px-6 sm:py-4 sm:text-sm">
                       {cat.description || "—"}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-right sm:px-6 sm:py-4">
@@ -242,17 +267,18 @@ export default function AdminCategories() {
                           type="button"
                           size="sm"
                           variant="ghost"
-                          className="text-white/70 dark:text-white/70 rounded-lg hover:text-white hover:bg-blue-600 border-0 px-2.5 py-1 text-xs cursor-pointer"
+                          className="text-black/70 rounded-lg hover:text-white hover:bg-blue-600 border-0 px-2.5 py-1 text-xs cursor-pointer"
                           onClick={() => startEdit(cat)}
                           aria-label={`Edit ${cat.name}`}
                         >
+                          <Edit2Icon className="h-4 w-4 sm:block hidden" />
                           Edit
                         </Button>
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="text-white/70 dark:text-white/70 rounded-lg hover:text-white hover:bg-red-600 border-0 px-2.5 py-1 text-xs cursor-pointer"
+                          className="text-black/70 rounded-lg hover:text-white hover:bg-red-600 border-0 px-2.5 py-1 text-xs cursor-pointer"
                           disabled={deletingId === cat.id}
                           onClick={() => handleDelete(cat.id, cat.name)}
                           aria-label={`Delete ${cat.name}`}
@@ -260,8 +286,9 @@ export default function AdminCategories() {
                           {deletingId === cat.id ? (
                             <Loader2Icon className="h-4 w-4 animate-spin" />
                           ) : (
-                            <div>Delete</div>
+                            <Trash2Icon className="h-4 w-4 sm:block hidden" />
                           )}
+                          <div>Delete</div>
                         </Button>
                       </div>
                     </TableCell>

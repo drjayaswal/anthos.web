@@ -11,9 +11,9 @@ const badgeVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
         success: "bg-green-600 text-white [a]:hover:bg-green-600 rounded-lg",
-        success_light: "bg-green-600/15 text-green-600 [a]:hover:bg-green-600/20 rounded-lg",
+        success_light: "bg-green-600 text-white! [a]:hover:bg-green-600/20 rounded-sm",
         failure: "bg-red-600 text-white [a]:hover:bg-red-600 rounded-lg",
-        failure_light: "bg-red-600/15 text-red-600 [a]:hover:bg-red-600/20 rounded-lg",
+        failure_light: "bg-red-600 text-white! [a]:hover:bg-red-600/20 rounded-sm",
         secondary:
           "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
         destructive:

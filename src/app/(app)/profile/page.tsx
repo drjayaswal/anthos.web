@@ -6,12 +6,12 @@ import Profile from "@/components/Profile";
 export default async function ProfilePage() {
   const session = await getSession();
   if (!session?.user?.id) {
-    redirect("/connect");
+    redirect("/");
   }
 
   const profile = await getUserProfile(session.user.id);
   if (!profile) {
-    redirect("/connect");
+    redirect("/");
   }
 
   return <Profile profile={profile} />;

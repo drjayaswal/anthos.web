@@ -16,10 +16,9 @@ export type OAuthAccountInput = {
 async function upsertOAuthUserRow(opts: {
   userId: string;
   email: string;
-  accessToken: string;
   createdAt: Date;
 }): Promise<void> {
-  const { userId, email, accessToken, createdAt } = opts;
+  const { userId, email, createdAt } = opts;
   await db.transaction(async (tx) => {
     const [existingByEmail] = await tx
       .select({ id: user.id })
@@ -76,12 +75,6 @@ async function upsertOAuthUserRow(opts: {
   });
 }
 
-function stableAccessToken(userId: string, token: string | null | undefined): string {
-  const t = token?.trim();
-  if (t) return t;
-  return `oauth:${userId}`;
-}
-
 export async function upsertOAuthUserFromCredentials(opts: {
   userId: string;
   email: string;
@@ -91,16 +84,14 @@ export async function upsertOAuthUserFromCredentials(opts: {
 }): Promise<void> {
   void opts.name;
   void opts.image;
-  const { userId, email, oauthAccount: acc } = opts;
-  const accessToken = stableAccessToken(userId, acc.access_token ?? null);
-  await upsertOAuthUserRow({ userId, email, accessToken, createdAt: new Date() });
+  const { userId, email } = opts;
+  await upsertOAuthUserRow({ userId, email, createdAt: new Date() });
 }
 
 export async function ensureUserRowFromSession(session: AppSession | null): Promise<boolean> {
   const userId = session?.user?.id;
   const email = session?.user?.email;
   if (!userId || !email) return false;
-  const accessToken = stableAccessToken(userId, session.accessToken ?? null);
-  await upsertOAuthUserRow({ userId, email, accessToken, createdAt: new Date() });
+  await upsertOAuthUserRow({ userId, email, createdAt: new Date() });
   return true;
 }

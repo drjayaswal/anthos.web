@@ -23,8 +23,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ ok: true, message: 'Category created successfully' });
-  } catch (error: any) {
-    if (error.code === '23505') {
+  } catch (error: unknown) {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as { code: string }).code === '23505') {
       return NextResponse.json({ ok: false, error: 'A category with this name already exists' }, { status: 409 });
     }
     
