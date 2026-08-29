@@ -14,8 +14,6 @@ import {
   Layers,
   ChevronDown,
   Sparkles,
-  BadgeCheckIcon,
-  BadgeXIcon,
 } from "lucide-react";
 import type { UserSettings, ModelItem } from "@/app/api/_db/settings";
 import {
@@ -77,7 +75,6 @@ function ModelCard({
     <>
       <CustomButton
         size="xs"
-        color="amber"
         onClick={(e) => { e.stopPropagation(); onToggleKey?.(model.id); }}
         title={isKeyVisible ? "Hide Key" : "Show Key"}
       >
@@ -85,15 +82,12 @@ function ModelCard({
       </CustomButton>
       <CustomButton
         size="xs"
-        color="green"
         onClick={(e) => { e.stopPropagation(); onCopy?.(model.apiKey, model.id); }}
-        title="Copy Key"
       >
         {copiedId === model.id ? "Copied!" : "Copy"}
       </CustomButton>
       <CustomButton
         size="xs"
-        color="blue"
         onClick={(e) => { e.stopPropagation(); onEdit?.(model); }}
         title="Edit model"
       >
@@ -101,7 +95,6 @@ function ModelCard({
       </CustomButton>
       <CustomButton
         size="xs"
-        color="red"
         onClick={(e) => { e.stopPropagation(); onDelete?.(model); }}
         disabled={isDeleting}
         title="Delete model"
@@ -453,7 +446,11 @@ export default function Settings({ settings: initialSettings }: { settings: User
               {PROVIDERS.map((provider: Provider) => (
                 <div
                   key={provider.id}
-                  className="flex items-center justify-between p-2.5 "
+                  onClick={() => {
+                    setIsProvidersListOpen(false);
+                    openAddModal(provider.name);
+                  }}
+                  className="flex items-center justify-between p-2.5 cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className="min-w-0">
@@ -465,17 +462,6 @@ export default function Settings({ settings: initialSettings }: { settings: User
                       </div>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsProvidersListOpen(false);
-                      openAddModal(provider.name);
-                    }}
-                    className="shrink-0 ml-2 rounded-lg bg-black/10 px-2 py-1 text-[10px] font-medium hover:bg-green-600! hover:text-white text-black transition cursor-pointer"
-                    title={`Add model for ${provider.name}`}
-                  >
-                    Use
-                  </button>
                 </div>
               ))}
             </div>
@@ -535,7 +521,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
                 <button
                   type="button"
                   onClick={() => setProviderDropdownOpen((prev) => !prev)}
-                  className={`w-full flex items-center justify-between p-2 rounded-xl border transition cursor-pointer text-left ${providerDropdownOpen && "bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]"}`}
+                  className="w-full flex items-center justify-between p-2.5 rounded-2xl bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] transition cursor-pointer text-left"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className="min-w-0">
@@ -559,38 +545,26 @@ export default function Settings({ settings: initialSettings }: { settings: User
                       transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                       className="overflow-hidden mt-1.5"
                     >
-                      <div className="rounded-2xl border p-1.5 scrollbar-none bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] max-h-48 overflow-y-auto overscroll-contain space-y-1">
-                        {PROVIDERS.map((provider) => {
-                          const isSelected = provider.name === selectedProviderName;
-                          return (
-                            <motion.button
-                              key={provider.id}
-                              type="button"
-                              whileTap={{ scale: 0.98 }}
-                              onClick={() => handleProviderSelect(provider.name)}
-                              className={`w-full flex px-2 py-1.5 items-center gap-1.5 rounded-xl text-left transition-colors cursor-pointer ${isSelected
-                                ? "bg-white text-black border shadow-md font-semibold"
-                                : "text-black/80"
-                                }`}
-                            >
-                              {isSelected ? (
-                                <BadgeCheckIcon className="w-6 h-6 text-white fill-green-600 shrink-0" />
-                              ) : (
-                                <BadgeXIcon className="w-6 h-6 text-white fill-amber-600 shrink-0" />
-                              )}
-                              <div className="flex items-center gap-2.5 min-w-0">
-                                <div className="min-w-0">
-                                  <div className="text-xs truncate">
-                                    {provider.name}
-                                  </div>
-                                  <div className="text-[9px] truncate text-black font-normal">
-                                    {provider.description || provider.name}
-                                  </div>
-                                </div>
+                      <div className="rounded-2xl border p-2 scrollbar-none bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] max-h-48 overflow-y-auto overscroll-contain space-y-1.5">
+                        {PROVIDERS.map((provider) => (
+                          <motion.button
+                            key={provider.id}
+                            type="button"
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => handleProviderSelect(provider.name)}
+                            className={`w-full flex px-3 py-2 items-center gap-2 transition-all duration-200 cursor-pointer text-left text-black ${selectedProviderName === provider.name ? "rounded-xl bg-white shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)]" : ""
+                              }`}
+                          >
+                            <div className="min-w-0 flex-1">
+                              <div className="text-xs font-semibold text-black truncate">
+                                {provider.name}
                               </div>
-                            </motion.button>
-                          );
-                        })}
+                              <div className="text-[9px] truncate text-black/50 font-normal">
+                                {provider.description || provider.name}
+                              </div>
+                            </div>
+                          </motion.button>
+                        ))}
                       </div>
                     </motion.div>
                   )}
@@ -672,7 +646,9 @@ export default function Settings({ settings: initialSettings }: { settings: User
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-3 border-t">
-              <CustomButton>
+              <CustomButton
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? <Loader2 className="h-3 w-3 animate-spin" /> : <PlusIcon className="h-3 w-3" />}
                 {editingModel ? "Save Model" : "Add Model"}
               </CustomButton>

@@ -1,13 +1,24 @@
 'use client';
 
-import { useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info, Minus, Plus } from 'lucide-react';
+import { ChevronDown, Info, Minus, Plus } from 'lucide-react';
 import type { CloudQueryOptions, DatabaseQueryOptions } from '@/types';
 
+export const EMAIL_PROVIDERS = [
+  { id: 'google', name: 'Google', description: 'Gmail & Google Workspace' },
+  { id: 'hotmail', name: 'Hotmail', description: 'Outlook & Microsoft Live' },
+  { id: 'yahoo', name: 'Yahoo', description: 'Yahoo Mail' },
+  { id: 'monday', name: 'Monday', description: 'Monday.com Work OS' },
+  { id: 'zoho', name: 'Zoho', description: 'Zoho Mail' },
+] as const;
+
 export type CloudQueryFieldsProps = {
+  provider?: string;
+  setProvider?: (v: string) => void;
   unread: boolean;
   setUnread: (v: boolean) => void;
   days: number;
@@ -19,10 +30,12 @@ export type CloudQueryFieldsProps = {
   starred: boolean;
   setStarred: (v: boolean) => void;
 };
+
 export type DatabaseQueryFieldsProps = {
   count: number;
   setCount: (v: number) => void;
-}
+};
+
 function FlagRow({
   id,
   label,
@@ -37,7 +50,7 @@ function FlagRow({
   tip?: string;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-lg p-2 border">
+    <div className="flex items-center justify-between rounded-2xl p-2 border bg-white shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)]">
       <div className="flex items-center space-x-2">
         <Checkbox id={id} checked={checked} onCheckedChange={(c) => onCheckedChange(c === true)} />
         <Label htmlFor={id} className="cursor-pointer text-xs font-medium text-black select-none">
@@ -62,6 +75,7 @@ function FlagRow({
 
 export function buildCloudQueryOptions(p: CloudQueryFieldsProps): CloudQueryOptions {
   return {
+    provider: p.provider,
     unread: p.unread,
     days: p.days,
     count: p.count,
@@ -69,6 +83,7 @@ export function buildCloudQueryOptions(p: CloudQueryFieldsProps): CloudQueryOpti
     starred: p.starred,
   };
 }
+
 export function buildDatabaseQueryOptions(p: DatabaseQueryFieldsProps, sessionUserId: string): DatabaseQueryOptions {
   return {
     count: p.count,
@@ -126,7 +141,7 @@ function Counter({
     <div className="flex items-center gap-2">
       <button
         type="button"
-        className="h-6 w-6 rounded-md bg-black/5 hover:bg-black/10 text-black flex items-center justify-center cursor-pointer transition disabled:opacity-30 disabled:pointer-events-none select-none"
+        className="h-6 w-6 rounded-lg bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.18),0_1px_2px_rgba(0,0,0,0.06)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] text-black flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none"
         onMouseDown={handleMinusStart}
         onTouchStart={handleMinusStart}
         onMouseUp={handleMinusEnd}
@@ -139,7 +154,7 @@ function Counter({
       <span className="w-5 text-center font-mono text-xs font-semibold text-black select-none">{value}</span>
       <button
         type="button"
-        className="h-6 w-6 rounded-md bg-black/5 hover:bg-black/10 text-black flex items-center justify-center cursor-pointer transition disabled:opacity-30 disabled:pointer-events-none select-none"
+        className="h-6 w-6 rounded-lg bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.18),0_1px_2px_rgba(0,0,0,0.06)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] text-black flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none"
         onMouseDown={handlePlusStart}
         onTouchStart={handlePlusStart}
         onMouseUp={handlePlusEnd}
@@ -154,15 +169,109 @@ function Counter({
 }
 
 export function CloudQueryFields(p: CloudQueryFieldsProps) {
+  const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
+  const providerDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (providerDropdownRef.current && !providerDropdownRef.current.contains(event.target as Node)) {
+        setProviderDropdownOpen(false);
+      }
+    };
+    if (providerDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [providerDropdownOpen]);
+
+  const currentProviderId = p.provider || 'google';
+  const currentProvider =
+    EMAIL_PROVIDERS.find((prov) => prov.id === currentProviderId) || EMAIL_PROVIDERS[0];
+
   return (
     <div className="space-y-3">
+      {p.setProvider && (
+        <div className="space-y-1.5" ref={providerDropdownRef}>
+          <label className="block text-[10px] font-medium text-black/60 uppercase tracking-wide">
+            Provider
+          </label>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setProviderDropdownOpen((prev) => !prev)}
+              className="w-full flex items-center justify-between p-2.5 rounded-2xl bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] transition cursor-pointer text-left"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-black truncate">
+                    {currentProvider.name}
+                  </p>
+                  <p className="text-[9px] text-black/50 truncate font-normal">
+                    {currentProvider.description}
+                  </p>
+                </div>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-black/50 transition-transform duration-200 shrink-0 ml-1 ${
+                  providerDropdownOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            <AnimatePresence>
+              {providerDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0, y: -4 }}
+                  animate={{ opacity: 1, height: 'auto', y: 0 }}
+                  exit={{ opacity: 0, height: 0, y: -4 }}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  className="overflow-hidden mt-1.5"
+                >
+                  <div className="rounded-2xl border p-1.5 scrollbar-none bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] max-h-48 overflow-y-auto overscroll-contain space-y-1.5">
+                    {EMAIL_PROVIDERS.map((prov) => {
+                      const isSelected = currentProviderId === prov.id;
+                      return (
+                        <motion.button
+                          key={prov.id}
+                          type="button"
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => {
+                            p.setProvider?.(prov.id);
+                            setProviderDropdownOpen(false);
+                          }}
+                          className={`w-full flex px-3 py-2 items-center gap-2 transition-all duration-200 cursor-pointer text-left text-black ${
+                            isSelected
+                              ? 'rounded-xl bg-white shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)]'
+                              : 'hover:bg-black/5 rounded-xl'
+                          }`}
+                        >
+                          <div className="min-w-0 flex-1">
+                            <div className="text-xs font-semibold text-black truncate">
+                              {prov.name}
+                            </div>
+                            <div className="text-[9px] truncate text-black/50 font-normal">
+                              {prov.description}
+                            </div>
+                          </div>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-2">
-        <div className="rounded-lg px-3 py-2 border flex items-center justify-between">
+        <div className="px-3 py-2 flex items-center justify-between">
           <Label className="text-xs font-medium text-black/80">Emails Count</Label>
           <Counter value={p.count} min={1} max={10} onChange={p.setCount} />
         </div>
-
-        <div className="rounded-lg px-3 py-2 border flex items-center justify-between">
+        <div className="px-3 py-2 flex items-center justify-between">
           <Label className="text-xs font-medium text-black/80">Lookback Days</Label>
           <Counter value={p.days} min={1} max={7} onChange={p.setDays} />
         </div>
@@ -173,13 +282,19 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
           Status &amp; Flags
         </label>
         <div className="grid grid-cols-2 gap-2">
-          <div onClick={() => p.setUnread(true)} className="flex items-center space-x-2 rounded-lg p-2 border">
+          <div
+            onClick={() => p.setUnread(true)}
+            className="flex items-center space-x-2 rounded-2xl p-2 border bg-white shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
+          >
             <Checkbox id="unread" checked={p.unread} onCheckedChange={() => p.setUnread(true)} />
             <Label htmlFor="unread" className="cursor-pointer text-xs font-medium text-black select-none">
               Unread
             </Label>
           </div>
-          <div onClick={() => p.setUnread(false)} className="flex items-center space-x-2 rounded-lg p-2 border">
+          <div
+            onClick={() => p.setUnread(false)}
+            className="flex items-center space-x-2 rounded-2xl p-2 border bg-white shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
+          >
             <Checkbox id="read" checked={!p.unread} onCheckedChange={() => p.setUnread(false)} />
             <Label htmlFor="read" className="cursor-pointer text-xs font-medium text-black select-none">
               Read
@@ -196,7 +311,7 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
 export function DatabaseQueryFields(p: DatabaseQueryFieldsProps) {
   return (
     <div className="space-y-3">
-      <div className="rounded-lg px-3 py-2 border flex items-center justify-between">
+      <div className="px-3 py-2 flex items-center justify-between">
         <Label className="text-xs font-medium text-black/80">Emails Count</Label>
         <Counter value={p.count} min={1} max={10} onChange={p.setCount} />
       </div>

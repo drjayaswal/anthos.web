@@ -131,7 +131,7 @@ export default function MailTable({
         <div className="flex items-center gap-3 flex-wrap justify-center">
           {activeTab === 'encrypted' && onLoadDataFromDatabase ? (
             <div data-tour="load-action-btn">
-              <CustomButton onClick={onLoadDataFromDatabase} color='green'>
+              <CustomButton onClick={onLoadDataFromDatabase}>
                 <DatabaseBackup className="w-3.5 h-3.5" />
                 <span>Load Mails</span>
               </CustomButton>
@@ -140,7 +140,7 @@ export default function MailTable({
             null
           ) : onFetch ? (
             <div data-tour="fetch-action-btn">
-              <CustomButton onClick={onFetch} color='red'>
+              <CustomButton onClick={onFetch}>
                 <CloudDownload className="w-3.5 h-3.5" />
                 <span>Fetch Mails</span>
               </CustomButton>

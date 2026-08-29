@@ -45,7 +45,7 @@ export default function ThankYou() {
               <span>Connect</span>
             </Link>
           </CustomButton>
-          <CustomButton asChild color="blue">
+          <CustomButton asChild>
             <Link href="/help">
               <span>Documentation</span>
             </Link>

@@ -14,6 +14,7 @@ export interface Mail {
 }
 
 export interface CloudQueryOptions {
+  provider?: string;
   unread: boolean;
   days: number;
   count: number;

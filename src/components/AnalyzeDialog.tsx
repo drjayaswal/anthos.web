@@ -11,8 +11,9 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info, Sparkles, X, Bot, Check, ChevronDown } from 'lucide-react';
+import { Info, Sparkles, X, Bot, ChevronDown } from 'lucide-react';
 import { getAnalysisModelsAction } from '@/app/actions';
+import { CustomButton } from '@/components/ui/button';
 import type { AnalysisModel } from '@/types';
 
 const FALLBACK_DEFAULT_MODEL: AnalysisModel = {
@@ -181,7 +182,7 @@ export default function AnalyzeDialog({
                 <button
                   type="button"
                   onClick={() => setDropdownOpen((prev) => !prev)}
-                  className="w-full flex items-center justify-between p-2.5 rounded-xl bg-black/5 border round hover:border-black/20 transition cursor-pointer text-left"
+                  className="w-full flex items-center justify-between p-2.5 rounded-2xl bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] transition cursor-pointer text-left"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className="w-6 h-6 rounded-lg bg-black/10 flex items-center justify-center shrink-0 overflow-hidden">
@@ -222,7 +223,7 @@ export default function AnalyzeDialog({
                     >
                       <div
                         data-prevent-drawer-drag
-                        className="rounded-xl bg-gray-50 border shadow-xl p-1.5 max-h-48 overflow-y-auto overscroll-contain touch-pan-y space-y-1"
+                        className="rounded-2xl border p-2 scrollbar-none bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] max-h-48 overflow-y-auto overscroll-contain touch-pan-y space-y-1.5"
                       >
                         {availableModels.map((model) => {
                           const isSelected = model.id === selectedModelId;
@@ -233,7 +234,6 @@ export default function AnalyzeDialog({
                               key={model.id}
                               type="button"
                               disabled={isModelDisabled}
-                              whileHover={isModelDisabled ? {} : { scale: 1.01 }}
                               whileTap={isModelDisabled ? {} : { scale: 0.98 }}
                               onClick={() => {
                                 if (!isModelDisabled) {
@@ -241,12 +241,13 @@ export default function AnalyzeDialog({
                                 }
                               }}
                               data-prevent-drawer-drag
-                              className={`w-full flex items-center justify-between p-2 rounded-lg transition-colors text-left ${isModelDisabled
-                                ? 'opacity-40 cursor-not-allowed bg-black/5'
-                                : isSelected
-                                  ? 'bg-black/10 font-semibold cursor-pointer'
-                                  : 'hover:bg-black/5 cursor-pointer'
-                                }`}
+                              className={`w-full flex items-center justify-between px-3 py-2 transition-all duration-200 text-left text-black ${
+                                isModelDisabled
+                                  ? 'opacity-40 cursor-not-allowed rounded-xl'
+                                  : isSelected
+                                    ? 'rounded-xl bg-white shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] cursor-pointer'
+                                    : 'hover:bg-black/5 rounded-xl cursor-pointer'
+                              }`}
                             >
                               <div className="flex items-center gap-2 min-w-0">
                                 <div className="w-5 h-5 rounded-md bg-black/10 flex items-center justify-center shrink-0 overflow-hidden">
@@ -265,7 +266,7 @@ export default function AnalyzeDialog({
                                 </div>
                                 <div className="min-w-0 flex-1">
                                   <div className="flex items-center gap-1.5">
-                                    <span className="text-xs text-black block truncate">
+                                    <span className="text-xs font-semibold text-black block truncate">
                                       {model.name}
                                     </span>
                                     {isModelDisabled && (
@@ -274,14 +275,11 @@ export default function AnalyzeDialog({
                                       </span>
                                     )}
                                   </div>
-                                  <span className="text-[8px] font-mono text-black/40 block truncate">
+                                  <span className="text-[9px] font-mono text-black/50 block truncate">
                                     {model.model}
                                   </span>
                                 </div>
                               </div>
-                              {isSelected && !isModelDisabled && (
-                                <Check className="w-3.5 h-3.5 text-green-600 shrink-0 ml-1" />
-                              )}
                             </motion.button>
                           );
                         })}
@@ -291,7 +289,7 @@ export default function AnalyzeDialog({
                 </AnimatePresence>
               </div>
             </div>
-            <div className="flex items-center space-x-2.5 rounded-xl bg-black/5 p-3 border">
+            <div className="flex items-center space-x-2.5 p-3">
               <Checkbox
                 id="store"
                 checked={store}
@@ -325,14 +323,14 @@ export default function AnalyzeDialog({
           </div>
 
           <div className="flex items-center justify-end gap-2 px-4 py-3 border-t">
-            <button
+            <CustomButton
               type="submit"
               disabled={isSubmitDisabled || loadingModels}
-              className="inline-flex items-center gap-1.5 rounded-lg cursor-pointer bg-black px-3 py-1.5 text-xs font-medium text-white transition hover:bg-black/90 active:scale-95"
+              size="lg"
             >
-              <Sparkles className="h-3.5 w-3.5 fill-white" />
+              <Sparkles className="h-3.5 w-3.5" />
               <span>Analyze</span>
-            </button>
+            </CustomButton>
           </div>
         </form>
       </DialogContent>

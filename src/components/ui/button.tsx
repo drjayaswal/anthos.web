@@ -5,12 +5,12 @@ import { Slot } from "radix-ui"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button cursor-pointer inline-flex shrink-0 items-center justify-center rounded-md! border-0! bg-clip-padding text-sm whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button cursor-pointer inline-flex shrink-0 items-center justify-center rounded-md! border-0! bg-clip-padding text-sm whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-0.5 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         custom_button:
-          "bg-white text-black border border-dashed hover:border-transparent rounded-xl duration-200 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
+          "bg-white text-black border border-dashed hover:border-transparent rounded-xl duration-150! shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-0.5",
         custom:
           "bg-white text-black border border-dashed hover:border-transparent rounded-xl duration-200 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
         light: "border border-gray-200/75 bg-white hover:-translate-y-px active:translate-y-0.5 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] text-black rounded-xl",
@@ -29,14 +29,14 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline shadow-none",
       },
       color: {
-        purple: "hover:bg-purple-600 hover:text-white",
-        red: "hover:bg-red-600 hover:text-white",
-        yellow: "hover:bg-yellow-600 hover:text-white",
-        amber: "hover:bg-amber-500 hover:text-white",
-        blue: "hover:bg-blue-600 hover:text-white",
-        teal: "hover:bg-teal-600 hover:text-white",
-        green: "hover:bg-green-600 hover:text-white",
-        black: "hover:bg-black hover:text-white",
+        purple: "bg-linear-to-b from-white to-gray-100 hover:from-purple-600 hover:to-purple-800 hover:text-white",
+        red: "bg-linear-to-b from-white to-gray-100 hover:from-red-600 hover:to-red-800 hover:text-white",
+        yellow: "bg-linear-to-b from-white to-gray-100 hover:from-yellow-600 hover:to-yellow-800 hover:text-white",
+        amber: "bg-linear-to-b from-white to-gray-100 hover:from-amber-600 hover:to-amber-800 hover:text-white",
+        blue: "bg-linear-to-b from-white to-gray-100 hover:from-blue-600 hover:to-blue-800 hover:text-white",
+        teal: "bg-linear-to-b from-white to-gray-100 hover:from-teal-600 hover:to-teal-800 hover:text-white",
+        green: "bg-linear-to-b from-white to-gray-100 hover:from-green-600 hover:to-green-800 hover:text-white",
+        black: "bg-linear-to-b from-white to-gray-100 active:to-white active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
       },
       size: {
         default:
@@ -56,7 +56,7 @@ const buttonVariants = cva(
     defaultVariants: {
       variant: "default",
       size: "default",
-      color: "red",
+      color: "black",
     },
   }
 )
@@ -75,7 +75,7 @@ function Button({
   className,
   variant = "default",
   size = "default",
-  color = "red",
+  color = "black",
   asChild = false,
   ...props
 }: React.ComponentProps<"button"> &
@@ -100,7 +100,7 @@ function CustomButton({
   className,
   variant = "custom_button",
   size = "default",
-  color = "red",
+  color = "black",
   ...props
 }: React.ComponentProps<typeof Button>) {
   return (

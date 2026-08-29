@@ -43,8 +43,7 @@ export default function MailInboxTabs({
             {isActive && (
               <motion.div
                 layoutId="active-mail-inbox-tab"
-                className="absolute inset-0 rounded-full bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)]"
-                transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                className="absolute inset-0 rounded-full bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)]"
               />
             )}
             <span className="relative z-10">{tab.label}</span>

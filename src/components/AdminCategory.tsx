@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   CheckIcon,
+  ChevronLeft,
+  ChevronRight,
   Edit2Icon,
   Loader2Icon,
   PlusIcon,
@@ -21,6 +23,7 @@ type Category = {
 };
 
 const emptyForm = { name: "", description: "" };
+const ITEMS_PER_PAGE = 3;
 
 export default function AdminCategories() {
   const [items, setItems] = useState<Category[]>([]);
@@ -29,6 +32,14 @@ export default function AdminCategories() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE) || 1;
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const paginatedItems = items.slice(
+    (safeCurrentPage - 1) * ITEMS_PER_PAGE,
+    safeCurrentPage * ITEMS_PER_PAGE
+  );
 
   const loadCategories = useCallback(async () => {
     setLoading(true);
@@ -155,7 +166,7 @@ export default function AdminCategories() {
         </p>
       </div>
 
-      <section className="rounded-4xl bg-white border p-5 shadow-sm sm:p-5">
+      <section className="p-5 sm:p-5">
         <h2 className="text-xs font-medium text-black sm:text-sm">
           {editingId ? "Edit category" : "Add category"}
         </h2>
@@ -191,7 +202,6 @@ export default function AdminCategories() {
           <div className="flex flex-wrap gap-2">
             <CustomButton
               type="submit"
-              color={editingId ? "green" : "red"}
               disabled={saving || !form.name.trim()}
             >
               {saving ? (
@@ -218,14 +228,9 @@ export default function AdminCategories() {
       </section>
 
       <section className="space-y-3 sm:space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm sm:text-base font-semibold tracking-tight text-black">
-            All categories
-          </h2>
-          <span className="text-[11px] sm:text-xs text-black/50 font-mono">
-            {items.length} {items.length === 1 ? "Category" : "Categories"}
-          </span>
-        </div>
+        <h2 className="text-sm sm:text-base font-semibold tracking-tight text-black">
+          All {items.length > 2 ? "Categories" : "Category"} ({items.length > 0 && items.length})
+        </h2>
 
         {loading ? (
           <div className="flex items-center justify-center gap-2 py-8 text-xs text-black sm:py-12 sm:text-sm">
@@ -237,54 +242,90 @@ export default function AdminCategories() {
             No categories yet.
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-2.5 sm:gap-3">
-            {items.map((cat) => (
-              <div
-                key={cat.id}
-                className={`overflow-hidden rounded-3xl bg-white border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] transition-all duration-200 p-3.5 sm:px-5 sm:py-3 flex items-center justify-between gap-3 text-black ${
-                  editingId === cat.id ? "bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]" : ""
-                }`}
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs sm:text-sm font-semibold text-black truncate">
-                      {cat.name}
-                    </span>
-                  </div>
-                  {cat.description && (
-                    <p className="text-[11px] sm:text-xs text-black/50 truncate mt-0.5">
-                      {cat.description}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <CustomButton
-                    size="xs"
-                    color="blue"
-                    onClick={() => startEdit(cat)}
-                    aria-label={`Edit ${cat.name}`}
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 gap-2.5 sm:gap-3">
+              {paginatedItems.map((cat, index) => {
+                const itemNumber = (safeCurrentPage - 1) * ITEMS_PER_PAGE + index + 1;
+                return (
+                  <div
+                    key={cat.id}
+                    className={`overflow-hidden relative rounded-3xl bg-white border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] transition-all duration-200 p-3.5 sm:px-5 sm:py-3 flex items-center justify-between gap-3 text-black ${
+                      editingId === cat.id ? "border-transparent bg-black/5 shadow-none" : ""
+                    }`}
                   >
-                    <Edit2Icon className="h-3 w-3 sm:block hidden" />
-                    <span>Edit</span>
+                    <div className="text-xs sm:text-sm font-semibold text-black/50">
+                      {itemNumber}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs sm:text-sm font-semibold text-black truncate">
+                          {cat.name}
+                        </span>
+                      </div>
+                      {cat.description && (
+                        <p className="text-[11px] sm:text-xs text-black/50 truncate mt-0.5">
+                          {cat.description}
+                        </p>
+                      )}
+                    </div>
+
+                    {editingId !== cat.id && (
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <CustomButton
+                          size="xs"
+                          onClick={() => startEdit(cat)}
+                          aria-label={`Edit ${cat.name}`}
+                        >
+                          <Edit2Icon className="h-3 w-3 sm:block hidden" />
+                          <span>Edit</span>
+                        </CustomButton>
+                        <CustomButton
+                          size="xs"
+                          disabled={deletingId === cat.id}
+                          onClick={() => handleDelete(cat.id, cat.name)}
+                          aria-label={`Delete ${cat.name}`}
+                        >
+                          {deletingId === cat.id ? (
+                            <Loader2Icon className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Trash2Icon className="h-3 w-3 sm:block hidden" />
+                          )}
+                          <span>Delete</span>
+                        </CustomButton>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-[11px] sm:text-xs text-black/50 font-mono">
+                  Page {safeCurrentPage} of {totalPages}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <CustomButton
+                    size="sm"
+                    disabled={safeCurrentPage <= 1}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    title="Previous page"
+                    >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                    <span>Prev</span>
                   </CustomButton>
                   <CustomButton
-                    size="xs"
-                    color="red"
-                    disabled={deletingId === cat.id}
-                    onClick={() => handleDelete(cat.id, cat.name)}
-                    aria-label={`Delete ${cat.name}`}
-                  >
-                    {deletingId === cat.id ? (
-                      <Loader2Icon className="h-3 w-3 animate-spin" />
-                    ) : (
-                      <Trash2Icon className="h-3 w-3 sm:block hidden" />
-                    )}
-                    <span>Delete</span>
+                    size="sm"
+                    disabled={safeCurrentPage >= totalPages}
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    title="Next page"
+                    >
+                    <span>Next</span>
+                    <ChevronRight className="h-3.5 w-3.5" />
                   </CustomButton>
                 </div>
               </div>
-            ))}
+            )}
           </div>
         )}
       </section>

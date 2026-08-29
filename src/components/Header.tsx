@@ -64,7 +64,7 @@ export default function Header({
               onClick={() => setOptionsOpen(true)}
               aria-expanded={optionsOpen}
               aria-label="Open options menu"
-              className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black transition-all duration-300 outline-none cursor-pointer select-none"
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all duration-200 outline-none cursor-pointer select-none"
             >
               Options
             </button>
@@ -96,13 +96,13 @@ export default function Header({
               {hasCategories && (
                 <motion.button
                   type="button"
-                  whileTap={{ scale: 0.95 }}
+                  
                   onClick={() => {
                     onAnalyze();
                     closeOptions();
                   }}
                   disabled={analyzing || analyzeDisabled}
-                  className="px-3.5 py-1.5 disabled:cursor-not-allowed rounded-full text-xs font-semibold text-black bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40"
+                  className="px-3.5 py-1.5 disabled:cursor-not-allowed rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40"
                   aria-label="Analyze Mails"
                 >
                   {analyzing ? 'Analyzing…' : 'Analysis'}
@@ -111,13 +111,13 @@ export default function Header({
 
               <motion.button
                 type="button"
-                whileTap={{ scale: 0.95 }}
+                
                 onClick={() => {
                   onFetch();
                   closeOptions();
                 }}
                 disabled={loading}
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
                 aria-label="Fetch from Gmail"
               >
                 {loading ? 'Fetching…' : 'Providers'}
@@ -125,13 +125,13 @@ export default function Header({
 
               <motion.button
                 type="button"
-                whileTap={{ scale: 0.95 }}
+                
                 onClick={() => {
                   onLoadDataFromDatabase();
                   closeOptions();
                 }}
                 disabled={loading}
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
                 aria-label="Load from Database"
               >
                 {loading ? 'Loading…' : 'Database'}
@@ -139,12 +139,12 @@ export default function Header({
 
               <motion.button
                 type="button"
-                whileTap={{ scale: 0.95 }}
+                
                 onClick={() => {
                   onAccount();
                   closeOptions();
                 }}
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
                 aria-label="Account Settings"
               >
                 Account

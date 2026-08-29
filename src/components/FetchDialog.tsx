@@ -23,12 +23,13 @@ export default function FetchDialog({
   onOpenChange,
   onFetchFromCloud,
 }: FetchDialogProps) {
+  const [provider, setProvider] = useState<string>('google');
   const [unread, setUnread] = useState(true);
   const [days, setDays] = useState(1);
   const [count, setCount] = useState(1);
   const [important, setImportant] = useState(false);
   const [starred, setStarred] = useState(false);
-  const fields = { unread, setUnread, days, setDays, count, setCount, important, setImportant, starred, setStarred };
+  const fields = { provider, setProvider, unread, setUnread, days, setDays, count, setCount, important, setImportant, starred, setStarred };
 
   const handleFetch = () => {
     onFetchFromCloud(buildCloudQueryOptions(fields));
@@ -61,9 +62,9 @@ export default function FetchDialog({
         </div>
 
         <div className="flex items-center justify-end gap-2 px-4 py-3 border-t">
-          <CustomButton onClick={handleFetch}>
+          <CustomButton onClick={handleFetch} size="lg">
             <CloudDownloadIcon className="w-3.5 h-3.5" />
-            <span>Fetch Mails</span>
+            <span>Fetch</span>
           </CustomButton>
         </div>
       </DialogContent>
