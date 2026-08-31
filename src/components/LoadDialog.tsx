@@ -41,8 +41,8 @@ export default function LoadDialog({
       >
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b">
           <div>
-            <DialogTitle className="text-sm font-semibold text-black">Load Mails</DialogTitle>
-            <DialogDescription className="text-[10px] text-black/50">Query encrypted mails from database</DialogDescription>
+            <DialogTitle className="text-sm font-semibold text-black">Storage</DialogTitle>
+            <DialogDescription className="text-[10px] text-black/50">Query stored mails from database</DialogDescription>
           </div>
           <button
             type="button"

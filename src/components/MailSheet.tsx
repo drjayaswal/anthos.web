@@ -1,156 +1,154 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { X, Clock, User, ExternalLink } from 'lucide-react';
 import { Mail } from '@/types';
-import { Badge } from './ui/badge';
-import { useBodyScrollLock } from '@/lib/useBodyScrollLock';
-import { formatEmailContent } from '@/lib/utils';
+import { cn, formatEmailContent } from '@/lib/utils';
 
 interface MailDetailSheetProps {
   mail: Mail | null;
   onClose: () => void;
 }
 
+function parseSender(senderStr: string) {
+  if (!senderStr) return { name: 'Unknown', email: null, initials: '??' };
+  const match = senderStr.match(/^(.*?)\s*<(.+?)>$/);
+  if (match) {
+    const rawName = match[1].replace(/^["']|["']$/g, '').trim();
+    const email = match[2].trim();
+    const name = rawName || email.split('@')[0];
+    const initials = name.slice(0, 2).toUpperCase();
+    return { name, email, initials };
+  }
+  const email = senderStr.trim();
+  const name = email.split('@')[0];
+  const initials = name.slice(0, 2).toUpperCase();
+  return { name, email, initials };
+}
+
+function parseRecipient(recipientStr?: string) {
+  if (!recipientStr) return null;
+  const match = recipientStr.match(/^(.*?)\s*<(.+?)>$/);
+  if (match) {
+    const rawName = match[1].replace(/^["']|["']$/g, '').trim();
+    const email = match[2].trim();
+    return rawName ? `${rawName} (${email})` : email;
+  }
+  return recipientStr;
+}
+
 export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
-  useBodyScrollLock(!!mail);
+  if (!mail) return null;
 
-  const initials = mail?.sender
-    ? mail.sender.split('@')[0].slice(0, 2).toUpperCase()
-    : '??';
+  const { name, email, initials } = parseSender(mail.sender);
+  const recipientDisplay = parseRecipient(mail.recipient);
 
-  const formattedDate = mail
-    ? new Date(mail.createdAt).toLocaleString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-    : '';
+  const formattedDate = new Date(mail.createdAt).toLocaleString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
-  const gmailUrl = mail ? `https://mail.google.com/mail/u/0/#all/${mail.id}` : '#';
+  const gmailUrl = `https://mail.google.com/mail/u/0/#all/${mail.id}`;
 
   return (
-    <AnimatePresence>
-      {mail && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-60 bg-black/50 backdrop-blur-sm"
-            onClick={onClose}
-          />
-          <div className="fixed inset-0 z-70 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 pointer-events-none">
-            <motion.div
-              initial={{ y: '100%', opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: '100%', opacity: 0 }}
-              transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-              drag="y"
-              dragConstraints={{ top: 0, bottom: 0 }}
-              dragElastic={{ top: 0, bottom: 0.7 }}
-              onDragEnd={(_, info) => {
-                if (info.offset.y > 80 || info.velocity.y > 200) {
-                  onClose();
-                }
-              }}
-              className="w-full sm:w-140 md:w-155 sm:max-w-sm max-h-[70dvh] sm:max-h-[50vh] flex flex-col rounded-t-4xl sm:rounded-4xl border border-b-0 sm:border-b bg-white text-black shadow-2xl overflow-hidden pointer-events-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="sm:hidden flex shrink-0 justify-center pt-3 pb-1.5 cursor-grab active:cursor-grabbing touch-none select-none">
-                <div className="h-1.5 w-12 rounded-full bg-black/25" />
+    <Dialog open={!!mail} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent
+        showCloseButton={false}
+        className="w-full sm:w-90 sm:max-w-lg rounded-t-4xl sm:rounded-4xl bg-white border sm:border-b border-b-0 text-black shadow-2xl p-0 gap-0 overflow-hidden flex flex-col max-h-[85vh]"
+      >
+        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
+            <div className="shrink-0 h-9 w-9 rounded-full bg-linear-to-br from-red-600 via-red-500 to-rose-400 flex items-center justify-center shadow-xs">
+              <span className="text-xs font-bold text-white">{initials}</span>
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 min-w-0">
+                <DialogTitle className="text-xs font-semibold text-black truncate">
+                  {name}
+                </DialogTitle>
+                <span
+                  className={cn(
+                    'text-[9px] font-semibold px-2 py-0.2 rounded-full capitalize shrink-0',
+                    mail.status === 'unread'
+                      ? 'bg-red-50 text-red-600 border border-red-200/60'
+                      : 'bg-emerald-50 text-emerald-600 border border-emerald-200/60'
+                  )}
+                >
+                  {mail.status}
+                </span>
               </div>
-
-              <div className="shrink-0 px-4 sm:px-5 pt-3 sm:pt-4 pb-3 border-b">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-linear-to-br from-red-600 via-red-400 to-red-200 flex items-center justify-center">
-                      <span className="text-xs sm:text-sm font-semibold text-white">{initials}</span>
-                    </div>
-
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-semibold text-black truncate max-w-40 sm:max-w-xs">
-                          {mail.sender}
-                        </p>
-                        <Badge
-                          variant={mail.status === 'unread' ? 'failure_light' : 'success_light'}
-                          className="capitalize text-[10px] px-2 py-0 h-4 shrink-0"
-                        >
-                          {mail.status}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-1 mt-0.5">
-                        <Clock className="h-3 w-3 text-black/40 shrink-0" />
-                        <p className="text-[11px] text-black/50 truncate">{formattedDate}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    title="Close"
-                    className="shrink-0 h-7 w-7 cursor-pointer rounded-full flex items-center justify-center text-black/50 hover:text-red-600 hover:bg-black/5 transition-colors"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-                {mail.recipient && (
-                  <div className="mt-2.5 flex items-center gap-1.5">
-                    <User className="h-3 w-3 text-black/30 shrink-0" />
-                    <span className="text-[11px] text-black/50">To:</span>
-                    <span className="text-[11px] text-black/70 truncate">{mail.recipient}</span>
-                  </div>
-                )}
+              {email && (
+                <p className="text-[10px] text-black/50 truncate font-mono leading-tight mt-0.5">
+                  {email}
+                </p>
+              )}
+              <div className="flex items-center gap-1 mt-0.5">
+                <Clock className="h-3 w-3 text-black/40 shrink-0" />
+                <DialogDescription className="text-[10px] text-black/40 truncate">
+                  {formattedDate}
+                </DialogDescription>
               </div>
-
-              <div className="shrink-0 px-4 sm:px-5 py-3 border-b bg-black/2">
-                <h2 className="text-base sm:text-sm font-semibold leading-snug text-black wrap-break-word">
-                  {mail.subject}
-                </h2>
-                {mail.summary && (
-                  <div className="mt-2 p-2.5 rounded-xl bg-black/5 border">
-                    <p className="text-[10px] font-medium uppercase tracking-wider text-black/50 mb-1">
-                      AI Summary
-                    </p>
-                    <p className="text-xs text-black/80 leading-relaxed">
-                      {mail.summary}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className="relative min-h-60 sm:min-h-52 flex-1 overflow-hidden flex flex-col justify-center">
-                <div className="absolute inset-0 overflow-hidden px-4 sm:px-5 py-4 select-none pointer-events-none blur-xs opacity-25">
-                  <p className="text-sm leading-relaxed text-black/80 whitespace-pre-wrap wrap-break-word font-normal">
-                    {formatEmailContent(mail.body) || 'No email content.'}
-                  </p>
-                </div>
-
-                <div className="relative z-10 flex flex-col items-center justify-center px-4 py-8 text-center">
-                  <p className="text-base sm:text-xs font-medium text-black/75 max-w-sm mb-4">
-                    Open in Gmail to read the full message with rich formatting, attachments, and threads.
-                  </p>
-                  <a
-                    href={gmailUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white px-4 py-2 text-xs font-semibold shadow-md hover:opacity-90 transition-all duration-200 active:scale-95 cursor-pointer"
-                  >
-                    <span>Open in Gmail</span>
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                </div>
-              </div>
-            </motion.div>
+            </div>
           </div>
-        </>
-      )}
-    </AnimatePresence>
+
+          <button
+            type="button"
+            onClick={onClose}
+            title="Close dialog"
+            className="shrink-0 rounded cursor-pointer p-1 text-black/50 hover:text-red-600! transition"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        <div className="px-4 py-3 space-y-2.5 overflow-y-auto overscroll-contain flex-1">
+          <div className="rounded-xl p-2.5 border space-y-1 ">
+            <span className="text-[9px] font-bold uppercase tracking-wider text-black/50 block">
+              Subject
+            </span>
+            <h2 className="text-xs font-semibold text-black leading-snug wrap-break-word">
+              {mail.subject || '(No Subject)'}
+            </h2>
+          </div>
+
+          {mail.summary && (
+            <div className="rounded-xl p-2.5 space-y-1 shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-black/50 block">
+                AI Summary
+              </span>
+              <p className="text-xs text-black/80 leading-relaxed">{mail.summary}</p>
+            </div>
+          )}
+
+          <div className="relative rounded-2xl p-3 min-h-36 overflow-hidden flex items-center justify-center">
+            <div className="absolute inset-0 p-3 overflow-hidden select-none pointer-events-none blur-xs opacity-50 text-xs leading-relaxed text-black/75 whitespace-pre-wrap wrap-break-word font-normal">
+              {formatEmailContent(mail.body) || 'No message content available.'}
+            </div>
+
+            <div className="relative z-10 flex items-center justify-center">
+              <a
+                href={gmailUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 text-xs font-semibold shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer"
+              >
+                <span>Open</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { motion, useMotionValue, useTransform, type PanInfo } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import {
   Dialog,
   DialogContent,
@@ -27,22 +27,29 @@ interface AccountDialogProps {
 export default function AccountDialog({ open, onOpenChange, onSignOut }: AccountDialogProps) {
   const [data, setData] = useState<UserAccountDetails | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [maxSwipe, setMaxSwipe] = useState(220);
+  const [maxSwipe, setMaxSwipe] = useState(255);
   const x = useMotionValue(0);
 
-  const bg = useTransform(x, [0, maxSwipe || 220], ['#DC2626', '#F87171']);
-  const iconColor = useTransform(x, [0, maxSwipe || 220], ['#ffffff', '#ffffff']);
+  const fillWidth = useTransform(x, (v) => `${Math.max(36, v + 36)}px`);
+  const labelOpacity = useTransform(x, [0, 80], [1, 0]);
+  const activeLabelOpacity = useTransform(x, [50, 150], [0, 1]);
 
-  const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (info.offset.x > maxSwipe * 0.75) {
+  const handleDragEnd = () => {
+    if (x.get() >= maxSwipe) {
       onSignOut();
+    } else {
+      animate(x, 0, {
+        type: 'spring',
+        stiffness: 500,
+        damping: 35,
+      });
     }
-    x.set(0);
   };
 
   useEffect(() => {
     async function loadData() {
       if (open) {
+        x.set(0);
         const result = await fetchUserDetails();
         if (result.ok && result.data) {
           setData(result.data as UserAccountDetails);
@@ -50,11 +57,11 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
       }
     }
     loadData();
-  }, [open]);
+  }, [open, x]);
 
   useEffect(() => {
     if (containerRef.current) {
-      setMaxSwipe(containerRef.current.offsetWidth - 42);
+      setMaxSwipe(containerRef.current.offsetWidth - 44);
     }
   }, [open, data]);
 
@@ -82,7 +89,7 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
         <div className="px-4 py-3 space-y-2">
           {data ? (
             <div className="space-y-2">
-              <div className="rounded-lg p-2.5 border flex items-center gap-3">
+              <div className="rounded-2xl p-2.5 border flex items-center gap-3">
                 <UserIcon size={15} className="text-black/50 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-[9px] font-medium text-black/50 uppercase tracking-wide">Email</p>
@@ -90,7 +97,7 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
                 </div>
               </div>
 
-              <div className="rounded-lg p-2.5 border flex items-center gap-3">
+              <div className="rounded-2xl p-2.5 border flex items-center gap-3">
                 <MailIcon size={15} className="text-black/50 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-[9px] font-medium text-black/50 uppercase tracking-wide">Encrypted Mails</p>
@@ -98,7 +105,7 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
                 </div>
               </div>
 
-              <div className="rounded-lg p-2.5 border flex items-center gap-3">
+              <div className="rounded-2xl p-2.5 border flex items-center gap-3">
                 <CalendarIcon size={15} className="text-black/50 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-[9px] font-medium text-black/50 uppercase tracking-wide">Joined</p>
@@ -118,24 +125,39 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
         <div className="p-3 border-t">
           <div
             ref={containerRef}
-            className="relative w-full h-11 rounded-full overflow-hidden border shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] bg-black/5 flex items-center p-1"
+            className="relative w-full h-10 rounded-full overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] bg-black/5 flex items-center select-none"
           >
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <span className="text-black/60 text-[11px] font-medium">
+            <motion.div
+              style={{ opacity: labelOpacity }}
+              className="absolute inset-0 flex items-center justify-center pointer-events-none pl-6"
+            >
+              <span className="text-black/60 text-[11px] font-medium tracking-tight">
                 Slide to Disconnect
               </span>
-            </div>
+            </motion.div>
+
+            <motion.div
+              style={{ width: fillWidth }}
+              className="absolute h-10 left-0 top-0 rounded-full bg-linear-to-b from-red-600 via-red-700 to-red-800 border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.25),0_2px_4px_rgba(0,0,0,0.1)] pointer-events-none flex items-center justify-center overflow-hidden"
+            >
+              <motion.span
+                style={{ opacity: activeLabelOpacity }}
+                className="text-white text-[10px] font-bold uppercase tracking-wider pr-6 truncate select-none"
+              >
+                Disconnecting
+              </motion.span>
+            </motion.div>
+
             <motion.div
               drag="x"
               dragConstraints={{ left: 0, right: maxSwipe }}
-              dragElastic={0.1}
+              dragMomentum={false}
+              dragElastic={0}
               onDragEnd={handleDragEnd}
-              style={{ x, backgroundColor: bg }}
-              className="relative z-10 w-9 h-9 rounded-full flex items-center justify-center shadow-md cursor-grab active:cursor-grabbing"
+              style={{ x }}
+              className="relative z-10 w-10 h-10 rounded-full bg-linear-to-b from-white to-gray-100 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.1)] flex items-center justify-center cursor-grab active:cursor-grabbing select-none shrink-0"
             >
-              <motion.div style={{ color: iconColor }}>
-                <ChevronsRightIcon size={16} strokeWidth={2.5} />
-              </motion.div>
+              <ChevronsRightIcon size={24} strokeWidth={3} className="text-red-600" />
             </motion.div>
           </div>
         </div>

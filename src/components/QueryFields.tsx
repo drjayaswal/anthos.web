@@ -195,7 +195,7 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
       {p.setProvider && (
         <div className="space-y-1.5" ref={providerDropdownRef}>
           <label className="block text-[10px] font-medium text-black/60 uppercase tracking-wide">
-            Provider
+            Service Provider
           </label>
           <div className="relative">
             <button
@@ -267,11 +267,11 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
       )}
 
       <div className="space-y-2">
-        <div className="px-3 py-2 flex items-center justify-between">
+        <div className="px-3 py-2 flex items-center justify-between rounded-xl border">
           <Label className="text-xs font-medium text-black/80">Emails Count</Label>
           <Counter value={p.count} min={1} max={10} onChange={p.setCount} />
         </div>
-        <div className="px-3 py-2 flex items-center justify-between">
+        <div className="px-3 py-2 flex items-center justify-between rounded-xl border">
           <Label className="text-xs font-medium text-black/80">Lookback Days</Label>
           <Counter value={p.days} min={1} max={7} onChange={p.setDays} />
         </div>
@@ -311,7 +311,7 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
 export function DatabaseQueryFields(p: DatabaseQueryFieldsProps) {
   return (
     <div className="space-y-3">
-      <div className="px-3 py-2 flex items-center justify-between">
+      <div className="px-3 py-2 flex items-center justify-between border rounded-xl">
         <Label className="text-xs font-medium text-black/80">Emails Count</Label>
         <Counter value={p.count} min={1} max={10} onChange={p.setCount} />
       </div>

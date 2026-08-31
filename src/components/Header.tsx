@@ -120,7 +120,7 @@ export default function Header({
                 className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
                 aria-label="Fetch from Gmail"
               >
-                {loading ? 'Fetching…' : 'Providers'}
+                {loading ? 'Fetching…' : 'ESPs'}
               </motion.button>
 
               <motion.button
@@ -134,7 +134,7 @@ export default function Header({
                 className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
                 aria-label="Load from Database"
               >
-                {loading ? 'Loading…' : 'Database'}
+                {loading ? 'Loading…' : 'Storage'}
               </motion.button>
 
               <motion.button

@@ -44,8 +44,8 @@ export default function FetchDialog({
       >
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b">
           <div>
-            <DialogTitle className="text-sm font-semibold text-black">Fetch Mails</DialogTitle>
-            <DialogDescription className="text-[10px] text-black/50">Query Gmail with custom filters</DialogDescription>
+            <DialogTitle className="text-sm font-semibold text-black">Email Service Providers</DialogTitle>
+            <DialogDescription className="text-[10px] text-black/50">Query email with custom filters</DialogDescription>
           </div>
           <button
             type="button"
