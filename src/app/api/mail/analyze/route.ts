@@ -31,7 +31,7 @@ export async function POST(req: Request): Promise<NextResponse<MailAnalyzeRespon
     return NextResponse.json({ ok: false, error: 'No mails provided for analysis' }, { status: 400 });
   }
 
-  const isHardcoded = !modelId || modelId === 'hardcoded-llama-70b';
+  const isHardcoded = !modelId || modelId.startsWith('hardcoded-') || modelId === 'hardcoded-llama-70b';
 
   if (isHardcoded && mails.length > 2) {
     return NextResponse.json({ ok: false, error: 'You can analyze at most 2 mails at a time with the default model' }, { status: 400 });
@@ -48,7 +48,7 @@ export async function POST(req: Request): Promise<NextResponse<MailAnalyzeRespon
     .join('\n');
 
   let groqClient = defaultGroq;
-  let modelNameToUse = 'llama-3.3-70b-versatile';
+  let nameToUse = 'gpt-oss-120b';
 
   if (!isHardcoded && session.user?.id) {
     try {
@@ -58,8 +58,8 @@ export async function POST(req: Request): Promise<NextResponse<MailAnalyzeRespon
         if (customModel.apiKey && customModel.apiKey !== 'FREE') {
           groqClient = new Groq({ apiKey: customModel.apiKey });
         }
-        if (customModel.modelName) {
-          modelNameToUse = customModel.modelName;
+        if (customModel.name) {
+          nameToUse = customModel.name;
         }
       }
     } catch {
@@ -92,7 +92,7 @@ Output MUST be a valid JSON object matching this schema strictly:
           { role: 'system', content: 'You are an expert email analysis AI. Respond strictly in valid JSON.' },
           { role: 'user', content: prompt },
         ],
-        model: modelNameToUse,
+        model: nameToUse,
         response_format: { type: 'json_object' },
         temperature: 0.2,
       });

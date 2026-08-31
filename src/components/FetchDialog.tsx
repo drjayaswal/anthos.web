@@ -62,7 +62,7 @@ export default function FetchDialog({
         </div>
 
         <div className="flex items-center justify-end gap-2 px-4 py-3 border-t">
-          <CustomButton onClick={handleFetch} size="lg">
+          <CustomButton onClick={handleFetch} size="sm">
             <CloudDownloadIcon className="w-3.5 h-3.5" />
             <span>Fetch</span>
           </CustomButton>

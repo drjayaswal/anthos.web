@@ -148,24 +148,42 @@ export default function Analyze({
     })();
   };
 
-  const handleAnalyzeSelected = (store: boolean, selectedModel?: AnalysisModel | null) => {
+  const handleAnalyzeSelected = (selectedModel?: AnalysisModel | null) => {
     const selection = selectedFetchedMails;
     if (selection.length === 0) {
       toast.error('Select fetched mails to analyze');
       return;
     }
-    const isHardcoded = !selectedModel || selectedModel.id === 'hardcoded-llama-70b';
-    if (isHardcoded && selection.length > 2) {
+    const isDefault = !selectedModel || selectedModel.default === true || selectedModel.id.startsWith('hardcoded-');
+    if (isDefault && selection.length > 2) {
       toast.error('Default model is limited to 2 mails at a time. Select your own AI model to analyze more.');
       return;
     }
-    const modelLabel = selectedModel?.name ?? 'AI Model';
-    console.log('Analyze mails triggered (Analysis API call paused for now):', {
-      selectedCount: selection.length,
-      selection,
-      selectedModel,
-      store,
-    });
+
+    const modelObject: AnalysisModel = selectedModel
+      ? {
+          id: selectedModel.id,
+          provider: selectedModel.provider,
+          name: selectedModel.name,
+          default: selectedModel.default,
+          settingId: selectedModel.settingId,
+        }
+      : {
+          id: 'hardcoded-gpt-oss-120b',
+          provider: 'Open AI',
+          name: 'gpt-oss-120b',
+          default: true,
+          settingId: 'system-default',
+        };
+
+    const payload = {
+      emails: selection,
+      model: modelObject,
+      userId: sessionUserId,
+    };
+
+    console.log(payload);
+    const modelLabel = modelObject.provider;
     toast.success(`${selection.length} mail(s) selected with ${modelLabel} (Analysis call disabled for now)`);
   };
 

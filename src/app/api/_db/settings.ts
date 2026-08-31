@@ -4,8 +4,8 @@ import { settings, models } from "@/app/db/schema";
 
 export type ModelItem = {
   id: string;
+  provider: string;
   name: string;
-  modelName: string;
   apiKey: string;
   logo?: string | null;
   settingId: string;
@@ -49,8 +49,8 @@ export async function getUserSettings(userId: string): Promise<UserSettings> {
     userId: settingRow.userId,
     models: modelRows.map((m) => ({
       id: m.id,
+      provider: m.provider,
       name: m.name,
-      modelName: m.modelName,
       apiKey: m.apiKey,
       logo: m.logo,
       settingId: m.settingId,
@@ -62,15 +62,15 @@ export async function getUserSettings(userId: string): Promise<UserSettings> {
 
 export async function addModelToSettings(
   userId: string,
-  input: { name: string; modelName: string; apiKey: string; logo?: string }
+  input: { provider: string; name: string; apiKey: string; logo?: string }
 ): Promise<UserSettings> {
   const userSettings = await getUserSettings(userId);
   const newModelId = crypto.randomUUID();
 
   await db.insert(models).values({
     id: newModelId,
+    provider: input.provider,
     name: input.name,
-    modelName: input.modelName,
     apiKey: input.apiKey,
     logo: input.logo?.trim() || null,
     settingId: userSettings.id,
@@ -93,15 +93,15 @@ export async function addModelToSettings(
 export async function updateModelInSettings(
   userId: string,
   modelId: string,
-  input: { name: string; modelName: string; apiKey: string; logo?: string }
+  input: { provider: string; name: string; apiKey: string; logo?: string }
 ): Promise<UserSettings> {
   const userSettings = await getUserSettings(userId);
 
   await db
     .update(models)
     .set({
+      provider: input.provider,
       name: input.name,
-      modelName: input.modelName,
       apiKey: input.apiKey,
       logo: input.logo?.trim() || null,
     })

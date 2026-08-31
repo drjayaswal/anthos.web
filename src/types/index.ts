@@ -50,8 +50,8 @@ export interface AnalyzeRunPayload {
 
 export interface AnalysisModel {
   id: string;
+  provider: string;
   name: string;
-  displayName: string;
-  model: string;
-  logo?: string | null;
+  default: boolean;
+  settingId: string;
 }

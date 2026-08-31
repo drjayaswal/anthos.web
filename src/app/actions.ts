@@ -47,9 +47,9 @@ export async function fetchUserDetails(): Promise<{
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
-    
+
     const result = await res.json();
-    
+
     if (!res.ok || result.ok === false) {
       return { ok: false, error: result.error || "Fetch failed" };
     }
@@ -201,8 +201,8 @@ export async function getUserSettingsAction(): Promise<{
 }
 
 export async function addModelSettingAction(input: {
+  provider: string;
   name: string;
-  modelName: string;
   apiKey: string;
   logo?: string;
 }): Promise<{
@@ -215,19 +215,20 @@ export async function addModelSettingAction(input: {
     if (!session?.user?.id) {
       return { ok: false, error: "Unauthorized" };
     }
-    if (!input.name.trim() || !input.modelName.trim() || !input.apiKey.trim()) {
+    if (!input.provider?.trim() || !input.name?.trim() || !input.apiKey?.trim()) {
       return { ok: false, error: "Provider Name, Model Name, and API Key are all required" };
     }
-    if (!isSupportedProvider(input.name)) {
+    if (!isSupportedProvider(input.provider)) {
       return {
         ok: false,
-        error: `Provider "${input.name}" is not supported. Please select one of the 10 supported providers.`,
+        error: `Provider "${input.provider}" is not supported. Please select one of the 10 supported providers.`,
       };
     }
-    const matchedProvider = getProviderByName(input.name);
+    const matchedProvider = getProviderByName(input.provider);
     const normalizedInput = {
-      ...input,
-      name: matchedProvider ? matchedProvider.name : input.name.trim(),
+      provider: matchedProvider ? matchedProvider.name : input.provider.trim(),
+      name: input.name.trim(),
+      apiKey: input.apiKey.trim(),
       logo: input.logo?.trim() || matchedProvider?.logo || undefined,
     };
     const updatedSettings = await addModelToSettings(session.user.id, normalizedInput);
@@ -242,8 +243,8 @@ export async function addModelSettingAction(input: {
 export async function updateModelSettingAction(
   modelId: string,
   input: {
+    provider: string;
     name: string;
-    modelName: string;
     apiKey: string;
     logo?: string;
   }
@@ -257,19 +258,20 @@ export async function updateModelSettingAction(
     if (!session?.user?.id) {
       return { ok: false, error: "Unauthorized" };
     }
-    if (!modelId || !input.name.trim() || !input.modelName.trim() || !input.apiKey.trim()) {
+    if (!modelId || !input.provider?.trim() || !input.name?.trim() || !input.apiKey?.trim()) {
       return { ok: false, error: "Model ID, Provider Name, Model Name, and API Key are required" };
     }
-    if (!isSupportedProvider(input.name)) {
+    if (!isSupportedProvider(input.provider)) {
       return {
         ok: false,
-        error: `Provider "${input.name}" is not supported. Please select one of the 10 supported providers.`,
+        error: `Provider "${input.provider}" is not supported. Please select one of the 10 supported providers.`,
       };
     }
-    const matchedProvider = getProviderByName(input.name);
+    const matchedProvider = getProviderByName(input.provider);
     const normalizedInput = {
-      ...input,
-      name: matchedProvider ? matchedProvider.name : input.name.trim(),
+      provider: matchedProvider ? matchedProvider.name : input.provider.trim(),
+      name: input.name.trim(),
+      apiKey: input.apiKey.trim(),
       logo: input.logo?.trim() || matchedProvider?.logo || undefined,
     };
     const updatedSettings = await updateModelInSettings(session.user.id, modelId, normalizedInput);
@@ -316,19 +318,19 @@ export async function getAnalysisModelsAction(): Promise<{
     const userSettings = await getUserSettings(session.user.id);
 
     const defaultModel: AnalysisModel = {
-      id: "hardcoded-llama-70b",
-      name: "Llama 70B",
-      displayName: "Llama 70B (Anthos Default)",
-      model: "llama-3.3-70b-versatile",
-      logo: "/ai-default.png",
+      id: "hardcoded-gpt-oss-120b",
+      provider: "Open AI",
+      name: "gpt-oss-120b",
+      default: true,
+      settingId: "system-default",
     };
 
     const userModels: AnalysisModel[] = (userSettings.models || []).map((m) => ({
       id: m.id,
+      provider: m.provider,
       name: m.name,
-      displayName: m.name,
-      model: m.modelName,
-      logo: m.logo ?? null,
+      default: false,
+      settingId: m.settingId,
     }));
 
     return {

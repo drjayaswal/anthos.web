@@ -58,8 +58,8 @@ export const settings = pgTable("settings", {
 
 export const models = pgTable("models", {
   id: text("id").primaryKey(),
+  provider: text("provider").notNull(),
   name: text("name").notNull(),
-  modelName: text("model_name").notNull(),
   apiKey: text("api_key").notNull(),
   logo: text("logo"),
   settingId: text("setting_id").notNull().references(() => settings.id, { onDelete: "cascade" })

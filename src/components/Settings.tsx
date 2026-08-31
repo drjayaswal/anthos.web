@@ -32,11 +32,11 @@ import {
 import { PROVIDERS, type Provider, isSupportedProvider, getProviderByName } from "@/lib/providers";
 
 const HARDCODED_DEFAULT_MODEL: ModelItem = {
-  id: "hardcoded-llama-70b",
-  name: "Llama 70B",
-  modelName: "llama-3.3-70b-versatile",
+  id: "hardcoded-gpt-oss-120b",
+  provider: "Open AI",
+  name: "gpt-oss-120b",
   apiKey: "FREE",
-  logo: "/ai-default.png",
+  logo: "/providers/openai.png",
   settingId: "system-default",
 };
 
@@ -68,7 +68,7 @@ function ModelCard({
   const [isModelHovered, setIsModelHovered] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const matchedProvider = getProviderByName(model.name);
+  const matchedProvider = getProviderByName(model.provider);
   const displayLogo = model.logo || matchedProvider?.logo || "/anthos.svg";
 
   const actionButtons = isReadOnly ? null : (
@@ -116,18 +116,18 @@ function ModelCard({
         <div className="flex items-center justify-center shrink-0 w-10 h-10 overflow-hidden">
           <Image
             src={displayLogo}
-            alt={model.name}
+            alt={model.provider}
             width={48}
             height={48}
             unoptimized
-            className={`${isReadOnly ? "h-8 w-8" : "h-7 w-7"} object-contain`}
+            className={`${isReadOnly ? "h-8 w-8" : "h-7 w-7"} object-contain rounded-4xl`}
           />
         </div>
 
         <div className="flex items-center gap-1.5 min-w-0 shrink-0">
-          <span className="text-xs font-semibold truncate max-w-28 text-black">{model.name}</span>
+          <span className="text-xs font-semibold truncate max-w-28 text-black">{model.provider}</span>
           <span className="inline-flex items-center rounded-sm bg-green-600/10 px-1 py-px text-[9px] font-mono text-green-600 truncate">
-            {model.modelName}
+            {model.name}
           </span>
         </div>
 
@@ -180,7 +180,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
 
   const [selectedProviderName, setSelectedProviderName] = useState<string>(PROVIDERS[0].name);
   const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
-  const [modelName, setModelName] = useState("");
+  const [name, setname] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [logo, setLogo] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
@@ -213,7 +213,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
       : PROVIDERS[0].name;
     setSelectedProviderName(targetProvider);
     setProviderDropdownOpen(false);
-    setModelName("");
+    setname("");
     setApiKey("");
     setLogo("");
     setShowApiKey(false);
@@ -222,12 +222,12 @@ export default function Settings({ settings: initialSettings }: { settings: User
 
   const openEditModal = (model: ModelItem) => {
     setEditingModel(model);
-    const validProvider = isSupportedProvider(model.name)
-      ? getProviderByName(model.name)?.name || PROVIDERS[0].name
+    const validProvider = isSupportedProvider(model.provider)
+      ? getProviderByName(model.provider)?.name || PROVIDERS[0].name
       : PROVIDERS[0].name;
     setSelectedProviderName(validProvider);
     setProviderDropdownOpen(false);
-    setModelName(model.modelName);
+    setname(model.name);
     setApiKey(model.apiKey);
     setLogo(model.logo || "");
     setShowApiKey(false);
@@ -256,7 +256,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
       toast.error("Please select a valid supported provider.");
       return;
     }
-    if (!modelName.trim() || !apiKey.trim()) {
+    if (!name.trim() || !apiKey.trim()) {
       toast.error("Please fill in all required fields (Model Identifier, API Key)");
       return;
     }
@@ -269,8 +269,8 @@ export default function Settings({ settings: initialSettings }: { settings: User
     try {
       if (editingModel) {
         const res = await updateModelSettingAction(editingModel.id, {
-          name: finalProviderName,
-          modelName: modelName.trim(),
+          provider: finalProviderName,
+          name: name.trim(),
           apiKey: apiKey.trim(),
           logo: finalLogo,
         });
@@ -284,8 +284,8 @@ export default function Settings({ settings: initialSettings }: { settings: User
         }
       } else {
         const res = await addModelSettingAction({
-          name: finalProviderName,
-          modelName: modelName.trim(),
+          provider: finalProviderName,
+          name: name.trim(),
           apiKey: apiKey.trim(),
           logo: finalLogo,
         });
@@ -306,7 +306,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
   };
 
   const handleDeleteModel = async (model: ModelItem) => {
-    if (!confirm(`Are you sure you want to remove the model parameter "${model.name}"?`)) {
+    if (!confirm(`Are you sure you want to remove the model parameter "${model.provider}"?`)) {
       return;
     }
 
@@ -315,7 +315,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
       const res = await deleteModelSettingAction(model.id);
       if (res.ok && res.settings) {
         setSettings(res.settings);
-        toast.success(`Model "${model.name}" deleted successfully.`);
+        toast.success(`Model "${model.provider}" deleted successfully.`);
       } else {
         toast.error(res.error || "Failed to delete model setting");
       }
@@ -419,7 +419,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
       <Dialog open={isProvidersListOpen} onOpenChange={setIsProvidersListOpen}>
         <DialogContent
           showCloseButton={false}
-          className="w-full sm:max-w-lg max-h-[85vh] flex flex-col rounded-t-4xl sm:rounded-2xl bg-white border text-black shadow-2xl p-0 gap-0 overflow-hidden"
+          className="w-full sm:max-w-90 max-h-[85vh] flex flex-col rounded-t-4xl sm:rounded-2xl bg-white border text-black shadow-2xl p-0 gap-0 overflow-hidden"
         >
           <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b shrink-0">
             <div className="flex items-center gap-2">
@@ -450,9 +450,19 @@ export default function Settings({ settings: initialSettings }: { settings: User
                     setIsProvidersListOpen(false);
                     openAddModal(provider.name);
                   }}
-                  className="flex items-center justify-between p-2.5 cursor-pointer"
+                  className="flex items-center justify-between p-2.5 cursor-pointer hover:bg-black/5 rounded-xl transition"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-6 h-6 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
+                      <Image
+                        src={provider.logo}
+                        alt={provider.name}
+                        width={24}
+                        height={24}
+                        unoptimized
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                     <div className="min-w-0">
                       <div className="text-xs font-semibold text-black truncate">
                         {provider.name}
@@ -477,7 +487,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
       >
         <DialogContent
           showCloseButton={false}
-          className="w-full sm:max-w-md max-h-[90vh] flex flex-col rounded-t-4xl sm:rounded-2xl bg-white border text-black shadow-2xl p-0 gap-0 overflow-hidden"
+          className="w-full sm:max-w-80 max-h-[90vh] flex flex-col rounded-t-4xl sm:rounded-2xl bg-white border text-black shadow-2xl p-0 gap-0 overflow-hidden"
         >
           <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b shrink-0">
             <div className="flex items-center gap-2">
@@ -524,6 +534,16 @@ export default function Settings({ settings: initialSettings }: { settings: User
                   className="w-full flex items-center justify-between p-2.5 rounded-2xl bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] transition cursor-pointer text-left"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-5 h-5 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
+                      <Image
+                        src={getProviderByName(selectedProviderName)?.logo || '/providers/openai.png'}
+                        alt={selectedProviderName}
+                        width={20}
+                        height={20}
+                        unoptimized
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-black truncate">
                         {selectedProviderName}
@@ -552,9 +572,19 @@ export default function Settings({ settings: initialSettings }: { settings: User
                             type="button"
                             whileTap={{ scale: 0.98 }}
                             onClick={() => handleProviderSelect(provider.name)}
-                            className={`w-full flex px-3 py-2 items-center gap-2 transition-all duration-200 cursor-pointer text-left text-black ${selectedProviderName === provider.name ? "rounded-xl bg-white shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)]" : ""
+                            className={`w-full flex px-3 py-2 items-center gap-2 transition-all duration-200 cursor-pointer text-left text-black ${selectedProviderName === provider.name ? "rounded-xl bg-white shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)]" : "hover:bg-black/5 rounded-xl"
                               }`}
                           >
+                            <div className="w-5 h-5 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
+                              <Image
+                                src={provider.logo}
+                                alt={provider.name}
+                                width={20}
+                                height={20}
+                                unoptimized
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
                             <div className="min-w-0 flex-1">
                               <div className="text-xs font-semibold text-black truncate">
                                 {provider.name}
@@ -593,8 +623,8 @@ export default function Settings({ settings: initialSettings }: { settings: User
                             : "model-identifier"
                 }
                 title="Enter the exact model identifier name"
-                value={modelName}
-                onChange={(e) => setModelName(e.target.value)}
+                value={name}
+                onChange={(e) => setname(e.target.value)}
                 className="w-full rounded-lg bg-black/5 px-2.5 py-1.5 font-mono text-xs text-black placeholder:text-black/30 outline-none"
               />
             </div>
@@ -604,17 +634,12 @@ export default function Settings({ settings: initialSettings }: { settings: User
                 <label className="block text-[10px] font-medium text-black/60 uppercase tracking-wide">
                   API Key <span className="text-red-400">*</span>
                 </label>
-                {selectedProviderName === "Ollama" && (
-                  <span className="text-[9px] text-green-600 font-mono">
-                    (Set to FREE or host URL)
-                  </span>
-                )}
               </div>
               <div className="relative">
                 <input
                   type={showApiKey ? "text" : "password"}
                   required
-                  placeholder={selectedProviderName === "Ollama" ? "FREE" : "sk-..."}
+                  placeholder={"sk-..."}
                   title="Enter your provider API key"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
@@ -648,6 +673,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
             <div className="flex items-center justify-end gap-2 pt-3 border-t">
               <CustomButton
                 disabled={isSubmitting}
+                size="sm"
               >
                 {isSubmitting ? <Loader2 className="h-3 w-3 animate-spin" /> : <PlusIcon className="h-3 w-3" />}
                 {editingModel ? "Save Model" : "Add Model"}

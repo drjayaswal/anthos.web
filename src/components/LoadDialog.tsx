@@ -59,7 +59,7 @@ export default function LoadDialog({
         </div>
 
         <div className="flex items-center justify-end gap-2 px-4 py-3 border-t">
-          <CustomButton onClick={handleLoad} size="lg">
+          <CustomButton onClick={handleLoad} size="sm">
             <DatabaseZapIcon className="w-3.5 h-3.5" />
             <span>Load</span>
           </CustomButton>

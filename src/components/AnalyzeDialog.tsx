@@ -9,27 +9,27 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info, Sparkles, X, Bot, ChevronDown } from 'lucide-react';
+import { Sparkles, X, Bot, ChevronDown } from 'lucide-react';
 import { getAnalysisModelsAction } from '@/app/actions';
 import { CustomButton } from '@/components/ui/button';
 import type { AnalysisModel } from '@/types';
 
+import { getProviderByName } from '@/lib/providers';
+
 const FALLBACK_DEFAULT_MODEL: AnalysisModel = {
-  id: 'hardcoded-llama-70b',
-  name: 'Llama 70B',
-  displayName: 'Llama 70B (Default)',
-  model: 'llama-3.3-70b-versatile',
-  logo: '/ai-default.png',
+  id: 'hardcoded-gpt-oss-120b',
+  provider: 'Open AI',
+  name: 'gpt-oss-120b',
+  default: true,
+  settingId: 'system-default',
 };
 
 interface AnalyzeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedCount: number;
-  onAnalyze: (store: boolean, selectedModel?: AnalysisModel | null) => void;
+  onAnalyze: (selectedModel?: AnalysisModel | null) => void;
   models?: AnalysisModel[];
 }
 
@@ -40,7 +40,6 @@ export default function AnalyzeDialog({
   onAnalyze,
   models: propModels,
 }: AnalyzeDialogProps) {
-  const [store, setStore] = useState(false);
   const [fetchedModels, setFetchedModels] = useState<AnalysisModel[]>([]);
   const availableModels = propModels && propModels.length > 0
     ? propModels
@@ -77,10 +76,10 @@ export default function AnalyzeDialog({
         const res = await getAnalysisModelsAction();
         if (isMounted && res.ok && res.models && res.models.length > 0) {
           setFetchedModels(res.models);
-          const customModels = res.models.filter((m) => m.id !== 'hardcoded-llama-70b');
+          const customModels = res.models.filter((m) => !m.id.startsWith('hardcoded-') && !m.default);
           if (selectedCount > 2 && customModels.length > 0) {
             setSelectedModelId((prev) =>
-              prev === 'hardcoded-llama-70b' || !res.models!.some((m) => m.id === prev)
+              prev.startsWith('hardcoded-') || !res.models!.some((m) => m.id === prev)
                 ? customModels[0].id
                 : prev
             );
@@ -104,50 +103,52 @@ export default function AnalyzeDialog({
   const selectedModel = availableModels.find((m) => m.id === selectedModelId) || availableModels[0] || FALLBACK_DEFAULT_MODEL;
 
   const handleSelectModel = (model: AnalysisModel) => {
-    if (model.id === 'hardcoded-llama-70b' && selectedCount > 2) {
+    const isHardcoded = model.id.startsWith('hardcoded-') || model.default === true;
+    if (isHardcoded && selectedCount > 2) {
       return;
     }
     setSelectedModelId(model.id);
     setDropdownOpen(false);
 
-    const modalFields = {
-      selectedModel: model,
-      selectedModelId: model.id,
-      modelName: model.model,
+    const modelObject: AnalysisModel = {
+      id: model.id,
+      provider: model.provider,
       name: model.name,
-      displayName: model.displayName,
-      logo: model.logo ?? null,
-      store,
-      selectedCount,
+      default: isHardcoded,
+      settingId: model.settingId || (isHardcoded ? 'system-default' : ''),
     };
-    console.log('Analyze Dialog fields (Model Selected):', modalFields);
+    console.log('Analyze Dialog fields (Model Selected):', {
+      model: modelObject,
+      selectedCount,
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const modalFields = {
-      selectedModel,
-      selectedModelId: selectedModel?.id,
-      modelName: selectedModel?.model,
-      name: selectedModel?.name,
-      displayName: selectedModel?.displayName,
-      logo: selectedModel?.logo ?? null,
-      store,
-      selectedCount,
+    const isDefault = selectedModel.id.startsWith('hardcoded-') || selectedModel.default === true;
+    const modelObject: AnalysisModel = {
+      id: selectedModel.id,
+      provider: selectedModel.provider,
+      name: selectedModel.name,
+      default: isDefault,
+      settingId: selectedModel.settingId || (isDefault ? 'system-default' : ''),
     };
-    console.log('Analyze Dialog fields (Submit):', modalFields);
-    onAnalyze(store, selectedModel);
+    console.log('Analyze Dialog fields (Submit):', {
+      model: modelObject,
+      selectedCount,
+    });
+    onAnalyze(modelObject);
     onOpenChange(false);
   };
 
-  const isHardcodedModel = selectedModel?.id === 'hardcoded-llama-70b';
+  const isHardcodedModel = selectedModel?.id.startsWith('hardcoded-') || selectedModel?.default === true;
   const isSubmitDisabled = selectedCount === 0 || (isHardcodedModel && selectedCount > 2);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="w-full sm:w-96 rounded-t-4xl sm:rounded-2xl bg-white border sm:border-b border-b-0 text-black shadow-2xl p-0 gap-0 overflow-hidden"
+        className="w-full sm:w-80 rounded-t-4xl sm:rounded-2xl bg-white border sm:border-b border-b-0 text-black shadow-2xl p-0 gap-0 overflow-hidden"
       >
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b">
           <div>
@@ -189,15 +190,15 @@ export default function AnalyzeDialog({
                   className="w-full flex items-center justify-between p-2.5 rounded-2xl bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] transition cursor-pointer text-left"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-6 h-6 rounded-lg bg-black/10 flex items-center justify-center shrink-0 overflow-hidden">
-                      {selectedModel.logo ? (
+                    <div className="w-6 h-6 flex rounded-xl items-center justify-center shrink-0 overflow-hidden">
+                      {getProviderByName(selectedModel.provider)?.logo ? (
                         <Image
-                          src={selectedModel.logo}
-                          alt={selectedModel.name}
+                          src={getProviderByName(selectedModel.provider)!.logo}
+                          alt={selectedModel.provider}
                           width={24}
                           height={24}
                           unoptimized
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                       ) : (
                         <Bot className="w-3.5 h-3.5 text-black/70" />
@@ -205,10 +206,10 @@ export default function AnalyzeDialog({
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-black truncate">
-                        {selectedModel.name}
+                        {selectedModel.provider}
                       </p>
                       <p className="text-[9px] font-mono text-black/50 truncate">
-                        {selectedModel.model}
+                        {selectedModel.name}
                       </p>
                     </div>
                   </div>
@@ -231,8 +232,9 @@ export default function AnalyzeDialog({
                       >
                         {availableModels.map((model) => {
                           const isSelected = model.id === selectedModelId;
-                          const isHardcoded = model.id === 'hardcoded-llama-70b';
+                          const isHardcoded = model.id.startsWith('hardcoded-') || model.default === true;
                           const isModelDisabled = isHardcoded && selectedCount > 2;
+                          const providerLogo = getProviderByName(model.provider)?.logo;
                           return (
                             <motion.button
                               key={model.id}
@@ -246,22 +248,22 @@ export default function AnalyzeDialog({
                               }}
                               data-prevent-drawer-drag
                               className={`w-full flex items-center justify-between px-3 py-2 transition-all duration-200 text-left text-black ${isModelDisabled
-                                  ? 'opacity-40 cursor-not-allowed rounded-xl'
-                                  : isSelected
-                                    ? 'rounded-xl bg-white shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] cursor-pointer'
-                                    : 'hover:bg-black/5 rounded-xl cursor-pointer'
+                                ? 'opacity-40 cursor-not-allowed rounded-xl'
+                                : isSelected
+                                  ? 'rounded-xl bg-white shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] cursor-pointer'
+                                  : 'hover:bg-black/5 rounded-xl cursor-pointer'
                                 }`}
                             >
                               <div className="flex items-center gap-2 min-w-0">
-                                <div className="w-5 h-5 rounded-md bg-black/10 flex items-center justify-center shrink-0 overflow-hidden">
-                                  {model.logo ? (
+                                <div className="w-5 h-5 rounded flex items-center justify-center shrink-0 overflow-hidden">
+                                  {providerLogo ? (
                                     <Image
-                                      src={model.logo}
-                                      alt={model.name}
+                                      src={providerLogo}
+                                      alt={model.provider}
                                       width={20}
                                       height={20}
                                       unoptimized
-                                      className="w-full h-full object-cover"
+                                      className="w-full h-full object-contain"
                                     />
                                   ) : (
                                     <Bot className="w-3 h-3 text-black/70" />
@@ -270,7 +272,7 @@ export default function AnalyzeDialog({
                                 <div className="min-w-0 flex-1">
                                   <div className="flex items-center gap-1.5">
                                     <span className="text-xs font-semibold text-black block truncate">
-                                      {model.name}
+                                      {model.provider}
                                     </span>
                                     {isModelDisabled && (
                                       <span className="text-[8px] px-1 py-0.2 rounded bg-red-600/20 text-red-600 font-medium shrink-0">
@@ -279,7 +281,7 @@ export default function AnalyzeDialog({
                                     )}
                                   </div>
                                   <span className="text-[9px] font-mono text-black/50 block truncate">
-                                    {model.model}
+                                    {model.name}
                                   </span>
                                 </div>
                               </div>
@@ -292,44 +294,13 @@ export default function AnalyzeDialog({
                 </AnimatePresence>
               </div>
             </div>
-            <div className="flex items-center space-x-2.5 p-3 border rounded-2xl shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)]">
-              <Checkbox
-                id="store"
-                checked={store}
-                onCheckedChange={(c) => {
-                  const newStore = c === true;
-                  setStore(newStore);
-                  console.log('Analyze Dialog fields (Store Toggled):', {
-                    selectedModel,
-                    selectedModelId,
-                    store: newStore,
-                    selectedCount,
-                  });
-                }}
-              />
-              <div className="flex items-center gap-1.5 flex-1">
-                <Label htmlFor="store" className="cursor-pointer text-xs font-medium text-black select-none">
-                  Store Encrypted in Database
-                </Label>
-                <TooltipProvider>
-                  <Tooltip delayDuration={300}>
-                    <TooltipTrigger asChild>
-                      <Info className="h-3.5 w-3.5 cursor-help text-blue-600 shrink-0" />
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-62.5 border-border bg-blue-600 text-white text-[10px]">
-                      <p>Persist results encrypted in the Database</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            </div>
           </div>
 
           <div className="flex items-center justify-end gap-2 px-4 py-3 border-t">
             <CustomButton
               type="submit"
               disabled={isSubmitDisabled || loadingModels}
-              size="lg"
+              size="sm"
             >
               <Sparkles className="h-3.5 w-3.5" />
               <span>Analyze</span>

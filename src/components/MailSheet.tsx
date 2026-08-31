@@ -51,7 +51,7 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
     <Dialog open={!!mail} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         showCloseButton={false}
-        className="w-full sm:w-90 sm:max-w-lg rounded-t-4xl sm:rounded-4xl bg-white border sm:border-b border-b-0 text-black shadow-2xl p-0 gap-0 overflow-hidden flex flex-col max-h-[85vh]"
+        className="w-full sm:w-80 sm:max-w-lg rounded-t-4xl sm:rounded-none bg-white border sm:border-b border-b-0 text-black shadow-2xl p-0 gap-0 overflow-hidden flex flex-col max-h-[85vh]"
       >
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b shrink-0">
           <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
@@ -118,7 +118,7 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
             </div>
           )}
 
-          <div className="relative rounded-2xl p-3 min-h-36 overflow-hidden flex items-center justify-center">
+          <div className="relative p-3 min-h-36 border border-black/25 border-dashed overflow-hidden flex items-center justify-center">
             <div className="absolute inset-0 p-3 overflow-hidden select-none pointer-events-none blur-xs opacity-50 text-xs leading-relaxed text-black/75 whitespace-pre-wrap wrap-break-word font-normal">
               {formatEmailContent(mail.body) || 'No message content available.'}
             </div>
@@ -128,7 +128,7 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
                 href={gmailUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 border border-black/25 duration-200 border-dashed text-black bg-white px-5 py-2 text-xs font-semibold cursor-pointer"
+                className="inline-flex items-center justify-center gap-1.5 duration-200 text-black bg-white px-5 py-2 text-xs font-semibold cursor-pointer"
               >
                 <span>Open</span>
                 <ExternalLink className="h-3.5 w-3.5" />

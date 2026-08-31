@@ -24,7 +24,7 @@ export const PROVIDERS: readonly Provider[] = [
   {
     name: 'Google',
     id: 'google',
-    logo: '/providers/google.png',
+    logo: '/providers/google.webp',
     logoClassName: 'h-5.5 sm:h-6 max-w-[95px]',
     description: 'Gemini 2.0 Flash, Gemini 1.5 Pro, Gemini 1.5 Flash',
   },
@@ -38,7 +38,7 @@ export const PROVIDERS: readonly Provider[] = [
   {
     name: 'OpenRouter',
     id: 'openrouter',
-    logo: '/providers/openrouter.png',
+    logo: '/providers/open-router.png',
     logoClassName: 'h-4.5 sm:h-5 max-w-[130px]',
     description: 'Unified gateway to 100+ open and proprietary models',
   },
@@ -52,7 +52,7 @@ export const PROVIDERS: readonly Provider[] = [
   {
     name: 'NVIDIA',
     id: 'nvidia',
-    logo: '/providers/nvidia.png',
+    logo: '/providers/nvidia.jpg',
     logoClassName: 'h-7.5 sm:h-8 max-w-[50px]',
     description: 'NVIDIA NIM microservices and accelerated models',
   },
@@ -80,15 +80,19 @@ export const PROVIDERS: readonly Provider[] = [
 ] as const;
 
 export function isSupportedProvider(name: string): boolean {
-  const normalized = name.trim().toLowerCase();
+  const normalized = name.trim().toLowerCase().replace(/\s+/g, '');
   return PROVIDERS.some(
-    (p) => p.name.toLowerCase() === normalized || p.id.toLowerCase() === normalized
+    (p) =>
+      p.name.toLowerCase().replace(/\s+/g, '') === normalized ||
+      p.id.toLowerCase().replace(/\s+/g, '') === normalized
   );
 }
 
 export function getProviderByName(name: string): Provider | undefined {
-  const normalized = name.trim().toLowerCase();
+  const normalized = name.trim().toLowerCase().replace(/\s+/g, '');
   return PROVIDERS.find(
-    (p) => p.name.toLowerCase() === normalized || p.id.toLowerCase() === normalized
+    (p) =>
+      p.name.toLowerCase().replace(/\s+/g, '') === normalized ||
+      p.id.toLowerCase().replace(/\s+/g, '') === normalized
   );
 }
