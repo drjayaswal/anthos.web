@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { X, Clock, User, ExternalLink } from 'lucide-react';
+import { X, Clock, ExternalLink } from 'lucide-react';
 import { Mail } from '@/types';
 import { cn, formatEmailContent } from '@/lib/utils';
 
@@ -31,22 +31,10 @@ function parseSender(senderStr: string) {
   return { name, email, initials };
 }
 
-function parseRecipient(recipientStr?: string) {
-  if (!recipientStr) return null;
-  const match = recipientStr.match(/^(.*?)\s*<(.+?)>$/);
-  if (match) {
-    const rawName = match[1].replace(/^["']|["']$/g, '').trim();
-    const email = match[2].trim();
-    return rawName ? `${rawName} (${email})` : email;
-  }
-  return recipientStr;
-}
-
 export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
   if (!mail) return null;
 
   const { name, email, initials } = parseSender(mail.sender);
-  const recipientDisplay = parseRecipient(mail.recipient);
 
   const formattedDate = new Date(mail.createdAt).toLocaleString('en-US', {
     weekday: 'short',
@@ -140,7 +128,7 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
                 href={gmailUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 text-xs font-semibold shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer"
+                className="inline-flex items-center justify-center gap-1.5 border border-black/25 duration-200 border-dashed text-black bg-white px-5 py-2 text-xs font-semibold cursor-pointer"
               >
                 <span>Open</span>
                 <ExternalLink className="h-3.5 w-3.5" />

@@ -50,10 +50,10 @@ export default function MailInboxTabs({
             {tab.count > 0 && (
               <span
                 className={cn(
-                  'absolute top-0 right-1 z-10 h-2 w-2 -mr-1 text-[10px] font-bold rounded-full transition-colors duration-200',
-                  tab.count > 0 && isActive ? 'bg-green-600' : 'bg-rose-600 animate-pulse'
+                  'absolute top-0 right-1 z-10 h-3 w-3 -mr-1 text-[10px] font-bold text-white rounded-full transition-colors duration-200',
+                  tab.count > 0 && isActive ? 'bg-green-600' : 'bg-gray-400'
                 )}
-              />
+              >{tab.count}</span>
             )}
           </button>
         );

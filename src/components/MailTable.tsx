@@ -153,7 +153,7 @@ export default function MailTable({
 
   return (
     <div className="w-full sm:m-0 mt-10 overflow-x-auto no-scrollbar">
-      <Table className="w-full min-w-125 sm:min-w-full table-fixed">
+      {loading || <Table className="w-full min-w-125 sm:min-w-full table-fixed">
         <TableHeader>
           <TableRow className="border-b hover:bg-transparent">
             {selectable ? (
@@ -253,6 +253,7 @@ export default function MailTable({
           </AnimatePresence>
         </TableBody>
       </Table>
+      }
 
       <AnimatePresence>
         {contextMenu && (

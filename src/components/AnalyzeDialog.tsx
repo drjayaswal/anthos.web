@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -150,9 +151,12 @@ export default function AnalyzeDialog({
       >
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b">
           <div>
-            <DialogTitle className="text-xs font-semibold text-black">
-              Analyze Selected
+            <DialogTitle className="text-sm font-semibold text-black">
+              Analyze Mails
             </DialogTitle>
+            <DialogDescription className="text-xs text-black/50">
+              Select an AI model to analyze your emails
+            </DialogDescription>
           </div>
           <button
             type="button"
@@ -241,13 +245,12 @@ export default function AnalyzeDialog({
                                 }
                               }}
                               data-prevent-drawer-drag
-                              className={`w-full flex items-center justify-between px-3 py-2 transition-all duration-200 text-left text-black ${
-                                isModelDisabled
+                              className={`w-full flex items-center justify-between px-3 py-2 transition-all duration-200 text-left text-black ${isModelDisabled
                                   ? 'opacity-40 cursor-not-allowed rounded-xl'
                                   : isSelected
                                     ? 'rounded-xl bg-white shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] cursor-pointer'
                                     : 'hover:bg-black/5 rounded-xl cursor-pointer'
-                              }`}
+                                }`}
                             >
                               <div className="flex items-center gap-2 min-w-0">
                                 <div className="w-5 h-5 rounded-md bg-black/10 flex items-center justify-center shrink-0 overflow-hidden">
@@ -289,7 +292,7 @@ export default function AnalyzeDialog({
                 </AnimatePresence>
               </div>
             </div>
-            <div className="flex items-center space-x-2.5 p-3">
+            <div className="flex items-center space-x-2.5 p-3 border rounded-2xl shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)]">
               <Checkbox
                 id="store"
                 checked={store}

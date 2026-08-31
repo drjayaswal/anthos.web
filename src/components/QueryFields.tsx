@@ -232,24 +232,37 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
                   <div className="rounded-2xl border p-1.5 scrollbar-none bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] max-h-48 overflow-y-auto overscroll-contain space-y-1.5">
                     {EMAIL_PROVIDERS.map((prov) => {
                       const isSelected = currentProviderId === prov.id;
+                      const isGoogle = prov.id === 'google';
                       return (
                         <motion.button
                           key={prov.id}
                           type="button"
-                          whileTap={{ scale: 0.98 }}
+                          disabled={!isGoogle}
+                          whileTap={isGoogle ? { scale: 0.98 } : {}}
                           onClick={() => {
-                            p.setProvider?.(prov.id);
-                            setProviderDropdownOpen(false);
+                            if (isGoogle) {
+                              p.setProvider?.(prov.id);
+                              setProviderDropdownOpen(false);
+                            }
                           }}
-                          className={`w-full flex px-3 py-2 items-center gap-2 transition-all duration-200 cursor-pointer text-left text-black ${
-                            isSelected
-                              ? 'rounded-xl bg-white shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)]'
-                              : 'hover:bg-black/5 rounded-xl'
+                          className={`w-full flex px-3 py-2 items-center gap-2 transition-all duration-200 text-left text-black ${
+                            !isGoogle
+                              ? 'opacity-40 cursor-not-allowed rounded-xl'
+                              : isSelected
+                                ? 'rounded-xl bg-white shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] cursor-pointer'
+                                : 'hover:bg-black/5 rounded-xl cursor-pointer'
                           }`}
                         >
                           <div className="min-w-0 flex-1">
-                            <div className="text-xs font-semibold text-black truncate">
-                              {prov.name}
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-semibold text-black truncate">
+                                {prov.name}
+                              </span>
+                              {!isGoogle && (
+                                <span className="text-[8px] px-1.5 py-0.2 rounded-full bg-black/10 text-black/50 font-medium shrink-0">
+                                  Coming Soon
+                                </span>
+                              )}
                             </div>
                             <div className="text-[9px] truncate text-black/50 font-normal">
                               {prov.description}
