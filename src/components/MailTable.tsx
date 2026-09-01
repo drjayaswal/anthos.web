@@ -4,8 +4,6 @@ import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles,
-  RotateCw,
-  ShieldCheck,
   CloudDownload,
   DatabaseBackup,
   Inbox,
@@ -38,6 +36,7 @@ interface MailTableProps {
   onRowHoldSelect?: (mail: Mail) => void;
   onStoreEncryptedMail?: (mail: Mail) => void;
   onAnalyzeMail?: (mail: Mail) => void;
+  onInsightMail?: (mail: Mail) => void;
   hasCategories?: boolean;
   activeTab?: MailInboxTab;
   onFetch?: () => void;
@@ -56,6 +55,7 @@ export default function MailTable({
   onRowHoldSelect,
   onStoreEncryptedMail,
   onAnalyzeMail,
+  onInsightMail,
   hasCategories = true,
   activeTab = 'fetched',
   onFetch,
@@ -263,48 +263,50 @@ export default function MailTable({
             exit={{ opacity: 0, scale: 0.95, y: -4 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
             style={{ left: contextMenu.x, top: contextMenu.y }}
-            className="fixed z-70 w-56 rounded-4xl rounded-tl-none bg-white backdrop-blur-2xl border border-gray-200/80 shadow-2xl p-1.5 ring-1 ring-black/5 flex flex-col gap-0.5 text-zinc-800"
+            className="fixed z-70 w-40 rounded-lg rounded-tl-none bg-white backdrop-blur-2xl border border-gray-200/80 shadow-md p-1.5 ring-1 ring-black/5 flex flex-col gap-0.5 text-zinc-800"
             onClick={(e) => e.stopPropagation()}
           >
             {hasCategories && (
-              <button
-                type="button"
-                onClick={() => {
-                  const targetMail = contextMenu.mail;
-                  setContextMenu(null);
-                  onAnalyzeMail?.(targetMail);
-                }}
-                className="group flex w-full items-center justify-between px-3 py-2 rounded-xl text-xs font-medium hover:bg-black/5 cursor-pointer"
-              >
-                <div className="flex items-center gap-2.5">
-                  <Sparkles className="w-4 h-4 text-black" />
-                  <span className="text-black">Analyze</span>
-                </div>
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const targetMail = contextMenu.mail;
+                    setContextMenu(null);
+                    onInsightMail?.(targetMail);
+                  }}
+                  className="group flex w-full items-center justify-between px-3 py-2 rounded-md text-xs font-medium hover:bg-black/5 cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-black">Insight</span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const targetMail = contextMenu.mail;
+                    setContextMenu(null);
+                    onAnalyzeMail?.(targetMail);
+                  }}
+                  className="group flex w-full items-center justify-between px-3 py-2 rounded-md text-xs font-medium hover:bg-black/5 cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-black">Analysis</span>
+                  </div>
+                </button>
+              </>
             )}
 
             <button
               type="button"
-              onClick={() => {
-                setContextMenu(null);
-                window.location.reload();
-              }}
-              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium hover:bg-black/5 cursor-pointer"
-            >
-              <RotateCw className="w-4 h-4 text-black" />
-              <span className='text-black'>Refresh Page</span>
-            </button>
-
-            <button
-              type="button"
+              disabled
               onClick={() => {
                 const targetMail = contextMenu.mail;
                 setContextMenu(null);
                 onStoreEncryptedMail?.(targetMail);
               }}
-              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium hover:bg-black/5 cursor-pointer"
+              className="disabled:cursor-not-allowed opacity-50 group flex w-full items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium not-disabled:hover:bg-black/5 cursor-pointer"
             >
-              <ShieldCheck className="w-4 h-4 text-black" />
               <span className="text-black">Store</span>
             </button>
           </motion.div>

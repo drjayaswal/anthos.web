@@ -343,3 +343,25 @@ export async function getAnalysisModelsAction(): Promise<{
   }
 }
 
+
+export async function getSingleMailInsightAction(mail: Mail): Promise<{
+  ok: boolean;
+  summary?: string;
+  mail?: Mail;
+  error?: string;
+}> {
+  try {
+    const res = await fetchInternalApi("/api/mail/insight", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mail }),
+    });
+    const data = (await res.json()) as { ok?: boolean; summary?: string; mail?: Mail; error?: string };
+    if (!res.ok || !data.ok) {
+      return { ok: false, error: typeof data.error === "string" ? data.error : "Insight failed" };
+    }
+    return { ok: true, summary: data.summary, mail: data.mail };
+  } catch {
+    return { ok: false, error: "Insight failed" };
+  }
+}

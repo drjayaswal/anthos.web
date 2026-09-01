@@ -10,8 +10,11 @@ interface HeaderProps {
   analyzing: boolean;
   loading: boolean;
   onAnalyze: () => void;
+  onInsight?: () => void;
   onLoadDataFromDatabase: () => void;
+  selectedCount?: number;
   analyzeDisabled?: boolean;
+  insightDisabled?: boolean;
   onFetch: () => void;
   onAccount: () => void;
   sessionUserEmail?: string | null;
@@ -22,8 +25,11 @@ export default function Header({
   analyzing,
   loading,
   onAnalyze,
+  onInsight,
   onLoadDataFromDatabase,
+  selectedCount = 0,
   analyzeDisabled = false,
+  insightDisabled = false,
   onAccount,
   onFetch,
   hasCategories = true,
@@ -55,11 +61,13 @@ export default function Header({
     };
   }, [optionsOpen]);
 
+  const hasSelectedMails = selectedCount > 0;
+
   return (
     <>
       <header className="flex w-full items-center justify-between gap-3">
         {!optionsOpen && !loading && (
-          <div data-tour="options-button" className="fixed top-3 right-2 z-40">
+          <div data-tour="options-button" className="fixed top-3 right-3 z-40">
             <button
               type="button"
               onClick={() => setOptionsOpen(true)}
@@ -94,14 +102,28 @@ export default function Header({
               transition={{ type: 'spring', stiffness: 400, damping: 28 }}
               className="fixed top-3 right-2 z-50 bg-black/5 backdrop-blur-md rounded-4xl flex items-center gap-1 p-1.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]"
             >
-              {hasCategories && (
+              {hasCategories && hasSelectedMails && (
                 <motion.button
                   type="button"
-                  
                   onClick={() => {
-                    onAnalyze();
+                    onInsight?.();
                     closeOptions();
                   }}
+                  disabled={analyzing || loading || insightDisabled}
+                  className="px-3.5 py-1.5 disabled:cursor-not-allowed rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40"
+                  aria-label="Insight Mail"
+                  >
+                  Insight
+                </motion.button>
+              )}
+
+              {hasCategories && hasSelectedMails && (
+                <motion.button
+                type="button"
+                onClick={() => {
+                  onAnalyze();
+                  closeOptions();
+                }}
                   disabled={analyzing || analyzeDisabled}
                   className="px-3.5 py-1.5 disabled:cursor-not-allowed rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40"
                   aria-label="Analyze Mails"
@@ -112,7 +134,6 @@ export default function Header({
 
               <motion.button
                 type="button"
-                
                 onClick={() => {
                   onFetch();
                   closeOptions();
@@ -126,7 +147,6 @@ export default function Header({
 
               <motion.button
                 type="button"
-                
                 onClick={() => {
                   onLoadDataFromDatabase();
                   closeOptions();
@@ -140,15 +160,14 @@ export default function Header({
 
               <motion.button
                 type="button"
-                
                 onClick={() => {
                   onAccount();
                   closeOptions();
                 }}
-                className="p-1.5 rounded-full text-xs font-semibold text-gray-400 bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
                 aria-label="Account Settings"
               >
-                <UserIcon size={18} className='stroke-2 fill-gray-400' />
+                Account
               </motion.button>
             </motion.div>
           </>
