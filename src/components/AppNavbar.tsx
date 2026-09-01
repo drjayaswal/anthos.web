@@ -190,7 +190,7 @@ export default function AppNavbar({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-              className="fixed top-0 left-0 bottom-0 z-70 w-80 sm:w-65 bg-white shadow-2xl flex flex-col overflow-hidden"
+              className="fixed top-0 left-0 bottom-0 z-70 w-65 bg-white shadow-2xl flex flex-col overflow-hidden"
             >
               <motion.div
                 variants={containerVariants}
@@ -227,7 +227,7 @@ export default function AppNavbar({
                           </div>
                           <div>
                             <div className={cn(
-                              "font-medium text-sm transition-colors",
+                              "font-medium text-xs sm:text-sm transition-colors",
                               active
                                 ? 'text-black'
                                 : 'text-black/50 group-hover:text-black transition-colors'
@@ -236,7 +236,7 @@ export default function AppNavbar({
                               {item.label}
                             </div>
                             <div className={cn(
-                              "font-medium text-[9px] transition-colors",
+                              "font-medium sm:text-[9px] text-[8px] transition-colors",
                               active
                                 ? 'text-black/70'
                                 : 'text-black/50 group-hover:text-black transition-colors'

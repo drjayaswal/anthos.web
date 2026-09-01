@@ -109,18 +109,6 @@ export default function AnalyzeDialog({
     }
     setSelectedModelId(model.id);
     setDropdownOpen(false);
-
-    const modelObject: AnalysisModel = {
-      id: model.id,
-      provider: model.provider,
-      name: model.name,
-      default: isHardcoded,
-      settingId: model.settingId || (isHardcoded ? 'system-default' : ''),
-    };
-    console.log('Analyze Dialog fields (Model Selected):', {
-      model: modelObject,
-      selectedCount,
-    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {

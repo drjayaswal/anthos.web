@@ -27,7 +27,7 @@ export default function MailInboxTabs({
   ];
 
   return (
-    <div data-tour="inbox-tabs" className="fixed sm:top-3 bg-black/5 backdrop-blur-md rounded-4xl top-13 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1.5 transition-all duration-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]">
+    <div data-tour="inbox-tabs" className="fixed sm:top-3 bg-black/5 backdrop-blur-md rounded-4xl top-18 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1.5 transition-all duration-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]">
       {tabs.map((tab) => {
         const isActive = active === tab.id;
 
@@ -50,10 +50,9 @@ export default function MailInboxTabs({
             {tab.count > 0 && (
               <span
                 className={cn(
-                  'absolute top-0 right-1 z-10 h-3 w-3 -mr-1 text-[10px] font-bold text-white rounded-full transition-colors duration-200',
-                  tab.count > 0 && isActive ? 'bg-green-600' : 'bg-gray-400'
-                )}
-              >{tab.count}</span>
+                  'absolute top-0 right-1 z-10 h-2 w-2 -mr-1 text-[10px] p-1 font-bold text-white rounded-full transition-colors duration-200',
+                  tab.count > 0 && 'bg-green-600'
+                )}/>
             )}
           </button>
         );

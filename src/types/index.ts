@@ -53,5 +53,5 @@ export interface AnalysisModel {
   provider: string;
   name: string;
   default: boolean;
-  settingId: string;
+  settingId?: string;
 }

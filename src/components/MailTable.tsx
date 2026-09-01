@@ -152,7 +152,7 @@ export default function MailTable({
   }
 
   return (
-    <div className="w-full sm:m-0 mt-10 overflow-x-auto no-scrollbar">
+    <div className="w-full sm:m-0 mt-15 overflow-x-auto no-scrollbar">
       {loading || <Table className="w-full min-w-125 sm:min-w-full table-fixed">
         <TableHeader>
           <TableRow className="border-b hover:bg-transparent">

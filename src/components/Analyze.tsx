@@ -166,20 +166,24 @@ export default function Analyze({
           provider: selectedModel.provider,
           name: selectedModel.name,
           default: selectedModel.default,
-          settingId: selectedModel.settingId,
+          ...(selectedModel.settingId ? { settingId: selectedModel.settingId } : {}),
         }
       : {
           id: 'hardcoded-gpt-oss-120b',
           provider: 'Open AI',
           name: 'gpt-oss-120b',
           default: true,
-          settingId: 'system-default',
         };
 
+    const sanitizedEmails = selection.map((mail) => {
+      const emailWithoutRecipient = { ...mail };
+      delete (emailWithoutRecipient as { recipient?: string }).recipient;
+      return emailWithoutRecipient;
+    });
+
     const payload = {
-      emails: selection,
+      emails: sanitizedEmails,
       model: modelObject,
-      userId: sessionUserId,
     };
 
     console.log(payload);
