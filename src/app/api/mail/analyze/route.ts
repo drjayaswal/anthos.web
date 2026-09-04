@@ -48,7 +48,7 @@ export async function POST(req: Request): Promise<NextResponse<MailAnalyzeRespon
     .join('\n');
 
   let groqClient = defaultGroq;
-  let nameToUse = 'gpt-oss-120b';
+  let nameToUse = 'openai/gpt-oss-120b';
 
   if (!isHardcoded && session.user?.id) {
     try {
@@ -64,6 +64,10 @@ export async function POST(req: Request): Promise<NextResponse<MailAnalyzeRespon
       }
     } catch {
     }
+  }
+
+  if (nameToUse === 'gpt-oss-120b' || nameToUse === 'hardcoded-gpt-oss-120b') {
+    nameToUse = 'openai/gpt-oss-120b';
   }
 
   try {
@@ -87,15 +91,33 @@ Output MUST be a valid JSON object matching this schema strictly:
   "summary": "Short 1-sentence summary"
 }`;
 
-      const completion = await groqClient.chat.completions.create({
-        messages: [
-          { role: 'system', content: 'You are an expert email analysis AI. Respond strictly in valid JSON.' },
-          { role: 'user', content: prompt },
-        ],
-        model: nameToUse,
-        response_format: { type: 'json_object' },
-        temperature: 0.2,
-      });
+      let completion;
+      try {
+        completion = await groqClient.chat.completions.create({
+          messages: [
+            { role: 'system', content: 'You are an expert email analysis AI. Respond strictly in valid JSON.' },
+            { role: 'user', content: prompt },
+          ],
+          model: nameToUse,
+          response_format: { type: 'json_object' },
+          temperature: 0.2,
+        });
+      } catch (primaryErr) {
+        if (nameToUse === 'openai/gpt-oss-120b') {
+          console.warn('Primary model openai/gpt-oss-120b failed, falling back to openai/gpt-oss-20b');
+          completion = await groqClient.chat.completions.create({
+            messages: [
+              { role: 'system', content: 'You are an expert email analysis AI. Respond strictly in valid JSON.' },
+              { role: 'user', content: prompt },
+            ],
+            model: 'openai/gpt-oss-20b',
+            response_format: { type: 'json_object' },
+            temperature: 0.2,
+          });
+        } else {
+          throw primaryErr;
+        }
+      }
 
       const responseText = completion.choices[0]?.message?.content || '{}';
       let parsed: { category?: string; categories?: string[]; priority?: number | number[]; summary?: string } = {};

@@ -14,6 +14,10 @@ import {
   Layers,
   ChevronDown,
   Sparkles,
+  Edit2Icon,
+  Trash2Icon,
+  Copy,
+  Check,
 } from "lucide-react";
 import type { UserSettings, ModelItem } from "@/app/api/_db/settings";
 import {
@@ -77,29 +81,41 @@ function ModelCard({
         size="xs"
         onClick={(e) => { e.stopPropagation(); onToggleKey?.(model.id); }}
         title={isKeyVisible ? "Hide Key" : "Show Key"}
+        color="black"
       >
-        {isKeyVisible ? "Hide" : "Show"}
+        {isKeyVisible ? <EyeOff className="h-3 w-3 sm:block hidden" /> : <Eye className="h-3 w-3 sm:block hidden" />}
+        <span>{isKeyVisible ? "Hide" : "Show"}</span>
       </CustomButton>
       <CustomButton
         size="xs"
         onClick={(e) => { e.stopPropagation(); onCopy?.(model.apiKey, model.id); }}
+        color={copiedId === model.id ? "green" : "black"}
       >
-        {copiedId === model.id ? "Copied!" : "Copy"}
+        {copiedId === model.id ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3 sm:block hidden" />}
+        <span>{copiedId === model.id ? "Copied!" : "Copy"}</span>
       </CustomButton>
       <CustomButton
         size="xs"
         onClick={(e) => { e.stopPropagation(); onEdit?.(model); }}
         title="Edit model"
+        color="blue"
       >
-        Edit
+        <Edit2Icon className="h-3 w-3 sm:block hidden" />
+        <span>Edit</span>
       </CustomButton>
       <CustomButton
         size="xs"
         onClick={(e) => { e.stopPropagation(); onDelete?.(model); }}
         disabled={isDeleting}
         title="Delete model"
+        color="red"
       >
-        {isDeleting ? "…" : "Delete"}
+        {isDeleting ? (
+          <Loader2 className="h-3 w-3 animate-spin" />
+        ) : (
+          <Trash2Icon className="h-3 w-3 sm:block hidden" />
+        )}
+        <span>Delete</span>
       </CustomButton>
     </>
   );
@@ -141,7 +157,7 @@ function ModelCard({
           </div>
           {actionButtons && (
             <div
-              className={`flex items-center gap-2 shrink-0 transition-all duration-200 ${isModelHovered ? "opacity-100 translate-x-0" : "opacity-0 pointer-events-none translate-x-2"
+              className={`flex items-center gap-2 px-1 shrink-0 transition-all duration-200 ${isModelHovered ? "opacity-100 translate-x-0" : "opacity-0 pointer-events-none translate-x-2"
                 }`}
             >
               {actionButtons}
@@ -360,18 +376,17 @@ export default function Settings({ settings: initialSettings }: { settings: User
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
+            <CustomButton
               onClick={() => setIsProvidersListOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-black cursor-pointer"
               title="View all supported AI providers"
             >
               <Layers className="h-3.5 w-3.5" />
-              Providers
-            </button>
+              <span>Providers</span>
+            </CustomButton>
             <CustomButton
               onClick={() => openAddModal()}
               title="Add new model parameter"
+              color="green"
             >
               <PlusIcon className="h-3.5 w-3.5" />
               <span>Add</span>
@@ -674,6 +689,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
               <CustomButton
                 disabled={isSubmitting}
                 size="sm"
+                color={isSubmitting ? "black" : "green"}
               >
                 {isSubmitting ? <Loader2 className="h-3 w-3 animate-spin" /> : <PlusIcon className="h-3 w-3" />}
                 {editingModel ? "Save Model" : "Add Model"}

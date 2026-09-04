@@ -289,9 +289,10 @@ export default function AnalyzeDialog({
               type="submit"
               disabled={isSubmitDisabled || loadingModels}
               size="sm"
+              color='green'
             >
               <Sparkles className="h-3.5 w-3.5" />
-              <span>Analyze</span>
+              <span>Analyze {selectedCount > 1 ? "Mails" : "Mail"}</span>
             </CustomButton>
           </div>
         </form>

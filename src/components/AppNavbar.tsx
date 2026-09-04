@@ -7,13 +7,19 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   Inbox,
   User,
-  ShieldCheck,
+  UserCog2Icon,
   HelpCircle,
   FileText,
   SettingsIcon,
   LockIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 type NavItem = {
   href: string;
@@ -27,7 +33,7 @@ function useIsDesktop() {
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    const checkIsDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    const checkIsDesktop = () => setIsDesktop(window.innerWidth >= 640);
     checkIsDesktop();
     window.addEventListener('resize', checkIsDesktop);
     return () => window.removeEventListener('resize', checkIsDesktop);
@@ -72,8 +78,8 @@ export default function AppNavbar({
     () => [
       {
         href: '/analyze',
-        label: 'Inbox',
-        description: 'Your intelligent AI email inbox',
+        label: 'Analyze',
+        description: 'Intelligent email analysis and inbox',
         show: authenticated,
         icon: Inbox,
       },
@@ -89,19 +95,19 @@ export default function AppNavbar({
         label: 'Admin',
         description: 'System administration & controls',
         show: authenticated && isAdmin,
-        icon: ShieldCheck,
+        icon: UserCog2Icon,
       },
       {
         href: '/settings',
         label: 'Settings',
-        description: 'System & AI Settings',
+        description: 'System & AI settings',
         show: authenticated,
         icon: SettingsIcon,
       },
       {
         href: '/help',
         label: 'Help',
-        description: 'Guides, FAQs & assistance',
+        description: 'Guides, FAQs & documentation',
         show: true,
         icon: HelpCircle,
       },
@@ -165,9 +171,9 @@ export default function AppNavbar({
             'relative px-3 py-2 cursor-pointer',
           )}
         >
-            <div className="text-xs font-semibold tracking-tight text-black transition-colors">
-              Menu
-            </div>
+          <div className="text-xs font-semibold tracking-tight text-black transition-colors">
+            Menu
+          </div>
         </button>
       </header>
 
@@ -190,67 +196,86 @@ export default function AppNavbar({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-              className="fixed top-0 left-0 bottom-0 z-70 w-65 bg-white shadow-2xl flex flex-col overflow-hidden"
+              className="fixed top-0 left-0 bottom-0 z-70 w-60 sm:w-20 bg-white shadow-2xl rounded-r-[35px] my-2 flex flex-col overflow-hidden"
             >
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="show"
-                className="flex-1 overflow-y-auto p-3 pr-0 space-y-1"
-              >
-                {visibleItems.map((item) => {
-                  const active =
-                    item.href === '/'
-                      ? pathname === '/'
-                      : pathname === item.href || pathname.startsWith(`${item.href}/`);
-                  const Icon = item.icon;
-                  return (
-                    <motion.div key={item.href} variants={itemVariants}>
-                      <Link
-                        href={item.href}
-                        onClick={closeMenu}
-                        className={cn(
-                          'group flex items-center border border-transparent justify-between p-2 rounded-l-full transition-all duration-200',
-                          active ? "bg-black/5 border-r-0 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]" : ""
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={cn(
-                              'p-2.5 rounded-full transition-colors',
-                              active
-                                ? 'text-white bg-red-600'
-                                : 'text-black/50 group-hover:text-black transition-colors'
-                            )}
+              <TooltipProvider delayDuration={150}>
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="show"
+                  className="flex-1 overflow-y-auto p-3 space-y-1"
+                >
+                  {visibleItems.map((item) => {
+                    const active =
+                      item.href === '/'
+                        ? pathname === '/'
+                        : pathname === item.href || pathname.startsWith(`${item.href}/`);
+                    const Icon = item.icon;
+                    return (
+                      <motion.div key={item.href} variants={itemVariants}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Link
+                              href={item.href}
+                              onClick={closeMenu}
+                              aria-label={`${item.label}: ${item.description}`}
+                              className={cn(
+                                'group flex items-center gap-3 sm:justify-center p-2 rounded-full transition-all duration-200',
+                                active
+                                  ? 'bg-black/10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]'
+                                  : 'hover:bg-black/5'
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  'p-2.5 rounded-full transition-colors shrink-0',
+                                  active
+                                    ? 'text-white bg-red-600'
+                                    : 'text-black/50 group-hover:text-black transition-colors'
+                                )}
+                              >
+                                <Icon className="w-6 h-6" />
+                              </div>
+                              <div className="flex flex-col min-w-0 sm:hidden">
+                                <span
+                                  className={cn(
+                                    'text-xs font-semibold tracking-tight transition-colors truncate',
+                                    active
+                                      ? 'text-black'
+                                      : 'text-black/80 group-hover:text-black'
+                                  )}
+                                >
+                                  {item.label}
+                                </span>
+                                <span
+                                  className={cn(
+                                    'text-[10px] font-medium transition-colors truncate',
+                                    active
+                                      ? 'text-black/70'
+                                      : 'text-black/50 group-hover:text-black/70'
+                                  )}
+                                >
+                                  {item.description}
+                                </span>
+                              </div>
+                            </Link>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="right"
+                            showArrow
+                            className="hidden sm:inline-flex z-80 flex-col items-start gap-0.5 max-w-55 bg-blue-600"
                           >
-                            <Icon className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <div className={cn(
-                              "font-medium text-xs sm:text-sm transition-colors",
-                              active
-                                ? 'text-black'
-                                : 'text-black/50 group-hover:text-black transition-colors'
-                            )}
-                            >
-                              {item.label}
-                            </div>
-                            <div className={cn(
-                              "font-medium sm:text-[9px] text-[8px] transition-colors",
-                              active
-                                ? 'text-black/70'
-                                : 'text-black/50 group-hover:text-black transition-colors'
-                            )}
-                            >
+                            <span className="font-semibold text-xs leading-none">{item.label}</span>
+                            <span className="text-[10px] text-background/70 font-normal leading-snug">
                               {item.description}
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
+                            </span>
+                          </TooltipContent>
+                        </Tooltip>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+              </TooltipProvider>
             </motion.div>
           </>
         )}

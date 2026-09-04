@@ -80,6 +80,7 @@ export default function InsightDialog({
               type="submit"
               disabled={loading}
               size="sm"
+              color='green'
             >
               {loading ? (
                 <>

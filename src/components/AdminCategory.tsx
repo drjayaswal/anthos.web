@@ -203,6 +203,7 @@ export default function AdminCategories() {
             <CustomButton
               type="submit"
               disabled={saving || !form.name.trim()}
+              color={saving ? "black" : "green"}
             >
               {saving ? (
                 <Loader2Icon className="h-4 w-4 animate-spin" />
@@ -218,6 +219,7 @@ export default function AdminCategories() {
                 type="button"
                 onClick={resetForm}
                 disabled={saving}
+                color="red"
               >
                 <XIcon className="h-4 w-4 sm:block hidden" />
                 <span>Cancel</span>
@@ -275,6 +277,7 @@ export default function AdminCategories() {
                           size="xs"
                           onClick={() => startEdit(cat)}
                           aria-label={`Edit ${cat.name}`}
+                          color="blue"
                         >
                           <Edit2Icon className="h-3 w-3 sm:block hidden" />
                           <span>Edit</span>
@@ -284,6 +287,7 @@ export default function AdminCategories() {
                           disabled={deletingId === cat.id}
                           onClick={() => handleDelete(cat.id, cat.name)}
                           aria-label={`Delete ${cat.name}`}
+                          color="red"
                         >
                           {deletingId === cat.id ? (
                             <Loader2Icon className="h-3 w-3 animate-spin" />

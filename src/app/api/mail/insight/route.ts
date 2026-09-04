@@ -34,7 +34,7 @@ export async function POST(req: Request): Promise<NextResponse<MailInsightRespon
     id: mail.id,
     subject: mail.subject,
     sender: mail.sender,
-    body: mail.body,
+    body: typeof mail.body === 'string' ? mail.body.slice(0, 3000) : '',
     status: mail.status,
     createdAt: mail.createdAt,
     labels: mail.labels,
@@ -66,7 +66,8 @@ Output MUST be a valid JSON object matching this schema strictly:
         response_format: { type: 'json_object' },
         temperature: 0.2,
       });
-    } catch {
+    } catch (primaryErr) {
+      console.warn('Primary model openai/gpt-oss-120b failed, falling back to openai/gpt-oss-20b:', primaryErr);
       completion = await defaultGroq.chat.completions.create({
         messages: [
           {
@@ -75,7 +76,7 @@ Output MUST be a valid JSON object matching this schema strictly:
           },
           { role: 'user', content: prompt },
         ],
-        model: 'gpt-oss-120b',
+        model: 'openai/gpt-oss-20b',
         response_format: { type: 'json_object' },
         temperature: 0.2,
       });

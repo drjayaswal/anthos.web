@@ -59,9 +59,9 @@ export default function LoadDialog({
         </div>
 
         <div className="flex items-center justify-end gap-2 px-4 py-3 border-t">
-          <CustomButton onClick={handleLoad} size="sm">
+          <CustomButton onClick={handleLoad} size="sm" color='green'>
             <DatabaseZapIcon className="w-3.5 h-3.5" />
-            <span>Load</span>
+            <span>Load Mails</span>
           </CustomButton>
         </div>
       </DialogContent>
