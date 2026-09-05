@@ -11,6 +11,7 @@ export interface Mail {
   categories?: string[] | null;
   priority?: string[] | null;
   summary?: string;
+  description?: string;
 }
 
 export interface CloudQueryOptions {

@@ -9,6 +9,7 @@ import {
 import { X, Clock, ExternalLink } from 'lucide-react';
 import { Mail } from '@/types';
 import { cn, formatEmailContent } from '@/lib/utils';
+import { getSenderCategory } from '@/lib/sender-category';
 
 interface MailDetailSheetProps {
   mail: Mail | null;
@@ -35,6 +36,7 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
   if (!mail) return null;
 
   const { name, email, initials } = parseSender(mail.sender);
+  const category = getSenderCategory(mail.sender);
 
   const formattedDate = new Date(mail.createdAt).toLocaleString('en-US', {
     weekday: 'short',
@@ -66,14 +68,24 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
                 </DialogTitle>
                 <span
                   className={cn(
-                    'text-[9px] font-semibold px-2 py-0.2 rounded-full capitalize shrink-0',
+                    'text-[9px] font-semibold px-2 py-0.2 rounded capitalize shrink-0',
                     mail.status === 'unread'
-                      ? 'bg-red-50 text-red-600 border border-red-200/60'
-                      : 'bg-emerald-50 text-emerald-600 border border-emerald-200/60'
+                      ? 'bg-red-50 text-red-600'
+                      : 'bg-emerald-50 text-emerald-600'
                   )}
                 >
                   {mail.status}
                 </span>
+                {category && (
+                  <span
+                    className={cn(
+                      'text-[9px] font-medium px-2 py-0.5 rounded shrink-0 leading-none',
+                      category.className
+                    )}
+                  >
+                    {category.label}
+                  </span>
+                )}
               </div>
               {email && (
                 <p className="text-[10px] text-black/50 truncate font-mono leading-tight mt-0.5">
@@ -108,6 +120,15 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
               {mail.subject || '(No Subject)'}
             </h2>
           </div>
+
+          {mail.description && (
+            <div className="p-2.5 space-y-1 border border-dashed border-purple-500/50">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-purple-600 block">
+                Description
+              </span>
+              <p className="text-xs text-black/85 font-medium leading-relaxed">{mail.description}</p>
+            </div>
+          )}
 
           {mail.summary && (
             <div className="p-2.5 space-y-1 border border-dashed border-blue-600/50">

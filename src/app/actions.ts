@@ -365,3 +365,34 @@ export async function getSingleMailInsightAction(mail: Mail): Promise<{
     return { ok: false, error: "Insight failed" };
   }
 }
+
+export async function generateMailDescriptionsAction(
+  mails: Array<{ id: string; sender: string; subject: string }>
+): Promise<{
+  ok: boolean;
+  descriptions?: Record<string, string>;
+  error?: string;
+}> {
+  try {
+    const res = await fetchInternalApi("/api/mail/descriptions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mails }),
+    });
+    const data = (await res.json()) as {
+      ok?: boolean;
+      descriptions?: Record<string, string>;
+      error?: string;
+    };
+    if (!res.ok || !data.ok) {
+      return {
+        ok: false,
+        error: typeof data.error === "string" ? data.error : "Failed to generate descriptions",
+      };
+    }
+    return { ok: true, descriptions: data.descriptions };
+  } catch {
+    return { ok: false, error: "Failed to generate descriptions" };
+  }
+}
+

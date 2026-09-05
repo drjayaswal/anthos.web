@@ -9,6 +9,7 @@ import {
   loadMailsFromDatabaseAction,
   getCategoriesAction,
   getSingleMailInsightAction,
+  generateMailDescriptionsAction,
 } from '@/app/actions';
 import { FetchOptions, LoadOptions, Mail, AnalysisModel } from '@/types';
 import { authClient } from '@/lib/auth-client';
@@ -50,6 +51,7 @@ export default function Analyze({
   const [selectedAnalyzedIds, setSelectedAnalyzedIds] = useState<Set<string>>(new Set());
   const [selectedEncryptedIds, setSelectedEncryptedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
+  const [generatingDescriptions, setGeneratingDescriptions] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [fetchDialogOpen, setFetchDialogOpen] = useState(false);
   const [loadDialogOpen, setLoadDialogOpen] = useState(false);
@@ -86,6 +88,32 @@ export default function Analyze({
         }
         setFetchedMails(result.mails);
         toast.success(`${result.mails.length > 0 ? result.mails.length : 'No'} Messages Fetched`);
+
+        if (result.mails.length > 0) {
+          const mailsForDescription = result.mails.map((m) => ({
+            id: m.id,
+            sender: m.sender,
+            subject: m.subject,
+          }));
+          setGeneratingDescriptions(true);
+          void (async () => {
+            try {
+              const descRes = await generateMailDescriptionsAction(mailsForDescription);
+              if (descRes.ok && descRes.descriptions) {
+                setFetchedMails((prev) =>
+                  prev.map((mail) => ({
+                    ...mail,
+                    description: descRes.descriptions?.[mail.id] ?? mail.description,
+                  }))
+                );
+              }
+            } catch (err) {
+              console.error('Failed to generate mail descriptions:', err);
+            } finally {
+              setGeneratingDescriptions(false);
+            }
+          })();
+        }
       } finally {
         setLoading(false);
       }
@@ -391,6 +419,7 @@ export default function Analyze({
               }}
               onStoreEncryptedMail={handleStoreSingleEncrypted}
               hasCategories={hasCategories}
+              generatingDescriptions={generatingDescriptions}
             />
           </CardContent>
         </Card>

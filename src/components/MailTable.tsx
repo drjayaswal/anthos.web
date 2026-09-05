@@ -21,6 +21,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { CustomButton } from '@/components/ui/button';
 import { Mail } from '@/types';
 import { formatEmailContent, cn } from '@/lib/utils';
+import { getSenderCategory } from '@/lib/sender-category';
 import type { MailInboxTab } from './MailInboxTabs';
 
 const HOLD_MS = 450;
@@ -42,6 +43,7 @@ interface MailTableProps {
   onFetch?: () => void;
   onLoadDataFromDatabase?: () => void;
   onGoToFetched?: () => void;
+  generatingDescriptions?: boolean;
 }
 
 export default function MailTable({
@@ -60,6 +62,7 @@ export default function MailTable({
   activeTab = 'fetched',
   onFetch,
   onLoadDataFromDatabase,
+  generatingDescriptions = false,
 }: MailTableProps) {
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdFired = useRef(false);
@@ -153,7 +156,7 @@ export default function MailTable({
 
   return (
     <div className="w-full sm:m-0 mt-15 overflow-x-auto no-scrollbar">
-      {loading || <Table className="w-full min-w-125 sm:min-w-full table-fixed">
+      {loading || <Table className="w-full min-w-125 sm:min-w-full table-fixed text-left!">
         <TableHeader>
           <TableRow className="border-b hover:bg-transparent">
             {selectable ? (
@@ -169,8 +172,8 @@ export default function MailTable({
                 <TableHead className="w-20 sm:w-24 px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Status</TableHead>
                 <TableHead className="w-[30%] sm:w-[24%] md:w-[18%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Origin</TableHead>
                 <TableHead className="w-[50%] sm:w-[56%] md:w-[32%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Subject</TableHead>
-                <TableHead className="hidden md:table-cell md:w-[38%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Body</TableHead>
-                <TableHead className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 text-right text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Time</TableHead>
+                <TableHead className="hidden md:table-cell md:w-[38%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Description</TableHead>
+                <TableHead className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Time</TableHead>
               </>
             }
           </TableRow>
@@ -183,6 +186,7 @@ export default function MailTable({
               mails.map((mail) => {
                 const selected = selectedIds?.has(mail.id) ?? false;
                 const isAnyMailSelected = (selectedIds?.size ?? 0) > 0;
+                const category = getSenderCategory(mail.sender);
 
                 return (
                   <motion.tr
@@ -235,15 +239,47 @@ export default function MailTable({
                       </Badge>
                     </TableCell>
                     <TableCell className="w-[30%] sm:w-[24%] md:w-[18%] px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden">
-                      <span className="block truncate font-semibold text-black/75">{mail.sender.split('<')[0]}</span>
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="truncate font-semibold text-black/75">
+                          {mail.sender.split('<')[0].trim() || mail.sender}
+                        </span>
+                        {category && (
+                          <span
+                            className={cn(
+                              'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-medium leading-none',
+                              category.className
+                            )}
+                          >
+                            {category.label}
+                          </span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="w-[50%] sm:w-[56%] md:w-[32%] px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden">
                       <span className="block truncate font-semibold text-black/75">{mail.subject}</span>
+                      <div className="block md:hidden mt-0.5 text-[11px] text-black/55 truncate">
+                        {generatingDescriptions && !mail.description ? (
+                          <div className="h-3 w-3/4 animate-pulse rounded bg-black/10 mt-1" />
+                        ) : (
+                          <span>{mail.description || formatEmailContent(mail.body)}</span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="hidden md:table-cell md:w-[38%] px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden">
-                      <span className="block truncate font-semibold text-black/75">{formatEmailContent(mail.body)}</span>
+                      {generatingDescriptions && !mail.description ? (
+                        <div className="flex items-center">
+                          <div className="h-3.5 w-4/5 animate-pulse rounded-md bg-black/10" />
+                        </div>
+                      ) : (
+                        <span
+                          className="block truncate font-normal text-black/50"
+                          title={mail.description || mail.body}
+                        >
+                          {mail.description || formatEmailContent(mail.body)}
+                        </span>
+                      )}
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 py-2.5 text-right text-[10px] text-black/75 sm:py-3.5 sm:text-xs">
+                    <TableCell className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 py-2.5 text-[10px] text-black/75 sm:py-3.5 sm:text-xs">
                       {new Date(mail.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                     </TableCell>
                   </motion.tr>
