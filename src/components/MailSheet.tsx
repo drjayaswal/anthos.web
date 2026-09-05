@@ -51,7 +51,7 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
     <Dialog open={!!mail} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         showCloseButton={false}
-        className="w-full sm:w-80 sm:max-w-lg rounded-t-4xl sm:rounded-none bg-white border sm:border-b border-b-0 text-black shadow-2xl p-0 gap-0 overflow-hidden flex flex-col max-h-[85vh]"
+        className="w-full sm:w-80 sm:max-w-lg rounded-t-4xl sm:rounded-b-none bg-white border sm:border-b border-b-0 text-black shadow-2xl p-0 gap-0 overflow-hidden flex flex-col max-h-[85vh]"
       >
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b shrink-0">
           <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-2">

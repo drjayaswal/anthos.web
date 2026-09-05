@@ -546,10 +546,10 @@ export default function Settings({ settings: initialSettings }: { settings: User
                 <button
                   type="button"
                   onClick={() => setProviderDropdownOpen((prev) => !prev)}
-                  className="w-full flex items-center justify-between p-2.5 rounded-2xl bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] transition cursor-pointer text-left"
+                  className={`w-full flex items-center justify-between p-2.5 ${providerDropdownOpen && 'rounded-b-none border-b-0'} rounded-2xl bg-white border transition cursor-pointer text-left`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-5 h-5 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
+                    <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
                       <Image
                         src={getProviderByName(selectedProviderName)?.logo || '/providers/openai.png'}
                         alt={selectedProviderName}
@@ -578,9 +578,9 @@ export default function Settings({ settings: initialSettings }: { settings: User
                       animate={{ opacity: 1, height: "auto", y: 0 }}
                       exit={{ opacity: 0, height: 0, y: -4 }}
                       transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                      className="overflow-hidden mt-1.5"
+                      className="overflow-hidden"
                     >
-                      <div className="rounded-2xl border p-2 scrollbar-none bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] max-h-48 overflow-y-auto overscroll-contain space-y-1.5">
+                      <div className="rounded-b-2xl border border-t-0 p-2 scrollbar-none bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] max-h-48 overflow-y-auto overscroll-contain space-y-1.5">
                         {PROVIDERS.map((provider) => (
                           <motion.button
                             key={provider.id}
@@ -590,7 +590,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
                             className={`w-full flex px-3 py-2 items-center gap-2 transition-all duration-200 cursor-pointer text-left text-black ${selectedProviderName === provider.name ? "rounded-xl bg-white shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)]" : "hover:bg-black/5 rounded-xl"
                               }`}
                           >
-                            <div className="w-5 h-5 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
+                            <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
                               <Image
                                 src={provider.logo}
                                 alt={provider.name}

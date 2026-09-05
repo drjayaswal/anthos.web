@@ -42,11 +42,8 @@ export default function Auth() {
 
   return (
     <div className="min-h-[94.28vh] flex flex-col items-center justify-center">
-      <div className="relative flex items-center border bg-white rounded-xl shadow-md p-3">
-        <div className="absolute top-1.5 right-1.5 flex justify-center">
-          <div className="w-5 h-5 rounded-full bg-white border shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]" />
-        </div>
-        <div className="flex flex-col items-center justify-center pb-1">
+      <div className="flex items-center">
+        <div className="flex flex-col items-center justify-center">
           <Image
             src="/anthos.svg"
             alt="anthos"

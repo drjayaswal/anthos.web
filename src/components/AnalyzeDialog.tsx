@@ -175,7 +175,7 @@ export default function AnalyzeDialog({
                 <button
                   type="button"
                   onClick={() => setDropdownOpen((prev) => !prev)}
-                  className="w-full flex items-center justify-between p-2.5 rounded-2xl bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] transition cursor-pointer text-left"
+                  className={`w-full flex items-center justify-between p-2.5 ${dropdownOpen && 'rounded-b-none border-b-0'} rounded-2xl bg-white border transition cursor-pointer text-left`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className="w-6 h-6 flex rounded-xl items-center justify-center shrink-0 overflow-hidden">
@@ -212,11 +212,11 @@ export default function AnalyzeDialog({
                       exit={{ opacity: 0, height: 0, y: -4 }}
                       transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                       data-prevent-drawer-drag
-                      className="overflow-hidden mt-1.5"
+                      className="overflow-hidden"
                     >
                       <div
                         data-prevent-drawer-drag
-                        className="rounded-2xl border p-2 scrollbar-none bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] max-h-48 overflow-y-auto overscroll-contain touch-pan-y space-y-1.5"
+                        className="rounded-b-2xl border border-t-0 p-2 scrollbar-none bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] max-h-48 overflow-y-auto overscroll-contain touch-pan-y space-y-1.5"
                       >
                         {availableModels.map((model) => {
                           const isSelected = model.id === selectedModelId;

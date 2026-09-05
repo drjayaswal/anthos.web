@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -9,11 +10,11 @@ import { cn } from '@/lib/utils';
 import type { CloudQueryOptions, DatabaseQueryOptions } from '@/types';
 
 export const EMAIL_PROVIDERS = [
-  { id: 'google', name: 'Google', description: 'Gmail & Google Workspace' },
-  { id: 'hotmail', name: 'Hotmail', description: 'Outlook & Microsoft Live' },
-  { id: 'yahoo', name: 'Yahoo', description: 'Yahoo Mail' },
-  { id: 'monday', name: 'Monday', description: 'Monday.com Work OS' },
-  { id: 'zoho', name: 'Zoho', description: 'Zoho Mail' },
+  { id: 'google', name: 'Google', description: 'Gmail & Google Workspace', logo: '/providers/gmail.jpg' },
+  { id: 'hotmail', name: 'Hotmail', description: 'Outlook & Microsoft Live', logo: '/providers/hotmail.webp' },
+  { id: 'yahoo', name: 'Yahoo', description: 'Yahoo Mail', logo: '/providers/yahoo.png' },
+  { id: 'monday', name: 'Monday', description: 'Monday.com Work OS', logo: '/providers/monday.png' },
+  { id: 'zoho', name: 'Zoho', description: 'Zoho Mail', logo: '/providers/zohomail.png' },
 ] as const;
 
 export type CloudQueryFieldsProps = {
@@ -69,7 +70,7 @@ function FlagRow({
     >
       <div
         onClick={() => onCheckedChange(!checked)}
-        className="relative z-10 flex items-center justify-between rounded-2xl p-2 border bg-white shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
+        className={`relative z-10 flex items-center justify-between transition-all duration-200 rounded-2xl p-2 border bg-white shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer ${checked && isOpen ? "border-green-600" : isOpen ? "border-blue-600" : "border-border"}`}
       >
         <div className="flex items-center space-x-2">
           <Checkbox
@@ -95,7 +96,7 @@ function FlagRow({
             }}
             className={cn(
               'p-1 -m-1 rounded-full cursor-pointer flex items-center justify-center transition-colors outline-none',
-              isOpen ? 'text-blue-600 hover:text-blue-700' : 'text-black/40 hover:text-black/80'
+              isOpen && checked ? 'text-green-700 hover:text-green-800' : isOpen ? 'text-blue-700 hover:text-blue-800' : 'text-black/40 hover:text-black/80'
             )}
             title={isOpen ? 'Hide info' : 'Show info'}
             aria-label={`Info about ${label}`}
@@ -113,12 +114,12 @@ function FlagRow({
               initial={{ x: -24, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -24, opacity: 0 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => {
                 e.stopPropagation();
                 setIsOpen(false);
               }}
-              className="absolute left-[calc(100%-16px)] top-[0.5px] z-0 h-9.25! rounded-l-none rounded-r-xl pl-5 pr-3 bg-blue-600 text-[10px] text-white font-medium border border-blue-600 whitespace-nowrap flex items-center cursor-pointer"
+              className={`absolute left-[calc(100%-16px)] top-[0.025px] z-0 h-9.5 bg-linear-to-b rounded-l-none rounded-r-xl pl-5 pr-3 ${checked ? "from-green-600 to-green-800" : "from-blue-600 to-blue-800"} border ${checked ? "border-green-600" : "border-blue-600"} text-[10px] text-white font-medium whitespace-nowrap flex items-center cursor-pointer`}
             >
               <p>{tip}</p>
             </motion.div>
@@ -197,7 +198,7 @@ function Counter({
     <div className="flex items-center gap-2">
       <button
         type="button"
-        className="h-6 w-6 rounded-lg bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.18),0_1px_2px_rgba(0,0,0,0.06)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] text-black flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none"
+        className={`h-6 w-6 rounded-lg bg-white ${value <= min || "border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.18),0_1px_2px_rgba(0,0,0,0.06)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]"} text-black flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none`}
         onMouseDown={handleMinusStart}
         onTouchStart={handleMinusStart}
         onMouseUp={handleMinusEnd}
@@ -210,7 +211,7 @@ function Counter({
       <span className="w-5 text-center font-mono text-xs font-semibold text-black select-none">{value}</span>
       <button
         type="button"
-        className="h-6 w-6 rounded-lg bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.18),0_1px_2px_rgba(0,0,0,0.06)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] text-black flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none"
+        className={`h-6 w-6 rounded-lg bg-white ${value >= max || "border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.18),0_1px_2px_rgba(0,0,0,0.06)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]"} text-black flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none`}
         onMouseDown={handlePlusStart}
         onTouchStart={handlePlusStart}
         onMouseUp={handlePlusEnd}
@@ -257,9 +258,19 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
             <button
               type="button"
               onClick={() => setProviderDropdownOpen((prev) => !prev)}
-              className="w-full flex items-center justify-between p-2.5 rounded-2xl bg-white border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] transition cursor-pointer text-left"
+              className={`w-full flex items-center justify-between p-2.5 ${providerDropdownOpen && 'rounded-b-none border-b-0'} rounded-2xl bg-white border transition cursor-pointer text-left`}
             >
               <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
+                  <Image
+                    src={currentProvider.logo}
+                    alt={currentProvider.name}
+                    width={20}
+                    height={20}
+                    unoptimized
+                    className="w-full h-full object-contain"
+                  />
+                </div>
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-black truncate">
                     {currentProvider.name}
@@ -283,9 +294,9 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
                   animate={{ opacity: 1, height: 'auto', y: 0 }}
                   exit={{ opacity: 0, height: 0, y: -4 }}
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="overflow-hidden mt-1.5"
+                  className="overflow-hidden"
                 >
-                  <div className="rounded-2xl border p-1.5 scrollbar-none bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] max-h-48 overflow-y-auto overscroll-contain space-y-1.5">
+                  <div className="rounded-b-2xl border border-t-0 p-2 scrollbar-none bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] max-h-48 overflow-y-auto overscroll-contain space-y-1.5">
                     {EMAIL_PROVIDERS.map((prov) => {
                       const isSelected = currentProviderId === prov.id;
                       const isGoogle = prov.id === 'google';
@@ -301,7 +312,7 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
                               setProviderDropdownOpen(false);
                             }
                           }}
-                          className={`w-full flex px-3 py-2 items-center gap-2 transition-all duration-200 text-left text-black ${
+                          className={`w-full flex px-3 py-2 items-center gap-2.5 transition-all duration-200 text-left text-black ${
                             !isGoogle
                               ? 'opacity-40 cursor-not-allowed rounded-xl'
                               : isSelected
@@ -309,6 +320,16 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
                                 : 'hover:bg-black/5 rounded-xl cursor-pointer'
                           }`}
                         >
+                          <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
+                            <Image
+                              src={prov.logo}
+                              alt={prov.name}
+                              width={20}
+                              height={20}
+                              unoptimized
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center justify-between">
                               <span className="text-xs font-semibold text-black truncate">
