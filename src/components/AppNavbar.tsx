@@ -196,14 +196,14 @@ export default function AppNavbar({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-              className="fixed top-0 left-0 bottom-0 z-70 w-60 sm:w-20 bg-white shadow-2xl rounded-r-[35px] my-2 flex flex-col overflow-hidden"
+              className="fixed top-0 left-0 bottom-0 z-70 w-60 sm:w-15 bg-white shadow-2xl rounded-r-[30px] my-2 flex flex-col overflow-hidden"
             >
               <TooltipProvider delayDuration={150}>
                 <motion.div
                   variants={containerVariants}
                   initial="hidden"
                   animate="show"
-                  className="flex-1 overflow-y-auto p-3 space-y-1"
+                  className="flex-1 overflow-y-auto p-3 space-y-1 mx-0!"
                 >
                   {visibleItems.map((item) => {
                     const active =
@@ -220,7 +220,7 @@ export default function AppNavbar({
                               onClick={closeMenu}
                               aria-label={`${item.label}: ${item.description}`}
                               className={cn(
-                                'group flex items-center gap-3 sm:justify-center p-2 rounded-full transition-all duration-200',
+                                'group flex items-center gap-3 sm:justify-center p-1 rounded-full transition-all duration-200',
                                 active
                                   ? 'bg-black/10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]'
                                   : 'hover:bg-black/5'
@@ -228,13 +228,13 @@ export default function AppNavbar({
                             >
                               <div
                                 className={cn(
-                                  'p-2.5 rounded-full transition-colors shrink-0',
+                                  'p-1.5 rounded-full transition-colors shrink-0',
                                   active
                                     ? 'text-white bg-red-600'
                                     : 'text-black/50 group-hover:text-black transition-colors'
                                 )}
                               >
-                                <Icon className="w-6 h-6" />
+                                <Icon className="w-4 h-4" />
                               </div>
                               <div className="flex flex-col min-w-0 sm:hidden">
                                 <span

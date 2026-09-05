@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { ChevronDown, Info, Minus, Plus } from 'lucide-react';
+import { ChevronDown, ChevronRightIcon, Minus, Plus } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { CloudQueryOptions, DatabaseQueryOptions } from '@/types';
 
 export const EMAIL_PROVIDERS = [
@@ -35,7 +35,6 @@ export type DatabaseQueryFieldsProps = {
   count: number;
   setCount: (v: number) => void;
 };
-
 function FlagRow({
   id,
   label,
@@ -49,25 +48,82 @@ function FlagRow({
   onCheckedChange: (c: boolean) => void;
   tip?: string;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (rowRef.current && !rowRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
   return (
-    <div className="flex items-center justify-between rounded-2xl p-2 border bg-white shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)]">
-      <div className="flex items-center space-x-2">
-        <Checkbox id={id} checked={checked} onCheckedChange={(c) => onCheckedChange(c === true)} />
-        <Label htmlFor={id} className="cursor-pointer text-xs font-medium text-black select-none">
-          {label}
-        </Label>
+    <div
+      ref={rowRef}
+      className={cn('relative', isOpen ? 'z-30' : 'z-0 hover:z-20')}
+    >
+      <div
+        onClick={() => onCheckedChange(!checked)}
+        className="relative z-10 flex items-center justify-between rounded-2xl p-2 border bg-white shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
+      >
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id={id}
+            checked={checked}
+            onCheckedChange={(c) => onCheckedChange(c === true)}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <Label
+            htmlFor={id}
+            onClick={(e) => e.stopPropagation()}
+            className="cursor-pointer text-xs font-medium text-black select-none"
+          >
+            {label}
+          </Label>
+        </div>
+        {tip ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen((prev) => !prev);
+            }}
+            className={cn(
+              'p-1 -m-1 rounded-full cursor-pointer flex items-center justify-center transition-colors outline-none',
+              isOpen ? 'text-blue-600 hover:text-blue-700' : 'text-black/40 hover:text-black/80'
+            )}
+            title={isOpen ? 'Hide info' : 'Show info'}
+            aria-label={`Info about ${label}`}
+            aria-expanded={isOpen}
+          >
+            <ChevronRightIcon className={`h-3 w-3 transition-transform duration-200 ease-in-out ${isOpen ? 'rotate-180' : 'rotate-0'}`} strokeWidth={2.5}/>
+          </button>
+        ) : null}
       </div>
+
       {tip ? (
-        <TooltipProvider>
-          <Tooltip delayDuration={300}>
-            <TooltipTrigger asChild>
-              <Info className="h-3 w-3 cursor-help text-black/40 hover:text-black/80 transition-colors" strokeWidth={2.5} />
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-70 border-border bg-blue-600 text-[10px] text-white">
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ x: -24, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -24, opacity: 0 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsOpen(false);
+              }}
+              className="absolute left-[calc(100%-16px)] top-[0.5px] z-0 h-9.25! rounded-l-none rounded-r-xl pl-5 pr-3 bg-blue-600 text-[10px] text-white font-medium border border-blue-600 whitespace-nowrap flex items-center cursor-pointer"
+            >
               <p>{tip}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+            </motion.div>
+          )}
+        </AnimatePresence>
       ) : null}
     </div>
   );
@@ -259,8 +315,8 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
                                 {prov.name}
                               </span>
                               {!isGoogle && (
-                                <span className="text-[8px] px-1.5 py-0.2 rounded-full bg-black/10 text-black/50 font-medium shrink-0">
-                                  Coming Soon
+                                <span className="text-[8px] px-1.5 py-0.2 rounded-full bg-red-600/10 text-red-600 font-medium shrink-0">
+                                  Not Connected
                                 </span>
                               )}
                             </div>
@@ -295,26 +351,34 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
           Status &amp; Flags
         </label>
         <div className="grid grid-cols-2 gap-2">
-          <div
-            onClick={() => p.setUnread(true)}
-            className="flex items-center space-x-2 rounded-2xl p-2 border bg-white shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
-          >
-            <Checkbox id="unread" checked={p.unread} onCheckedChange={() => p.setUnread(true)} />
-            <Label htmlFor="unread" className="cursor-pointer text-xs font-medium text-black select-none">
-              Unread
-            </Label>
-          </div>
-          <div
-            onClick={() => p.setUnread(false)}
-            className="flex items-center space-x-2 rounded-2xl p-2 border bg-white shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
-          >
-            <Checkbox id="read" checked={!p.unread} onCheckedChange={() => p.setUnread(false)} />
-            <Label htmlFor="read" className="cursor-pointer text-xs font-medium text-black select-none">
-              Read
-            </Label>
-          </div>
-          <FlagRow id="important" label="Important" checked={p.important} onCheckedChange={p.setImportant} tip="Emails marked important" />
-          <FlagRow id="starred" label="Starred" checked={p.starred} onCheckedChange={p.setStarred} tip="Emails you ★ starred" />
+          <FlagRow
+            id="unread"
+            label="Unread"
+            checked={p.unread}
+            onCheckedChange={() => p.setUnread(true)}
+            tip="Only unread emails"
+          />
+          <FlagRow
+            id="read"
+            label="Read"
+            checked={!p.unread}
+            onCheckedChange={() => p.setUnread(false)}
+            tip="Only read emails"
+          />
+          <FlagRow
+            id="important"
+            label="Important"
+            checked={p.important}
+            onCheckedChange={p.setImportant}
+            tip="Emails marked important"
+          />
+          <FlagRow
+            id="starred"
+            label="Starred"
+            checked={p.starred}
+            onCheckedChange={p.setStarred}
+            tip="Emails you ★ starred"
+          />
         </div>
       </div>
     </div>
