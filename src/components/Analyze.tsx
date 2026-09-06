@@ -374,13 +374,13 @@ export default function Analyze({
         <AnimatePresence>
           {(loading || analyzing) && (
             <motion.div
-              initial={{ opacity: 0, y: -8, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.98 }}
-              transition={{ duration: 0.2 }}
-              className="flex items-center justify-center gap-2.5 text-black text-xs sm:text-sm font-medium mt-4 mb-2 sm:mt-6 sm:mb-3 py-2"
+              key="loading-blur-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="w-full h-full fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-wait pointer-events-auto"
             >
-              <LoaderCircleIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 animate-spin text-black shrink-0" />
             </motion.div>
           )}
         </AnimatePresence>
