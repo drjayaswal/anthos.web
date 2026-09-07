@@ -8,7 +8,7 @@ export default function Admin() {
   const [appLoading, setAppLoading] = useState(false);
 
   if (appLoading) {
-    return <Loader onComplete={() => setAppLoading(false)} />;
+    return <Loader/>;
   }
 
   return (
