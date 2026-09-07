@@ -22,11 +22,10 @@ import AnalyzeDialog from './AnalyzeDialog';
 import InsightDialog from './InsightDialog';
 import AnalyzedMailsPriorityGraph from './AnalyzedMailsPriorityGraph';
 import { toast } from '@/lib/toast';
-import Loader from './Loader';
 import LoadDialog from './LoadDialog';
 import AccountDialog from './AccountDialog';
 import { useRouter } from 'next/navigation';
-import { LoaderCircleIcon } from 'lucide-react';
+import Loader from './Loader';
 
 export function toggleInSet(prev: Set<string>, id: string): Set<string> {
   const next = new Set(prev);
@@ -337,7 +336,7 @@ export default function Analyze({
   };
 
   if (appLoading) {
-    return <Loader onComplete={() => setAppLoading(false)} />;
+    return <Loader />;
   }
 
   return (

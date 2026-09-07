@@ -216,7 +216,7 @@ export default function AppNavbar({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-              className="fixed top-0 left-0 bottom-0 z-70 w-18 bg-white shadow-2xl flex flex-col overflow-visible"
+              className="fixed top-0 left-0 bottom-0 z-70 w-21 bg-white shadow-2xl flex flex-col overflow-visible"
             >
               <motion.div
                 variants={containerVariants}
@@ -240,7 +240,7 @@ export default function AppNavbar({
                     >
                       <div
                         className={cn(
-                          'relative z-10 flex items-center justify-between transition-all duration-200 border border-transparent p-1 bg-white',
+                          'relative z-10 flex items-center justify-center transition-all duration-200 border border-transparent p-1 bg-white',
                           active ? 'bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.18)] rounded-xl' : "rounded-4xl"
                         )}
                       >
@@ -269,7 +269,7 @@ export default function AppNavbar({
                           }}
                           disabled={active}
                           className={cn(
-                            'p-1 -ml-1.5 cursor-pointer flex items-center justify-center transition-colors outline-none shrink-0',
+                            'p-1 ml-1.5 cursor-pointer flex items-center justify-center transition-colors outline-none shrink-0',
                             isTooltipOpen
                               ? 'text-black'
                               : 'text-black/40 hover:text-black'
@@ -280,7 +280,7 @@ export default function AppNavbar({
                         >{
                           active ? 
                           <CheckIcon
-                            className="h-3.5 w-3.5 transition-transform text-green-600 bg-transparent duration-200 ease-in-out"
+                            className="h-3.5 w-3.5 transition-transform text-black bg-transparent duration-200 ease-in-out"
                             strokeWidth={2.5}
                           />
                           :
