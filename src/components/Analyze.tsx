@@ -10,8 +10,9 @@ import {
   getCategoriesAction,
   getSingleMailInsightAction,
   generateMailDescriptionsAction,
+  runEmailAnalysisAction,
 } from '@/app/actions';
-import { FetchOptions, LoadOptions, Mail, AnalysisModel } from '@/types';
+import { FetchOptions, LoadOptions, Mail, AnalysisModel, EmailAnalysisResult } from '@/types';
 import { authClient } from '@/lib/auth-client';
 import Header from './Header';
 import MailTable from './MailTable';
@@ -20,7 +21,11 @@ import MailInboxTabs, { type MailInboxTab } from './MailInboxTabs';
 import FetchDialog from './FetchDialog';
 import AnalyzeDialog from './AnalyzeDialog';
 import InsightDialog from './InsightDialog';
-import AnalyzedMailsPriorityGraph from './AnalyzedMailsPriorityGraph';
+import AnalyzedMailsPriorityGraph, {
+  getPriorityPercent,
+  getConfidencePercent,
+  matchesRange,
+} from './AnalyzedMailsPriorityGraph';
 import { toast } from '@/lib/toast';
 import LoadDialog from './LoadDialog';
 import AccountDialog from './AccountDialog';
@@ -44,11 +49,14 @@ export default function Analyze({
   const [appLoading, setAppLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<MailInboxTab>('fetched');
   const [fetchedMails, setFetchedMails] = useState<Mail[]>([]);
-  const [analyzedMails] = useState<Mail[]>([]);
+  const [analyzedMails, setAnalyzedMails] = useState<Mail[]>([]);
   const [categories, setCategories] = useState<{ name: string }[]>([]);
   const [selectedFetchedIds, setSelectedFetchedIds] = useState<Set<string>>(new Set());
   const [selectedAnalyzedIds, setSelectedAnalyzedIds] = useState<Set<string>>(new Set());
   const [selectedEncryptedIds, setSelectedEncryptedIds] = useState<Set<string>>(new Set());
+  const [analyzedCategory, setAnalyzedCategory] = useState<string>('ALL');
+  const [analyzedPriorityRange, setAnalyzedPriorityRange] = useState<string>('ALL');
+  const [analyzedConfidenceRange, setAnalyzedConfidenceRange] = useState<string>('ALL');
   const [loading, setLoading] = useState(false);
   const [generatingDescriptions, setGeneratingDescriptions] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
@@ -67,7 +75,7 @@ export default function Analyze({
   useEffect(() => {
     (async () => {
       const res = await getCategoriesAction();
-      if (res.ok && res.categories) {
+      if (res.ok && res.categories && res.categories.length > 0) {
         setCategories(res.categories);
       }
     })();
@@ -200,6 +208,10 @@ export default function Analyze({
       toast.error('Select fetched mails to analyze');
       return;
     }
+    if (selectedFetchedIds.size > 5) {
+      toast.error('Maximum 5 emails can be analyzed at a time');
+      return;
+    }
     setAnalyzeDialogOpen(true);
   };
 
@@ -233,54 +245,95 @@ export default function Analyze({
     })();
   };
 
-  const handleAnalyzeSelected = (selectedModel?: AnalysisModel | null) => {
+  const handleAnalyzeSelected = async (selectedModel?: AnalysisModel | null) => {
     const selection = selectedFetchedMails;
     if (selection.length === 0) {
       toast.error('Select fetched mails to analyze');
       return;
     }
-    const isDefault = !selectedModel || selectedModel.default === true || selectedModel.id.startsWith('hardcoded-');
-    if (isDefault && selection.length > 2) {
-      toast.error('Default model is limited to 2 mails at a time. Select your own AI model to analyze more.');
+    if (selection.length > 5) {
+      toast.error('Maximum 5 emails can be analyzed at a time');
       return;
     }
 
-    const modelObject: AnalysisModel = selectedModel
-      ? {
-          id: selectedModel.id,
-          provider: selectedModel.provider,
-          name: selectedModel.name,
-          default: selectedModel.default,
-          ...(selectedModel.settingId ? { settingId: selectedModel.settingId } : {}),
-        }
-      : {
-          id: 'hardcoded-gpt-oss-120b',
-          provider: 'Open AI',
-          name: 'gpt-oss-120b',
-          default: true,
-        };
-
-    const sanitizedEmails = selection.map((mail) => {
-      const emailWithoutRecipient = { ...mail };
-      delete (emailWithoutRecipient as { recipient?: string }).recipient;
-      return emailWithoutRecipient;
-    });
-
-    const payload = {
-      emails: sanitizedEmails,
-      model: modelObject,
+    const modelObject: AnalysisModel = {
+      id: selectedModel?.id || '6b73ef82-7a41-451e-ac2b-a0107475cb38',
+      provider: selectedModel?.provider || 'Google',
+      name: selectedModel?.name || 'gemma-4-26b-a4b-it',
+      default: true,
+      settingId: selectedModel?.settingId || '42821d65-9f24-4b44-b88b-6d3b1c85a12f',
     };
 
-    console.log(payload);
-    const modelLabel = modelObject.provider;
-    toast.success(`${selection.length} mail(s) selected with ${modelLabel} (Analysis call disabled for now)`);
+    setAnalyzing(true);
+    try {
+      const res = await runEmailAnalysisAction(selection, modelObject);
+      if (!res.ok || !res.results) {
+        toast.error(res.error || 'Failed to analyze emails');
+        return;
+      }
+
+      const resultsMap = new Map<string, EmailAnalysisResult>();
+      for (const r of res.results) {
+        resultsMap.set(r.id, r);
+      }
+
+      const mapAnalyzedMail = (mail: Mail): Mail => {
+        const r = resultsMap.get(mail.id);
+        if (!r) return mail;
+        return {
+          ...mail,
+          category: r.category ?? mail.category,
+          categories: r.category ? [r.category] : (mail.categories || []),
+          priority: [String(r.priority_score)],
+          priority_score: r.priority_score,
+          confidence_score: r.confidence_score,
+          versions: r.versions,
+          retry_count: r.retry_count,
+          summary: r.summary ?? mail.summary,
+        };
+      };
+
+      setFetchedMails((prev) => prev.map(mapAnalyzedMail));
+
+      const analyzedSelection = selection.map(mapAnalyzedMail);
+      setAnalyzedMails((prev) => {
+        const existingMap = new Map(prev.map((m) => [m.id, m]));
+        for (const mail of analyzedSelection) {
+          existingMap.set(mail.id, mail);
+        }
+        return Array.from(existingMap.values());
+      });
+
+      setSelectedFetchedIds(new Set());
+      setActiveTab('analyzed');
+      toast.success(`Successfully analyzed ${res.results.length} email(s)`);
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : 'Analysis failed';
+      toast.error(errorMsg);
+    } finally {
+      setAnalyzing(false);
+    }
   };
 
   const tabMails = useMemo(() => {
     if (activeTab === 'fetched') return fetchedMails;
     if (activeTab === 'encrypted') return encryptedMails;
-    return analyzedMails;
-  }, [activeTab, fetchedMails, encryptedMails, analyzedMails]);
+    return analyzedMails.filter((mail) => {
+      if (analyzedCategory !== 'ALL') {
+        const cat = mail.category || (Array.isArray(mail.categories) && mail.categories[0]) || 'Others';
+        if (cat.toLowerCase() !== analyzedCategory.toLowerCase()) return false;
+      }
+      if (analyzedPriorityRange !== 'ALL') {
+        const pct = getPriorityPercent(mail);
+        if (!matchesRange(pct, analyzedPriorityRange)) return false;
+      }
+      if (analyzedConfidenceRange !== 'ALL') {
+        const conf = getConfidencePercent(mail);
+        if (!matchesRange(conf, analyzedConfidenceRange)) return false;
+      }
+      return true;
+    });
+  }, [activeTab, fetchedMails, encryptedMails, analyzedMails, analyzedCategory, analyzedPriorityRange, analyzedConfidenceRange]);
 
   const filteredMails = useMemo(
     () =>
@@ -295,11 +348,16 @@ export default function Analyze({
 
   const toggleAllFetched = () => {
     if (activeTab !== 'fetched') return;
+    if (filteredMails.length === 0) return;
     if (filteredMails.every((m) => selectedFetchedIds.has(m.id))) {
       setSelectedFetchedIds(new Set());
       return;
     }
-    setSelectedFetchedIds(new Set(filteredMails.map((m) => m.id)));
+    const toSelect = filteredMails.slice(0, 5);
+    setSelectedFetchedIds(new Set(toSelect.map((m) => m.id)));
+    if (filteredMails.length > 5) {
+      toast.info('Selected first 5 emails (maximum 5 allowed for analysis)');
+    }
   };
 
   const toggleAllEncrypted = () => {
@@ -363,7 +421,7 @@ export default function Analyze({
           onAnalyze={openAnalyzeDialog}
           onInsight={handleOpenInsightDialog}
           selectedCount={selectedFetchedIds.size}
-          analyzeDisabled={selectedFetchedIds.size === 0}
+          analyzeDisabled={selectedFetchedIds.size === 0 || selectedFetchedIds.size > 5}
           insightDisabled={selectedFetchedIds.size === 0 || selectedFetchedIds.size > 1}
           onFetch={() => setFetchDialogOpen(true)}
           onLoadDataFromDatabase={() => setLoadDialogOpen(true)}
@@ -378,7 +436,7 @@ export default function Analyze({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="w-full h-full fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-wait pointer-events-auto"
+              className="w-full h-full fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-sm cursor-wait pointer-events-auto"
             >
             </motion.div>
           )}
@@ -399,7 +457,13 @@ export default function Analyze({
               selectedIds={activeTab === 'fetched' ? selectedFetchedIds : activeTab === 'encrypted' ? selectedEncryptedIds : selectedAnalyzedIds}
               onToggleSelect={(id) => {
                 if (activeTab === 'fetched') {
-                  setSelectedFetchedIds((p) => toggleInSet(p, id));
+                  setSelectedFetchedIds((prev) => {
+                    if (!prev.has(id) && prev.size >= 5) {
+                      toast.error('Maximum 5 emails can be selected for analysis');
+                      return prev;
+                    }
+                    return toggleInSet(prev, id);
+                  });
                 } else if (activeTab === 'encrypted') {
                   setSelectedEncryptedIds((p) => toggleInSet(p, id));
                 } else {
@@ -409,7 +473,13 @@ export default function Analyze({
               onToggleAll={activeTab === 'fetched' ? toggleAllFetched : activeTab === 'encrypted' ? toggleAllEncrypted : toggleAllAnalyzed}
               onRowHoldSelect={(mail) => {
                 if (activeTab === 'fetched') {
-                  setSelectedFetchedIds((p) => toggleInSet(p, mail.id));
+                  setSelectedFetchedIds((prev) => {
+                    if (!prev.has(mail.id) && prev.size >= 5) {
+                      toast.error('Maximum 5 emails can be selected for analysis');
+                      return prev;
+                    }
+                    return toggleInSet(prev, mail.id);
+                  });
                 } else if (activeTab === 'encrypted') {
                   setSelectedEncryptedIds((p) => toggleInSet(p, mail.id));
                 } else {
@@ -427,6 +497,12 @@ export default function Analyze({
             mails={activeTab === 'analyzed' ? analyzedMails : encryptedMails}
             categories={categories}
             onOpenDetail={setDetailMail}
+            selectedCategory={analyzedCategory}
+            onCategoryChange={setAnalyzedCategory}
+            selectedPriorityRange={analyzedPriorityRange}
+            onPriorityRangeChange={setAnalyzedPriorityRange}
+            selectedConfidenceRange={analyzedConfidenceRange}
+            onConfidenceRangeChange={setAnalyzedConfidenceRange}
           />
         ) : null}
       </motion.div>

@@ -2,7 +2,7 @@
 
 import { fetchInternalApi } from "@/lib/internal-api";
 
-import type { AnalyzeOptions, FetchOptions, LoadOptions, Mail, AnalysisModel } from "@/types";
+import type { AnalyzeOptions, FetchOptions, LoadOptions, Mail, AnalysisModel, EmailAnalysisResult } from "@/types";
 import { deriveAnalyzeOptionsFromMails } from "@/lib/derive-analyze-options";
 import { getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
@@ -317,29 +317,111 @@ export async function getAnalysisModelsAction(): Promise<{
     }
     const userSettings = await getUserSettings(session.user.id);
 
-    const defaultModel: AnalysisModel = {
-      id: "hardcoded-gpt-oss-120b",
-      provider: "Open AI",
-      name: "gpt-oss-120b",
-      default: true,
-      settingId: "system-default",
-    };
+    const userModels = userSettings.models || [];
+    const gemmaModel = userModels.find(
+      (m) => m.name === "gemma-4-26b-a4b-it" || m.name.includes("gemma")
+    );
 
-    const userModels: AnalysisModel[] = (userSettings.models || []).map((m) => ({
-      id: m.id,
-      provider: m.provider,
-      name: m.name,
-      default: false,
-      settingId: m.settingId,
-    }));
+    const defaultModel: AnalysisModel = gemmaModel
+      ? {
+          id: gemmaModel.id,
+          provider: gemmaModel.provider,
+          name: gemmaModel.name,
+          default: true,
+          settingId: gemmaModel.settingId,
+        }
+      : {
+          id: "6b73ef82-7a41-451e-ac2b-a0107475cb38",
+          provider: "Google",
+          name: "gemma-4-26b-a4b-it",
+          default: true,
+          settingId: userSettings.id || "42821d65-9f24-4b44-b88b-6d3b1c85a12f",
+        };
+
+    const formattedUserModels: AnalysisModel[] = userModels
+      .filter((m) => m.id !== defaultModel.id)
+      .map((m) => ({
+        id: m.id,
+        provider: m.provider,
+        name: m.name,
+        default: false,
+        settingId: m.settingId,
+      }));
 
     return {
       ok: true,
-      models: [defaultModel, ...userModels],
+      models: [defaultModel, ...formattedUserModels],
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Failed to fetch models for analysis";
     return { ok: false, error: errorMsg };
+  }
+}
+
+export async function runEmailAnalysisAction(
+  emails: Mail[],
+  model: AnalysisModel
+): Promise<{
+  ok: boolean;
+  results?: EmailAnalysisResult[];
+  error?: string;
+}> {
+  try {
+    if (emails.length > 5) {
+      return { ok: false, error: "Maximum 5 emails are allowed for analysis" };
+    }
+
+    const aiServerUrl = process.env.AI_SERVER_URL || "http://localhost:8000";
+
+    const payload = {
+      emails: emails.map((mail) => ({
+        id: mail.id,
+        subject: mail.subject || null,
+        sender: mail.sender || "",
+        body: mail.body || "",
+        status: mail.status || "unread",
+        createdAt: mail.createdAt || new Date().toISOString(),
+        labels: mail.labels || [],
+        threadId: mail.threadId || mail.id,
+      })),
+      model: {
+        id: model.id,
+        name: model.name,
+        provider: model.provider,
+        default: true,
+        settingId: model.settingId || null,
+        setting_id: model.settingId || null,
+      },
+    };
+
+    let res = await fetch(`${aiServerUrl}/analyse`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok && res.status === 404) {
+      res = await fetch(`${aiServerUrl}/analyze`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    }
+
+    if (!res.ok) {
+      const errText = await res.text();
+      return { ok: false, error: `AI Server error (${res.status}): ${errText}` };
+    }
+
+    const data = (await res.json()) as { results?: EmailAnalysisResult[] };
+    if (!data || !Array.isArray(data.results)) {
+      return { ok: false, error: "Invalid response from AI Server" };
+    }
+
+    return { ok: true, results: data.results };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to connect to AI Server";
+    return { ok: false, error: message };
   }
 }
 

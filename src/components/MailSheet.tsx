@@ -139,6 +139,42 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
             </div>
           )}
 
+          {(mail.category || mail.priority_score !== undefined || mail.confidence_score !== undefined || mail.versions || mail.retry_count !== undefined) && (
+            <div className="p-2.5 space-y-1.5 border border-dashed border-green-600/50">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-green-600 block">
+                AI Classification & Priority
+              </span>
+              <div className="grid grid-cols-2 gap-2 pt-1 text-xs">
+                {mail.category && (
+                  <div className="p-2">
+                    <span className="text-[9px] text-black/50 block">Category</span>
+                    <span className="font-semibold text-black text-xs">{mail.category}</span>
+                  </div>
+                )}
+                {mail.priority_score !== undefined && mail.priority_score !== null && (
+                  <div className="p-2">
+                    <span className="text-[9px] text-black/50 block">Priority Score</span>
+                    <span className="font-semibold font-mono text-black text-xs">{((mail.priority_score * 100)/10).toFixed(2)}%</span>
+                  </div>
+                )}
+                {mail.confidence_score !== undefined && mail.confidence_score !== null && (
+                  <div className="p-2">
+                    <span className="text-[9px] text-black/50 block">Confidence</span>
+                    <span className="font-semibold font-mono text-black text-xs">{(mail.confidence_score * 100).toFixed(2)}%</span>
+                  </div>
+                )}
+                {(mail.versions || mail.retry_count !== undefined) && (
+                  <div className="p-2">
+                    <span className="text-[9px] text-black/50 block">Version & Retries</span>
+                    <span className="font-semibold font-mono text-black text-xs">
+                      v{mail.versions?.[0] ?? 1} (retry: {mail.retry_count ?? 0})
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="relative p-3 min-h-36 border border-black/25 border-dashed overflow-hidden flex items-center justify-center">
             <div className="absolute inset-0 p-3 overflow-hidden select-none pointer-events-none blur-xs opacity-50 text-xs leading-relaxed text-black/75 whitespace-pre-wrap wrap-break-word font-normal">
               {formatEmailContent(mail.body) || 'No message content available.'}

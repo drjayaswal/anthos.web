@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles,
@@ -25,6 +25,52 @@ import { getSenderCategory } from '@/lib/sender-category';
 import type { MailInboxTab } from './MailInboxTabs';
 
 const HOLD_MS = 450;
+
+const CATEGORY_BADGE_COLORS = [
+  'bg-purple-600/10 text-purple-700',
+  'bg-indigo-600/10 text-indigo-700',
+  'bg-blue-600/10 text-blue-700',
+  'bg-emerald-600/10 text-emerald-700',
+  'bg-rose-600/10 text-rose-700',
+  'bg-amber-600/10 text-amber-700',
+  'bg-cyan-600/10 text-cyan-700',
+  'bg-teal-600/10 text-teal-700',
+  'bg-fuchsia-600/10 text-fuchsia-700',
+  'bg-violet-600/10 text-violet-700',
+  'bg-orange-600/10 text-orange-700',
+  'bg-pink-600/10 text-pink-700',
+];
+
+const categoryColorRegistry = new Map<string, string>();
+let nextCategoryColorIdx = 0;
+
+export function getCategoryBadgeColor(category: string): string {
+  const key = category.trim().toLowerCase();
+  if (!categoryColorRegistry.has(key)) {
+    categoryColorRegistry.set(
+      key,
+      CATEGORY_BADGE_COLORS[nextCategoryColorIdx % CATEGORY_BADGE_COLORS.length]
+    );
+    nextCategoryColorIdx++;
+  }
+  return categoryColorRegistry.get(key)!;
+}
+
+export function getPriorityBadgeColor(pct: number): string {
+  if (pct <= 80) {
+    return 'bg-green-600/10 text-green-700';
+  }
+  if (pct <= 60) {
+    return 'bg-yellow-600/10 text-yellow-700';
+  }
+  if (pct <= 40) {
+    return 'bg-amber-600/10 text-amber-700';
+  }
+  if (pct <= 20) {
+    return 'bg-orange-600/10 text-orange-700';
+  }
+  return 'bg-red-600/10 text-red-700';
+}
 
 interface MailTableProps {
   mails: Mail[];
@@ -68,6 +114,34 @@ export default function MailTable({
   const holdFired = useRef(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; mail: Mail } | null>(null);
   const allSelected = selectable && mails.length > 0 && mails.every((m) => selectedIds?.has(m.id));
+
+  const hasAnyCategoryOrPriority = useMemo(() => {
+    return (
+      activeTab === 'analyzed' ||
+      mails.some(
+        (m) =>
+          Boolean(m.category || (Array.isArray(m.categories) && m.categories.length > 0)) ||
+          (m.priority_score !== undefined && m.priority_score !== null)
+      )
+    );
+  }, [mails, activeTab]);
+
+  const colWidths = useMemo(() => {
+    if (hasAnyCategoryOrPriority) {
+      return {
+        origin: 'w-[48%] sm:w-[34%] md:w-[28%] lg:w-[26%]',
+        subject: 'w-[52%] sm:w-[46%] md:w-[26%] lg:w-[26%]',
+        description: 'hidden md:table-cell md:w-[34%] lg:w-[36%]',
+        time: 'hidden sm:table-cell sm:w-[20%] md:w-[12%] lg:w-[12%]',
+      };
+    }
+    return {
+      origin: 'w-[24%] sm:w-[18%] md:w-[14%]',
+      subject: 'w-[76%] sm:w-[62%] md:w-[34%]',
+      description: 'hidden md:table-cell md:w-[40%]',
+      time: 'hidden sm:table-cell sm:w-[20%] md:w-[12%]',
+    };
+  }, [hasAnyCategoryOrPriority]);
 
   useEffect(() => {
     const handleClick = () => setContextMenu(null);
@@ -169,11 +243,10 @@ export default function MailTable({
             ) : null}
             {mails.length !== 0 &&
               <>
-                <TableHead className="w-20 sm:w-24 px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Status</TableHead>
-                <TableHead className="w-[30%] sm:w-[24%] md:w-[18%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Origin</TableHead>
-                <TableHead className="w-[50%] sm:w-[56%] md:w-[32%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Subject</TableHead>
-                <TableHead className="hidden md:table-cell md:w-[38%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Description</TableHead>
-                <TableHead className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold">Time</TableHead>
+                <TableHead className={cn(colWidths.origin, "px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold")}>Origin</TableHead>
+                <TableHead className={cn(colWidths.subject, "px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold")}>Subject</TableHead>
+                <TableHead className={cn(colWidths.description, "px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold")}>Description</TableHead>
+                <TableHead className={cn(colWidths.time, "px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold")}>Time</TableHead>
               </>
             }
           </TableRow>
@@ -233,17 +306,13 @@ export default function MailTable({
                         </div>
                       </TableCell>
                     ) : null}
-                    <TableCell className="w-20 sm:w-24 px-2 py-2.5 sm:py-3.5">
-                      <Badge variant={mail.status === 'unread' ? 'failure_light' : 'success_light'} className="px-2 py-0.5 text-[9px] capitalize sm:px-2.5 sm:text-[10px] font-semibold shadow-xs">
-                        {mail.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="w-[30%] sm:w-[24%] md:w-[18%] px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden">
+                    <TableCell className={cn(colWidths.origin, "px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden")}>
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="truncate font-semibold text-black/75">
+                        <span className={cn("inline-flex shrink-0 rounded-2xl items-center p-1 leading-none", mail.status === "unread" ? "bg-red-600 text-white" : "bg-green-600 text-white")}/>
+                        <span className="truncate font-semibold text-black/75" title={mail.sender}>
                           {mail.sender.split('<')[0].trim() || mail.sender}
                         </span>
-                        {category && (
+                        {category && (!mail.category || category.label.toLowerCase() !== mail.category.toLowerCase()) && (
                           <span
                             className={cn(
                               'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-medium leading-none',
@@ -253,33 +322,57 @@ export default function MailTable({
                             {category.label}
                           </span>
                         )}
+                        {mail.category && (
+                          <span
+                            className={cn(
+                              'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-medium leading-none',
+                              getCategoryBadgeColor(mail.category)
+                            )}
+                          >
+                            {mail.category}
+                          </span>
+                        )}
+                        {mail.priority_score !== undefined && mail.priority_score !== null && (() => {
+                          const pct = (mail.priority_score * 100) / 10;
+                          return (
+                            <span
+                              title={`Priority: ${pct.toFixed(0)}%`}
+                              className={cn(
+                                'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-mono font-medium leading-none',
+                                getPriorityBadgeColor(pct)
+                              )}
+                            >
+                              {pct % 1 === 0 ? `${pct.toFixed(0)}%` : `${pct.toFixed(1)}%`}
+                            </span>
+                          );
+                        })()}
                       </div>
                     </TableCell>
-                    <TableCell className="w-[50%] sm:w-[56%] md:w-[32%] px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden">
+                    <TableCell className={cn(colWidths.subject, "px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden")}>
                       <span className="block truncate font-semibold text-black/75">{mail.subject}</span>
                       <div className="block md:hidden mt-0.5 text-[11px] text-black/55 truncate">
-                        {generatingDescriptions && !mail.description ? (
+                        {generatingDescriptions && !mail.description && !mail.summary ? (
                           <div className="h-3 w-3/4 animate-pulse rounded bg-black/10 mt-1" />
                         ) : (
-                          <span>{mail.description || formatEmailContent(mail.body)}</span>
+                          <span>{mail.summary || mail.description || formatEmailContent(mail.body)}</span>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell md:w-[38%] px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden">
-                      {generatingDescriptions && !mail.description ? (
+                    <TableCell className={cn(colWidths.description, "px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden")}>
+                      {generatingDescriptions && !mail.description && !mail.summary ? (
                         <div className="flex items-center">
                           <div className="h-3.5 w-4/5 animate-pulse rounded-md bg-black/10" />
                         </div>
                       ) : (
                         <span
                           className="block truncate font-normal text-black/50"
-                          title={mail.description || mail.body}
+                          title={mail.summary || mail.description || mail.body}
                         >
-                          {mail.description || formatEmailContent(mail.body)}
+                          {mail.summary || mail.description || formatEmailContent(mail.body)}
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell sm:w-[20%] md:w-[12%] px-2 py-2.5 text-[10px] text-black/75 sm:py-3.5 sm:text-xs">
+                    <TableCell className={cn(colWidths.time, "px-2 py-2.5 text-[10px] text-black/75 sm:py-3.5 sm:text-xs")}>
                       {new Date(mail.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                     </TableCell>
                   </motion.tr>

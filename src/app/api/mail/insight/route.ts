@@ -29,7 +29,6 @@ export async function POST(req: Request): Promise<NextResponse<MailInsightRespon
     return NextResponse.json({ ok: false, error: 'No mail provided for insight' }, { status: 400 });
   }
 
-  // Request mail body includes ONLY these details:
   const mailPayload = {
     id: mail.id,
     subject: mail.subject,

@@ -9,10 +9,27 @@ export interface Mail {
   labels: string[];
   createdAt: string;
   categories?: string[] | null;
+  category?: string | null;
   priority?: string[] | null;
-  summary?: string;
+  priority_score?: number | null;
+  confidence_score?: number | null;
+  versions?: number[] | null;
+  retry_count?: number | null;
+  summary?: string | null;
   description?: string;
 }
+
+export interface EmailAnalysisResult {
+  id: string;
+  threadId: string;
+  summary?: string | null;
+  category?: string | null;
+  priority_score: number;
+  confidence_score: number;
+  versions: number[];
+  retry_count: number;
+}
+
 
 export interface CloudQueryOptions {
   provider?: string;

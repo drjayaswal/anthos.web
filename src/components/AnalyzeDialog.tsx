@@ -18,11 +18,11 @@ import type { AnalysisModel } from '@/types';
 import { getProviderByName } from '@/lib/providers';
 
 const FALLBACK_DEFAULT_MODEL: AnalysisModel = {
-  id: 'hardcoded-gpt-oss-120b',
-  provider: 'Open AI',
-  name: 'gpt-oss-120b',
+  id: '6b73ef82-7a41-451e-ac2b-a0107475cb38',
+  provider: 'Google',
+  name: 'gemma-4-26b-a4b-it',
   default: true,
-  settingId: 'system-default',
+  settingId: '42821d65-9f24-4b44-b88b-6d3b1c85a12f',
 };
 
 interface AnalyzeDialogProps {
@@ -46,7 +46,9 @@ export default function AnalyzeDialog({
     : (fetchedModels.length > 0 ? fetchedModels : [FALLBACK_DEFAULT_MODEL]);
 
   const [selectedModelId, setSelectedModelId] = useState<string>(
-    propModels && propModels.length > 0 ? propModels[0].id : FALLBACK_DEFAULT_MODEL.id
+    propModels && propModels.length > 0
+      ? (propModels.find((m) => m.default)?.id || propModels[0].id)
+      : FALLBACK_DEFAULT_MODEL.id
   );
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loadingModels, setLoadingModels] = useState(false);
@@ -76,18 +78,8 @@ export default function AnalyzeDialog({
         const res = await getAnalysisModelsAction();
         if (isMounted && res.ok && res.models && res.models.length > 0) {
           setFetchedModels(res.models);
-          const customModels = res.models.filter((m) => !m.id.startsWith('hardcoded-') && !m.default);
-          if (selectedCount > 2 && customModels.length > 0) {
-            setSelectedModelId((prev) =>
-              prev.startsWith('hardcoded-') || !res.models!.some((m) => m.id === prev)
-                ? customModels[0].id
-                : prev
-            );
-          } else {
-            setSelectedModelId((prev) =>
-              !res.models!.some((m) => m.id === prev) ? res.models![0].id : prev
-            );
-          }
+          const defaultMod = res.models.find((m) => m.default) || res.models[0];
+          setSelectedModelId(defaultMod.id);
         }
       } catch {
       } finally {
@@ -98,13 +90,12 @@ export default function AnalyzeDialog({
     return () => {
       isMounted = false;
     };
-  }, [open, propModels, selectedCount]);
+  }, [open, propModels]);
 
-  const selectedModel = availableModels.find((m) => m.id === selectedModelId) || availableModels[0] || FALLBACK_DEFAULT_MODEL;
+  const selectedModel = availableModels.find((m) => m.id === selectedModelId) || availableModels.find((m) => m.default) || availableModels[0] || FALLBACK_DEFAULT_MODEL;
 
   const handleSelectModel = (model: AnalysisModel) => {
-    const isHardcoded = model.id.startsWith('hardcoded-') || model.default === true;
-    if (isHardcoded && selectedCount > 2) {
+    if (!model.default) {
       return;
     }
     setSelectedModelId(model.id);
@@ -113,13 +104,12 @@ export default function AnalyzeDialog({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const isDefault = selectedModel.id.startsWith('hardcoded-') || selectedModel.default === true;
     const modelObject: AnalysisModel = {
       id: selectedModel.id,
       provider: selectedModel.provider,
       name: selectedModel.name,
-      default: isDefault,
-      settingId: selectedModel.settingId || (isDefault ? 'system-default' : ''),
+      default: true,
+      settingId: selectedModel.settingId || '42821d65-9f24-4b44-b88b-6d3b1c85a12f',
     };
     console.log('Analyze Dialog fields (Submit):', {
       model: modelObject,
@@ -129,8 +119,7 @@ export default function AnalyzeDialog({
     onOpenChange(false);
   };
 
-  const isHardcodedModel = selectedModel?.id.startsWith('hardcoded-') || selectedModel?.default === true;
-  const isSubmitDisabled = selectedCount === 0 || (isHardcodedModel && selectedCount > 2);
+  const isSubmitDisabled = selectedCount === 0 || selectedCount > 5;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -144,7 +133,7 @@ export default function AnalyzeDialog({
               Analyze Mails
             </DialogTitle>
             <DialogDescription className="text-xs text-black/50">
-              Select an AI model to analyze your emails
+              Select an AI model to analyze up to 5 emails
             </DialogDescription>
           </div>
           <button
@@ -220,8 +209,8 @@ export default function AnalyzeDialog({
                       >
                         {availableModels.map((model) => {
                           const isSelected = model.id === selectedModelId;
-                          const isHardcoded = model.id.startsWith('hardcoded-') || model.default === true;
-                          const isModelDisabled = isHardcoded && selectedCount > 2;
+                          const isDefault = model.default === true;
+                          const isModelDisabled = !isDefault;
                           const providerLogo = getProviderByName(model.provider)?.logo;
                           return (
                             <motion.button
@@ -262,9 +251,13 @@ export default function AnalyzeDialog({
                                     <span className="text-xs font-semibold text-black block truncate">
                                       {model.provider}
                                     </span>
-                                    {isModelDisabled && (
-                                      <span className="text-[8px] px-1 py-0.2 rounded bg-red-600/20 text-red-600 font-medium shrink-0">
-                                        Max 2
+                                    {isDefault ? (
+                                      <span className="text-[8px] px-1.5 py-0.5 rounded bg-emerald-600/15 text-emerald-700 font-medium shrink-0">
+                                        Default
+                                      </span>
+                                    ) : (
+                                      <span className="text-[8px] px-1.5 py-0.5 rounded bg-black/10 text-black/50 font-medium shrink-0">
+                                        Paused
                                       </span>
                                     )}
                                   </div>
@@ -280,7 +273,16 @@ export default function AnalyzeDialog({
                     </motion.div>
                   )}
                 </AnimatePresence>
+                <p className="text-[10px] text-black/45 px-1 pt-1">
+                  Custom Model feature is in beta, use default instead.
+                </p>
               </div>
+
+              {selectedCount > 5 && (
+                <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-700 text-xs">
+                  Maximum 5 mails allowed for analysis (currently selected: {selectedCount}).
+                </div>
+              )}
             </div>
           </div>
 
@@ -292,7 +294,10 @@ export default function AnalyzeDialog({
               color='green'
             >
               <Sparkles className="h-3.5 w-3.5" />
-              <span>Analyze {selectedCount > 1 ? "Mails" : "Mail"}</span>
+              <span>
+                Analyze {selectedCount > 1 ? "Mails" : "Mail"}
+                {selectedCount > 0 ? ` (${selectedCount}/5)` : ''}
+              </span>
             </CustomButton>
           </div>
         </form>

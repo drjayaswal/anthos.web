@@ -130,7 +130,6 @@ Output MUST strictly be a JSON object with this exact schema:
       }
     }
 
-    // Ensure every requested mail has a description
     for (const mail of trimmedMails) {
       if (!descriptionsMap[mail.id]) {
         descriptionsMap[mail.id] = generateFallbackDescription(mail.subject);
@@ -140,7 +139,6 @@ Output MUST strictly be a JSON object with this exact schema:
     return NextResponse.json({ ok: true, descriptions: descriptionsMap });
   } catch (err: unknown) {
     console.error('Groq description error:', err);
-    // Graceful fallback for all emails so UI still gets populated
     const fallbackMap: Record<string, string> = {};
     for (const mail of trimmedMails) {
       fallbackMap[mail.id] = generateFallbackDescription(mail.subject);
