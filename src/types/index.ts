@@ -73,3 +73,39 @@ export interface AnalysisModel {
   default: boolean;
   settingId?: string;
 }
+
+export interface WsConfirmationFrame {
+  type: 'confirmation';
+  status: string;
+  message: string;
+  email_count: number;
+  model_name: string;
+}
+
+export interface WsLogFrame {
+  type: 'log';
+  status: string;
+  level: string;
+  name: string;
+  message: string;
+  timestamp: string;
+}
+
+export interface WsCompleteFrame {
+  type: 'complete';
+  status: string;
+  results: EmailAnalysisResult[];
+}
+
+export interface WsErrorFrame {
+  type: 'error';
+  status: string;
+  message: string;
+  detail?: string;
+}
+
+export type WsAnalysisFrame =
+  | WsConfirmationFrame
+  | WsLogFrame
+  | WsCompleteFrame
+  | WsErrorFrame;

@@ -10,7 +10,6 @@ import {
   getCategoriesAction,
   getSingleMailInsightAction,
   generateMailDescriptionsAction,
-  runEmailAnalysisAction,
 } from '@/app/actions';
 import { FetchOptions, LoadOptions, Mail, AnalysisModel, EmailAnalysisResult } from '@/types';
 import { authClient } from '@/lib/auth-client';
@@ -31,6 +30,7 @@ import LoadDialog from './LoadDialog';
 import AccountDialog from './AccountDialog';
 import { useRouter } from 'next/navigation';
 import Loader from './Loader';
+import AnalysisProgressDrawer from './AnalysisProgressDrawer';
 
 export function toggleInSet(prev: Set<string>, id: string): Set<string> {
   const next = new Set(prev);
@@ -60,6 +60,12 @@ export default function Analyze({
   const [loading, setLoading] = useState(false);
   const [generatingDescriptions, setGeneratingDescriptions] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [analysisActive, setAnalysisActive] = useState(false);
+  const [progressDrawerOpen, setProgressDrawerOpen] = useState(false);
+  const [isAnalysisStreaming, setIsAnalysisStreaming] = useState(false);
+  const [isAnalysisDone, setIsAnalysisDone] = useState(false);
+  const [analysisTargetMails, setAnalysisTargetMails] = useState<Mail[]>([]);
+  const [analysisTargetModel, setAnalysisTargetModel] = useState<AnalysisModel | null>(null);
   const [fetchDialogOpen, setFetchDialogOpen] = useState(false);
   const [loadDialogOpen, setLoadDialogOpen] = useState(false);
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
@@ -245,7 +251,7 @@ export default function Analyze({
     })();
   };
 
-  const handleAnalyzeSelected = async (selectedModel?: AnalysisModel | null) => {
+  const handleAnalyzeSelected = (selectedModel?: AnalysisModel | null) => {
     const selection = selectedFetchedMails;
     if (selection.length === 0) {
       toast.error('Select fetched mails to analyze');
@@ -264,55 +270,63 @@ export default function Analyze({
       settingId: selectedModel?.settingId || '42821d65-9f24-4b44-b88b-6d3b1c85a12f',
     };
 
-    setAnalyzing(true);
-    try {
-      const res = await runEmailAnalysisAction(selection, modelObject);
-      if (!res.ok || !res.results) {
-        toast.error(res.error || 'Failed to analyze emails');
-        return;
-      }
+    setAnalyzeDialogOpen(false);
+    setAnalysisTargetMails(selection);
+    setAnalysisTargetModel(modelObject);
+    setAnalysisActive(true);
+    setIsAnalysisStreaming(true);
+    setIsAnalysisDone(false);
+    setProgressDrawerOpen(false);
+    toast.success('Analysis started! Click Progress in top-right to view live stream.');
+  };
 
-      const resultsMap = new Map<string, EmailAnalysisResult>();
-      for (const r of res.results) {
-        resultsMap.set(r.id, r);
-      }
-
-      const mapAnalyzedMail = (mail: Mail): Mail => {
-        const r = resultsMap.get(mail.id);
-        if (!r) return mail;
-        return {
-          ...mail,
-          category: r.category ?? mail.category,
-          categories: r.category ? [r.category] : (mail.categories || []),
-          priority: [String(r.priority_score)],
-          priority_score: r.priority_score,
-          confidence_score: r.confidence_score,
-          versions: r.versions,
-          retry_count: r.retry_count,
-          summary: r.summary ?? mail.summary,
-        };
-      };
-
-      setFetchedMails((prev) => prev.map(mapAnalyzedMail));
-
-      const analyzedSelection = selection.map(mapAnalyzedMail);
-      setAnalyzedMails((prev) => {
-        const existingMap = new Map(prev.map((m) => [m.id, m]));
-        for (const mail of analyzedSelection) {
-          existingMap.set(mail.id, mail);
-        }
-        return Array.from(existingMap.values());
-      });
-
-      setSelectedFetchedIds(new Set());
-      setActiveTab('analyzed');
-      toast.success(`Successfully analyzed ${res.results.length} email(s)`);
-    } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Analysis failed';
-      toast.error(errorMsg);
-    } finally {
-      setAnalyzing(false);
+  const handleAnalysisComplete = (results: EmailAnalysisResult[]) => {
+    const resultsMap = new Map<string, EmailAnalysisResult>();
+    for (const r of results) {
+      resultsMap.set(r.id, r);
     }
+
+    const mapAnalyzedMail = (mail: Mail): Mail => {
+      const r = resultsMap.get(mail.id);
+      if (!r) return mail;
+      return {
+        ...mail,
+        category: r.category ?? mail.category,
+        categories: r.category ? [r.category] : (mail.categories || []),
+        priority: [String(r.priority_score)],
+        priority_score: r.priority_score,
+        confidence_score: r.confidence_score,
+        versions: r.versions,
+        retry_count: r.retry_count,
+        summary: r.summary ?? mail.summary,
+      };
+    };
+
+    setFetchedMails((prev) => prev.map(mapAnalyzedMail));
+
+    const analyzedSelection = analysisTargetMails.map(mapAnalyzedMail);
+    setAnalyzedMails((prev) => {
+      const existingMap = new Map(prev.map((m) => [m.id, m]));
+      for (const mail of analyzedSelection) {
+        existingMap.set(mail.id, mail);
+      }
+      return Array.from(existingMap.values());
+    });
+
+    setSelectedFetchedIds(new Set());
+    setActiveTab('analyzed');
+    setProgressDrawerOpen(false);
+    setAnalysisActive(false);
+    setIsAnalysisStreaming(false);
+    setIsAnalysisDone(true);
+    toast.success(`Successfully analyzed ${results.length} email(s)`);
+  };
+
+  const handleDismissAnalysis = () => {
+    setAnalysisActive(false);
+    setProgressDrawerOpen(false);
+    setIsAnalysisStreaming(false);
+    setIsAnalysisDone(false);
   };
 
   const tabMails = useMemo(() => {
@@ -425,11 +439,16 @@ export default function Analyze({
           insightDisabled={selectedFetchedIds.size === 0 || selectedFetchedIds.size > 1}
           onFetch={() => setFetchDialogOpen(true)}
           onLoadDataFromDatabase={() => setLoadDialogOpen(true)}
+          hasAnalysisProgress={analysisActive && isAnalysisStreaming}
+          isAnalysisStreaming={isAnalysisStreaming}
+          isAnalysisDone={isAnalysisDone}
+          onToggleProgressDrawer={() => setProgressDrawerOpen((prev) => !prev)}
+          progressDrawerOpen={progressDrawerOpen}
           sessionUserEmail={sessionUserEmail}
           hasCategories={hasCategories}
         />
         <AnimatePresence>
-          {(loading || analyzing) && (
+          {loading && (
             <motion.div
               key="loading-blur-overlay"
               initial={{ opacity: 0 }}
@@ -445,7 +464,7 @@ export default function Analyze({
           <CardContent className="min-w-0 px-2 sm:px-4 py-3 border-none">
             <MailTable
               mails={filteredMails}
-              loading={loading || analyzing}
+              loading={loading}
               onMailClick={setDetailMail}
               selectable
               activeTab={activeTab}
@@ -536,6 +555,21 @@ export default function Analyze({
         onGetInsight={handleGetInsight}
         loading={insightLoading}
       />
+      {analysisTargetModel && (
+        <AnalysisProgressDrawer
+          open={progressDrawerOpen}
+          onOpenChange={setProgressDrawerOpen}
+          active={analysisActive}
+          emails={analysisTargetMails}
+          model={analysisTargetModel}
+          onComplete={handleAnalysisComplete}
+          onStreamStateChange={(streaming, done) => {
+            setIsAnalysisStreaming(streaming);
+            setIsAnalysisDone(done);
+          }}
+          onDismiss={handleDismissAnalysis}
+        />
+      )}
     </div>
   );
 }

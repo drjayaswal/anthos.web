@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { UserIcon } from 'lucide-react';
+import { UserIcon, Sparkles, RotateCw, CheckCircle2, BadgeCheckIcon, LoaderCircleIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface HeaderProps {
   searchTerm?: string;
@@ -17,6 +18,11 @@ interface HeaderProps {
   insightDisabled?: boolean;
   onFetch: () => void;
   onAccount: () => void;
+  hasAnalysisProgress?: boolean;
+  isAnalysisStreaming?: boolean;
+  isAnalysisDone?: boolean;
+  onToggleProgressDrawer?: () => void;
+  progressDrawerOpen?: boolean;
   sessionUserEmail?: string | null;
   hasCategories?: boolean;
 }
@@ -32,6 +38,11 @@ export default function Header({
   insightDisabled = false,
   onAccount,
   onFetch,
+  hasAnalysisProgress = false,
+  isAnalysisStreaming = false,
+  isAnalysisDone = false,
+  onToggleProgressDrawer,
+  progressDrawerOpen = false,
   hasCategories = true,
 }: HeaderProps) {
   const [optionsOpen, setOptionsOpen] = useState(false);
@@ -67,7 +78,32 @@ export default function Header({
     <>
       <header className="flex w-full items-center justify-between gap-3">
         {!optionsOpen && !loading && (
-          <div data-tour="options-button" className="fixed top-3 right-3 z-40">
+          <div data-tour="options-button" className="fixed top-3 right-3 z-40 flex items-center gap-2">
+            <AnimatePresence>
+              {hasAnalysisProgress && (
+                <motion.button
+                  key="progress-button"
+                  type="button"
+                  onClick={onToggleProgressDrawer}
+                  initial={{ opacity: 0, scale: 0.9, x: 6 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className={cn(
+                    'px-3.5 py-1.5 rounded-full text-xs font-semibold outline-none cursor-pointer select-none flex items-center gap-1.5',
+                  )}
+                  aria-label="Toggle Progress Drawer"
+                >
+                  {isAnalysisStreaming ? (
+                    <LoaderCircleIcon className="size-3.5 text-green-600 animate-spin" />
+                  ) : isAnalysisDone ? (
+                    <BadgeCheckIcon className="size-3.5 text-green-600" />
+                  ) : (
+                    <Sparkles className="size-3.5 text-[#4F46E5] fill-[#4F46E5]/30" />
+                  )}
+                  <span>Processing...</span>
+                </motion.button>
+              )}
+            </AnimatePresence>
             <button
               type="button"
               onClick={() => setOptionsOpen(true)}
@@ -102,6 +138,25 @@ export default function Header({
               transition={{ type: 'spring', stiffness: 400, damping: 28 }}
               className="fixed top-3 right-2 z-50 bg-black/5 backdrop-blur-md rounded-4xl flex items-center gap-1 p-1.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]"
             >
+              {hasAnalysisProgress && (
+                <motion.button
+                  type="button"
+                  onClick={() => {
+                    onToggleProgressDrawer?.();
+                    closeOptions();
+                  }}
+                  className={cn(
+                    'px-3.5 py-1.5 rounded-full text-xs font-semibold border shadow-[inset_0_-3px_6px_rgba(79,70,229,0.15),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none flex items-center gap-1.5',
+                    progressDrawerOpen
+                      ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
+                      : 'bg-linear-to-b from-indigo-50 to-white text-[#4F46E5] border-indigo-200'
+                  )}
+                  aria-label="Toggle Progress Drawer"
+                >
+                  <span>Progress</span>
+                </motion.button>
+              )}
+
               {hasCategories && hasSelectedMails && (
                 <motion.button
                   type="button"
