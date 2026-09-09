@@ -1,205 +1,260 @@
+<p align="center">
+  <img src="./public/anthos-banner.png" alt="Anthos Banner" width="100%" />
+</p>
+
 # Anthos Web
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19-61dafb?logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
-[![Drizzle ORM](https://img.shields.io/badge/Drizzle-ORM-000?logo=drizzle)](https://orm.drizzle.team/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+An intelligent, privacy-first email dashboard and organization companion built with **Next.js**, **React 19**, **Better Auth**, **Drizzle ORM**, and **Tailwind CSS**.
 
-A Next.js dashboard for Gmail: read-only OAuth, encrypted local vault (IndexedDB), optional AES-256-GCM cloud backup in Postgres, AI-assisted mail analysis, and a motion-first UI.
-
-**Live stack:** Next.js App Router · NextAuth (Google) · Gmail API · Drizzle + Postgres (Neon) · Framer Motion · Radix UI · Tailwind CSS v4
+Anthos Web connects respectfully to your Gmail with read-only permissions, safeguarding your correspondence through client-side encryption while providing real-time AI email classification, priority scoring, summarization, and interactive visual analytics.
 
 ---
 
-## Features
+## Table of Contents
 
-| Area | Description |
-|------|-------------|
-| **Fetch** | Query Gmail with read/unread, lookback days, count, important, and starred filters. |
-| **Local vault** | Fetched mail encrypted in the browser (AES-GCM, key derived from user id + email). |
-| **Analyze** | Select fetched mail, run AI analysis with options derived from the selection; optional store to DB. |
-| **Cloud vault** | Manually sync selected analyzed mail to Postgres (`encrypted_mail`) with server-side encryption. |
-| **Tabs** | Separate **Fetched** and **Analyzed** inboxes with search and detail sheet. |
+1. [Overview & Philosophy](#overview--philosophy)
+2. [Key Features](#key-features)
+3. [Architecture & Workflow](#architecture--workflow)
+4. [Project Structure](#project-structure)
+5. [Prerequisites](#prerequisites)
+6. [Environment Configuration](#environment-configuration)
+7. [Installation & Setup](#installation--setup)
+8. [Running the Application](#running-the-application)
+9. [AI Integration & Real-Time Streaming](#ai-integration--real-time-streaming)
+10. [Security & Privacy Commitments](#security--privacy-commitments)
+11. [Companion CLI Integration](#companion-cli-integration)
+12. [License & Acknowledgments](#license--acknowledgments)
 
 ---
 
-## Quick start
+## Overview & Philosophy
 
-### Prerequisites
+Anthos Web was designed to bring clarity, calm, and intelligence to email management without compromising personal privacy.
 
-- Node.js 20+ or [Bun](https://bun.sh)
-- Google Cloud OAuth client (Gmail API enabled)
-- Postgres database (e.g. [Neon](https://neon.tech))
-- Optional: separate [AI server](https://github.com) exposing `POST /analyze/mails`
+- **Strict Respect for Privacy**: Your inbox represents your personal space. Anthos Web requests only read-only permissions (`gmail.readonly`). It never modifies, deletes, or sends emails on your behalf.
+- **Client-Side Safeguards**: Fetched emails are encrypted directly within your browser using modern Web Crypto standards. Your sensitive content remains your own.
+- **Purposeful AI Assistance**: Rather than scanning an entire mailbox continuously in the background, Anthos Web analyzes focused batches (up to 5 emails at a time) on demand. You remain in complete control of which messages are processed.
+- **Calm, Motion-First Interface**: Built with fluid spring physics and thoughtful micro-interactions, Anthos delivers immediate feedback without visual clutter.
 
-### Install
+---
 
-```bash
-git clone https://github.com/YOUR_ORG/anthos.web.git
-cd anthos.web
-cp .env.example .env.local
+## Key Features
+
+- **Selective Mail Fetching**: Query Gmail with flexible parameters including read/unread status, lookback days, quantity limits, and important or starred flags.
+- **Real-Time Streaming Drawer**: Watch the AI pipeline work in real time through an integrated sliding terminal drawer, displaying live progress logs, categorization stages, and verification checks streamed directly over WebSockets.
+- **Intelligent Classification & Summaries**: Automatically tags emails into user-defined or default categories, synthesizes clear 50-word summaries, and calculates confidence scores (0–100%).
+- **Dual-Metric Priority Visualization**: An interactive scatter plot charting email priority alongside classification confidence, complete with 4-tier quadrant filtering and category breakdowns.
+- **Single-Mail Insights**: Deep-dive into individual emails on demand to generate instant key takeaways and action points.
+- **Encrypted Local Vault**: Encrypts and caches emails locally in the browser with AES-GCM encryption, keeping data accessible across visits while staying protected.
+- **Optional Cloud Vault**: Persist analyzed records securely in a PostgreSQL database using server-side AES-256-GCM encryption for unified cross-device access.
+
+---
+
+## Architecture & Workflow
+
+Anthos Web acts as the intuitive visual client within the Anthos open-source ecosystem, interfacing seamlessly with Google's Gmail API, the Anthos AI backend, and persistent database storage:
+
+```
+                      [ Google Gmail API ]
+                                │
+                  (OAuth 2.0 — Read-Only Scope)
+                                │
+                                ▼
+                       [ Anthos Web UI ]
+             (Next.js App Router · React 19 · Framer Motion)
+                                │
+       ┌────────────────────────┼────────────────────────┐
+       ▼                        ▼                        ▼
+[ Local Vault ]        [ WebSocket Stream ]      [ Cloud Vault ]
+  (IndexedDB)           (ws://.../analyse)         (PostgreSQL)
+  Client AES-GCM                │                Server AES-256-GCM
+                                ▼
+                       [ Anthos AI Server ]
+                    (LangGraph Multi-Agent)
+                                │
+                   Live Progress & Status Logs
+                                │
+                                ▼
+                    [ Interactive Dashboard ]
+                 (Priority Graph · Categorized)
 ```
 
-Fill in `.env.local` (see [Environment](#environment)), then:
+### Workflow Highlights:
+1. **Authentication**: Users sign in securely through Google OAuth managed by Better Auth.
+2. **Retrieve**: Desired emails are fetched on demand directly from Gmail via the official Google APIs.
+3. **Analyze**: When analysis is requested, the payload is transmitted to the Anthos AI server via a persistent WebSocket connection.
+4. **Stream & Display**: Real-time pipeline events stream directly to the progress drawer, after which the dashboard updates automatically with priority scores and summaries.
+5. **Vault**: Users can optionally sync analyzed records to their encrypted database vault for historical tracking.
+
+---
+
+## Project Structure
+
+```text
+anthos.web/
+├── src/
+│   ├── app/
+│   │   ├── (auth)/             # Authentication entry points
+│   │   ├── actions.ts          # Type-safe server actions (Fetch, Analyze, Insights)
+│   │   ├── api/                # Better Auth and background API route handlers
+│   │   └── db/                 # Drizzle ORM schema definitions and database connection
+│   ├── components/
+│   │   ├── ui/                 # Reusable accessible interface primitives
+│   │   ├── Header.tsx          # Dynamic navigation bar with active progress indicator
+│   │   ├── Analyze.tsx         # Primary inbox coordinator and view controller
+│   │   ├── MailTable.tsx       # Responsive table with batch selection and quick actions
+│   │   ├── AnalysisProgressDrawer.tsx # Live streaming terminal drawer for AI updates
+│   │   ├── AnalyzedMailsPriorityGraph.tsx # Priority and confidence visual analytics
+│   │   ├── MailSheet.tsx       # Detail slide-over view for comprehensive mail inspection
+│   │   ├── FetchDialog.tsx     # Gmail fetch configuration modal
+│   │   ├── AnalyzeDialog.tsx   # Model selection and analysis confirmation modal
+│   │   └── InsightDialog.tsx   # Single-mail quick insight dialog
+│   ├── lib/                    # Encryption engines, auth configuration, and utilities
+│   └── types/                  # Shared TypeScript interfaces and domain schemas
+├── public/                     # Static media and brand assets
+├── drizzle.config.ts           # Drizzle Kit migration configuration
+├── package.json                # Project dependencies and script definitions
+└── README.md                   # Project documentation
+```
+
+---
+
+## Prerequisites
+
+Before running Anthos Web locally, ensure you have:
+
+- **Node.js**: Version 20 or higher, or [Bun](https://bun.sh)
+- **Google Cloud Console Credentials**: An OAuth 2.0 Client ID with the `https://www.googleapis.com/auth/gmail.readonly` scope enabled
+- **PostgreSQL Database**: A running instance (such as [Neon](https://neon.tech), Supabase, or a local database)
+- **Anthos AI Server** *(Optional but recommended)*: The companion Python backend running on `http://localhost:8000` for full real-time classification
+
+---
+
+## Environment Configuration
+
+Create a `.env.local` file in the project root based on the configuration below:
+
+```env
+# Application Base URL
+BETTER_AUTH_URL="http://localhost:3000"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Authentication Security Secret (Minimum 32 random characters)
+BETTER_AUTH_SECRET="your-secure-random-secret"
+AUTH_SECRET="your-secure-random-secret"
+
+# PostgreSQL Database Connection
+DATABASE_URL="postgresql://user:password@localhost:5432/anthos"
+
+# Google Cloud OAuth 2.0 Credentials
+AUTH_GOOGLE_ID="your-google-client-id.apps.googleusercontent.com"
+AUTH_GOOGLE_SECRET="your-google-client-secret"
+
+# Server-Side Vault Encryption (32-byte hex string for AES-256-GCM)
+ENCRYPTION_KEY="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+
+# Anthos AI Backend URL
+AI_SERVER_URL="http://localhost:8000"
+NEXT_PUBLIC_AI_SERVER_URL="http://localhost:8000"
+
+# Optional Administrator Email
+ADMIN_EMAIL="admin@example.com"
+```
+
+> **Google OAuth Configuration Tip**: Ensure your Google Cloud Console Authorized Redirect URI includes:  
+> `http://localhost:3000/api/auth/callback/google`
+
+---
+
+## Installation & Setup
 
 ```bash
+# 1. Clone the repository
+git clone https://github.com/your-org/anthos.web.git
+cd anthos.web
+
+# 2. Install dependencies (Bun recommended)
 bun install
+
+# 3. Synchronize database schema
 bun run db:push
+```
+
+If you prefer using `npm` or `pnpm`:
+```bash
+npm install
+npm run db:push
+```
+
+---
+
+## Running the Application
+
+### Development Mode
+
+Start the Next.js development server:
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+The application will be accessible at [http://localhost:3000](http://localhost:3000).
 
----
+### Production Build
 
-## Environment
+To validate type integrity and build for production:
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `BETTER_AUTH_SECRET` | Yes | Auth secret (32+ bytes random base64) |
-| `BETTER_AUTH_URL` | Yes | App base URL (e.g. `http://localhost:3000`) |
-| `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `GOOGLE_CLIENT_ID` | Yes | Google Cloud OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | Yes | Google Cloud OAuth client secret |
-| `ENCRYPTION_KEY` | Yes | 32-byte hex for AES-256-GCM cloud vault encryption |
-| `ADMIN_EMAIL` | No | Comma-separated admin emails |
-| `AI_SERVER_URL` | No | Base URL of the AI processing server |
-
-Google OAuth redirect URI: `{BETTER_AUTH_URL}/api/auth/callback/google`  
-Scope used: `openid email profile https://www.googleapis.com/auth/gmail.readonly`
-
----
-
-## Scripts
-
-| Command | Description |
-|---------|-------------|
-| `bun dev` | Development server |
-| `bun run build` | Production build |
-| `bun start` | Start production server |
-| `bun run lint` | ESLint |
-| `bun run db:generate` | Drizzle migrations (generate) |
-| `bun run db:push` | Push schema to database |
-| `bun run db:studio` | Drizzle Studio |
-
----
-
-## Architecture
-
-```text
-Browser (Home)
-  ├─ Fetch → POST /api/mail/fetch → Gmail API
-  ├─ Vault  → IndexedDB (client AES-GCM)
-  ├─ Analyze → analyzeMailsAction → POST /api/mail/analyze-check
-  │            → AI_SERVER_URL/analyze/mails
-  └─ Sync   → POST /api/mail/sync → encrypted_mail (Postgres)
-
-Auth → /api/auth/[...all] (Better Auth + Google)
+```bash
+bun run build
+bun start
 ```
 
-### CLI Integration
+### Database Management
 
-The companion CLI project (`anthos.cli`) is fully integrated with this Next.js web application:
-- **Shared DB Access**: The CLI's Hono server (`packages/server`) connects directly to the same Postgres database using Drizzle ORM.
-- **Better Auth Device Flow**: Authentication is secured through Better Auth's device authorization flow.
-- **Gmail Token Resolving**: When running in `ANALYZE` mode, the CLI retrieves and automatically refreshes Google OAuth tokens directly from the shared `account` table, enabling full terminal-based inbox querying and analysis.
+Anthos Web uses Drizzle ORM for schema management. You can launch Drizzle Studio to inspect and edit records directly in your browser:
 
-### API routes
-
-| Route | Method | Purpose |
-|-------|--------|---------|
-| `/api/mail/fetch` | POST | Fetch mail from Gmail with query options |
-| `/api/mail/analyze-check` | POST | Partition selected mail vs DB; attach categories/priority |
-| `/api/mail/sync` | POST | Upsert selected mail ciphertext into `encrypted_mail` |
-| `/api/auth/[...all]` | * | Session and OAuth |
-
-### Database schema
-
-- `user` — OAuth user row (id, email, accessToken, createdAt)
-- `encrypted_mail` — per-user encrypted JSON payloads, categories, priority (`decimal(10,4)`)
-
-Defined in [`src/app/db/schema.ts`](src/app/db/schema.ts).
-
----
-
-## Project structure
-
-```text
-src/
-├── app/
-│   ├── actions.ts          # Server actions (fetch, analyze, sync)
-│   ├── api/mail/           # Route handlers
-│   ├── api/auth/           # Better Auth
-│   ├── db/                 # Drizzle schema + client
-│   ├── admin/              # Admin gate (ADMIN_EMAIL)
-│   ├── privacy-policy/     # Privacy & security
-│   ├── terms-condition/    # Terms of use
-│   └── help/               # Documentation & guides
-├── components/             # UI (Home, tables, dialogs, graph)
-├── lib/                    # Gmail, crypto, vault, auth, API client
-└── types/                  # Shared TypeScript types
+```bash
+bun run db:studio
 ```
 
 ---
 
-## Analyze payload
+## AI Integration & Real-Time Streaming
 
-The AI server should accept:
+Anthos Web interfaces with the **Anthos AI Server** over a bidirectional WebSocket:
 
-```json
-{
-  "mails": [/* Mail[] */],
-  "options": {
-    "unread": true,
-    "days": 3,
-    "count": 5,
-    "important": false,
-    "starred": false,
-    "store": false
-  }
-}
-```
-
-`options` are derived from the selected mail batch (dates, status, labels, count). Only `store` is chosen in the UI.
+1. **Connection**: When analysis begins, Anthos Web establishes a WebSocket connection to `ws://localhost:8000/analyse`.
+2. **Payload**: The selected emails, user categories, and model configurations are sent in structured JSON.
+3. **Live Progress**: The server streams back log events as they occur—including text cleaning, regex fast-routing, LLM evaluation, and supervisor verification.
+4. **Visual Feedback**: The streaming drawer opens to present color-coded operational badges and diagnostic logs.
+5. **Completion**: When analysis concludes, the drawer closes automatically, results are recorded, and the interactive priority graph is populated.
+6. **Resilient Fallback**: If WebSocket streaming is unavailable, Anthos Web automatically falls back to standard HTTP `POST /analyse` to ensure uninterrupted service.
 
 ---
 
-## Legal pages
+## Security & Privacy Commitments
 
-- [Privacy & security](/privacy-policy) — `src/app/(app)/privacy-policy/page.tsx`
-- [Terms of use](/terms-condition) — `src/app/(app)/terms-condition/page.tsx`
-- [Help & Documentation](/help) — `src/app/(app)/help/page.tsx`
+Anthos Web is engineered with trust and data dignity at its foundation:
 
----
-
-## Security notes
-
-- Gmail access is **read-only**.
-- Local vault encryption uses Web Crypto; keys are derived from session user id + email (data survives sign-out).
-- Server vault uses **AES-256-GCM** via [`src/lib/mail-crypto.ts`](src/lib/mail-crypto.ts).
-- Never commit `.env` files; use `.env.example` as a template.
+- **Read-Only Guarantee**: OAuth scopes are intentionally limited to `gmail.readonly`. The application cannot alter, delete, send, or draft messages.
+- **Client-Side Zero-Knowledge**: Email content stored on the client is encrypted with keys derived from your authenticated session, ensuring your data remains private.
+- **No Third-Party Tracking**: Your emails are never retained for marketing purposes, sold, or shared with unauthorized third parties.
+- **Bounded Requests**: Email batches are strictly capped at 5 messages per analysis request to prevent unintended bulk exposure.
 
 ---
 
-## Contributing
+## Companion CLI Integration
 
-1. Fork the repository  
-2. Create a branch: `git checkout -b feat/your-feature`  
-3. Commit and push  
-4. Open a pull request  
+Anthos Web works in harmony with **`anthos.cli`**, the terminal companion for command-line power users:
 
-Run `bun run lint` and `bun run build` before submitting.
-
----
-
-## Tags
-
-`nextjs` `react` `typescript` `gmail` `email` `oauth` `drizzle` `postgresql` `encryption` `tailwindcss` `framer-motion` `nextauth` `ai` `dashboard`
+- **Unified Authentication**: Both the web application and CLI share Better Auth verification and database tables.
+- **Centralized Vault**: Emails analyzed through the CLI can be stored into the shared PostgreSQL vault and viewed immediately on the web dashboard.
+- **Synchronized Categories**: Categories defined in the web interface are shared across CLI sessions for consistent prioritization.
 
 ---
 
-## License
+## License & Acknowledgments
 
-[MIT](LICENSE) © Anthos contributors
+Anthos Web is open-source software licensed under the **[MIT License](LICENSE)**.
+
+Designed and developed with care by the Anthos contributors. Built using open-source libraries from the Next.js, React, Tailwind CSS, and Drizzle communities.
