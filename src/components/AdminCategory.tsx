@@ -203,7 +203,6 @@ export default function AdminCategories() {
             <CustomButton
               type="submit"
               disabled={saving || !form.name.trim()}
-              color={saving ? "black" : "green"}
             >
               {saving ? (
                 <Loader2Icon className="h-4 w-4 animate-spin" />
@@ -219,7 +218,7 @@ export default function AdminCategories() {
                 type="button"
                 onClick={resetForm}
                 disabled={saving}
-                color="red"
+                className="text-red-600!"
               >
                 <XIcon className="h-4 w-4 sm:block hidden" />
                 <span>Cancel</span>
@@ -251,8 +250,8 @@ export default function AdminCategories() {
                 return (
                   <div
                     key={cat.id}
-                    className={`overflow-hidden relative rounded-3xl bg-white border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] transition-all duration-200 p-3.5 sm:px-5 sm:py-3 flex items-center justify-between gap-3 text-black ${
-                      editingId === cat.id ? "border-transparent bg-black/5 shadow-none" : ""
+                    className={`overflow-hidden relative rounded-3xl bg-white border  p-3.5 sm:px-5 sm:py-3 flex items-center justify-between gap-3 text-black ${
+                      editingId === cat.id ? "border-transparent opacity-50 bg-black/5 shadow-none" : ""
                     }`}
                   >
                     <div className="text-xs sm:text-sm font-semibold text-black/50">
@@ -277,7 +276,6 @@ export default function AdminCategories() {
                           size="xs"
                           onClick={() => startEdit(cat)}
                           aria-label={`Edit ${cat.name}`}
-                          color="blue"
                         >
                           <Edit2Icon className="h-3 w-3 sm:block hidden" />
                           <span>Edit</span>
@@ -287,7 +285,7 @@ export default function AdminCategories() {
                           disabled={deletingId === cat.id}
                           onClick={() => handleDelete(cat.id, cat.name)}
                           aria-label={`Delete ${cat.name}`}
-                          color="red"
+                          className="text-red-600"
                         >
                           {deletingId === cat.id ? (
                             <Loader2Icon className="h-3 w-3 animate-spin" />
@@ -314,6 +312,7 @@ export default function AdminCategories() {
                     disabled={safeCurrentPage <= 1}
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     title="Previous page"
+                    className="border-0"
                     >
                     <ChevronLeft className="h-3.5 w-3.5" />
                     <span>Prev</span>
@@ -323,6 +322,7 @@ export default function AdminCategories() {
                     disabled={safeCurrentPage >= totalPages}
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     title="Next page"
+                    className="border-0"
                     >
                     <span>Next</span>
                     <ChevronRight className="h-3.5 w-3.5" />

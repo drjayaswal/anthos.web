@@ -1,8 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { UserIcon, Sparkles, RotateCw, CheckCircle2, BadgeCheckIcon, LoaderCircleIcon } from 'lucide-react';
+import {
+  UserIcon,
+  SearchIcon,
+  BadgeCheckIcon,
+  LoaderCircleIcon,
+  MailIcon,
+  Database,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps {
@@ -11,11 +18,9 @@ interface HeaderProps {
   analyzing: boolean;
   loading: boolean;
   onAnalyze: () => void;
-  onInsight?: () => void;
   onLoadDataFromDatabase: () => void;
   selectedCount?: number;
   analyzeDisabled?: boolean;
-  insightDisabled?: boolean;
   onFetch: () => void;
   onAccount: () => void;
   hasAnalysisProgress?: boolean;
@@ -27,15 +32,26 @@ interface HeaderProps {
   hasCategories?: boolean;
 }
 
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkIsDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    checkIsDesktop();
+    window.addEventListener('resize', checkIsDesktop);
+    return () => window.removeEventListener('resize', checkIsDesktop);
+  }, []);
+
+  return isDesktop;
+}
+
 export default function Header({
   analyzing,
   loading,
   onAnalyze,
-  onInsight,
   onLoadDataFromDatabase,
   selectedCount = 0,
   analyzeDisabled = false,
-  insightDisabled = false,
   onAccount,
   onFetch,
   hasAnalysisProgress = false,
@@ -44,8 +60,10 @@ export default function Header({
   onToggleProgressDrawer,
   progressDrawerOpen = false,
   hasCategories = true,
+  sessionUserEmail,
 }: HeaderProps) {
   const [optionsOpen, setOptionsOpen] = useState(false);
+  const isDesktop = useIsDesktop();
 
   const closeOptions = () => {
     setOptionsOpen(false);
@@ -62,7 +80,7 @@ export default function Header({
   }, [optionsOpen]);
 
   useEffect(() => {
-    if (optionsOpen) {
+    if (optionsOpen && !isDesktop) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -70,15 +88,140 @@ export default function Header({
     return () => {
       document.body.style.overflow = '';
     };
-  }, [optionsOpen]);
+  }, [optionsOpen, isDesktop]);
 
   const hasSelectedMails = selectedCount > 0;
+
+  const options = useMemo(() => {
+    const list = [];
+
+    if (hasAnalysisProgress) {
+      list.push({
+        id: 'progress',
+        label: 'Progress',
+        description: isAnalysisStreaming
+          ? 'Streaming live AI analysis logs'
+          : isAnalysisDone
+          ? 'Analysis completed - view logs'
+          : 'Live progress and logs',
+        show: true,
+        active: progressDrawerOpen,
+        disabled: false,
+        icon: isAnalysisStreaming
+          ? LoaderCircleIcon
+          : isAnalysisDone
+          ? BadgeCheckIcon
+          : SearchIcon,
+        iconClassName: isAnalysisStreaming
+          ? 'text-green-600 animate-spin'
+          : isAnalysisDone
+          ? 'text-green-600'
+          : 'text-[#4F46E5] fill-[#4F46E5]/30',
+        onClick: () => {
+          onToggleProgressDrawer?.();
+          closeOptions();
+        },
+      });
+    }
+
+    if (hasCategories && hasSelectedMails) {
+      list.push({
+        id: 'analyze',
+        label: analyzing ? 'Analysing...' : 'Analyse',
+        description: 'Classify and score priority with AI',
+        show: true,
+        disabled: analyzing || analyzeDisabled,
+        icon: SearchIcon,
+        iconClassName: analyzing ? 'animate-spin text-[#4F46E5]' : undefined,
+        onClick: () => {
+          onAnalyze();
+          closeOptions();
+        },
+      });
+    }
+
+    list.push({
+      id: 'fetch',
+      label: loading ? 'Fetching...' : 'ESPs',
+      description: 'Fetch new messages from Gmail',
+      show: true,
+      disabled: loading,
+      icon: MailIcon,
+      iconClassName: undefined,
+      onClick: () => {
+        onFetch();
+        closeOptions();
+      },
+    });
+
+    list.push({
+      id: 'storage',
+      label: loading ? 'Loading...' : 'Storage',
+      description: 'Load encrypted vault from database',
+      show: true,
+      disabled: loading,
+      icon: Database,
+      iconClassName: undefined,
+      onClick: () => {
+        onLoadDataFromDatabase();
+        closeOptions();
+      },
+    });
+
+    list.push({
+      id: 'account',
+      label: 'Account',
+      description: sessionUserEmail || 'Profile settings and sign out',
+      show: true,
+      disabled: false,
+      icon: UserIcon,
+      iconClassName: undefined,
+      onClick: () => {
+        onAccount();
+        closeOptions();
+      },
+    });
+
+    return list;
+  }, [
+    hasAnalysisProgress,
+    isAnalysisStreaming,
+    isAnalysisDone,
+    progressDrawerOpen,
+    hasCategories,
+    hasSelectedMails,
+    analyzing,
+    loading,
+    analyzeDisabled,
+    sessionUserEmail,
+    onToggleProgressDrawer,
+    onAnalyze,
+    onFetch,
+    onLoadDataFromDatabase,
+    onAccount,
+  ]);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.05,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: isDesktop ? -20 : 0, y: isDesktop ? 0 : -10 },
+    show: { opacity: 1, x: 0, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
+  } as const;
 
   return (
     <>
       <header className="flex w-full items-center justify-between gap-3">
         {!optionsOpen && !loading && (
-          <div data-tour="options-button" className="fixed top-3 right-3 z-40 flex items-center gap-2">
+          <div data-tour="options-button" className="fixed top-2 right-1 z-40 flex items-center gap-2">
             <AnimatePresence>
               {hasAnalysisProgress && (
                 <motion.button
@@ -98,7 +241,7 @@ export default function Header({
                   ) : isAnalysisDone ? (
                     <BadgeCheckIcon className="size-3.5 text-green-600" />
                   ) : (
-                    <Sparkles className="size-3.5 text-[#4F46E5] fill-[#4F46E5]/30" />
+                    <SearchIcon className="size-3.5 text-[#4F46E5] fill-[#4F46E5]/30" />
                   )}
                   <span>Processing...</span>
                 </motion.button>
@@ -109,9 +252,13 @@ export default function Header({
               onClick={() => setOptionsOpen(true)}
               aria-expanded={optionsOpen}
               aria-label="Open options menu"
-              className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all duration-200 outline-none cursor-pointer select-none"
+              className={cn(
+                'relative px-3 py-2 cursor-pointer flex items-center gap-1.5 group select-none',
+              )}
             >
-              Options
+              <div className="text-xs font-semibold tracking-tight text-black transition-colors">
+                Options
+              </div>
             </button>
           </div>
         )}
@@ -125,105 +272,65 @@ export default function Header({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40"
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="fixed inset-0 z-60"
               onClick={closeOptions}
             />
 
             <motion.div
-              key="options-dock"
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 40 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-              className="fixed top-3 right-2 z-50 bg-black/5 backdrop-blur-md rounded-4xl flex items-center gap-1 p-1.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]"
+              key="options-drawer"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+              className="fixed top-0 right-0 bottom-0 z-70 w-18 h-screen bg-white border-l flex flex-col overflow-visible"
             >
-              {hasAnalysisProgress && (
-                <motion.button
-                  type="button"
-                  onClick={() => {
-                    onToggleProgressDrawer?.();
-                    closeOptions();
-                  }}
-                  className={cn(
-                    'px-3.5 py-1.5 rounded-full text-xs font-semibold border shadow-[inset_0_-3px_6px_rgba(79,70,229,0.15),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none flex items-center gap-1.5',
-                    progressDrawerOpen
-                      ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
-                      : 'bg-linear-to-b from-indigo-50 to-white text-[#4F46E5] border-indigo-200'
-                  )}
-                  aria-label="Toggle Progress Drawer"
-                >
-                  <span>Progress</span>
-                </motion.button>
-              )}
-
-              {hasCategories && hasSelectedMails && (
-                <motion.button
-                  type="button"
-                  onClick={() => {
-                    onInsight?.();
-                    closeOptions();
-                  }}
-                  disabled={analyzing || loading || insightDisabled}
-                  className="px-3.5 py-1.5 disabled:cursor-not-allowed rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40"
-                  aria-label="Insight Mail"
-                  >
-                  Insight
-                </motion.button>
-              )}
-
-              {hasCategories && hasSelectedMails && (
-                <motion.button
-                type="button"
-                onClick={() => {
-                  onAnalyze();
-                  closeOptions();
-                }}
-                  disabled={analyzing || analyzeDisabled}
-                  className="px-3.5 py-1.5 disabled:cursor-not-allowed rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40"
-                  aria-label="Analyze Mails"
-                >
-                  {analyzing ? 'Analysing...' : 'Analyse'}
-                </motion.button>
-              )}
-
-              <motion.button
-                type="button"
-                onClick={() => {
-                  onFetch();
-                  closeOptions();
-                }}
-                disabled={loading}
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
-                aria-label="Fetch from Gmail"
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+                className="flex-1 p-2 space-y-1.5 overflow-visible"
               >
-                {loading ? 'Fetching...' : 'ESPs'}
-              </motion.button>
+                {options.map((item) => {
+                  const Icon = item.icon;
 
-              <motion.button
-                type="button"
-                onClick={() => {
-                  onLoadDataFromDatabase();
-                  closeOptions();
-                }}
-                disabled={loading}
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
-                aria-label="Load from Database"
-              >
-                {loading ? 'Loading...' : 'Storage'}
-              </motion.button>
-
-              <motion.button
-                type="button"
-                onClick={() => {
-                  onAccount();
-                  closeOptions();
-                }}
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all cursor-pointer select-none disabled:opacity-40 disabled:pointer-events-none"
-                aria-label="Account Settings"
-              >
-                Account
-              </motion.button>
+                  return (
+                    <motion.div
+                      key={item.id}
+                      variants={itemVariants}
+                      className="relative"
+                    >
+                      <div
+                        className={cn(
+                          'relative z-10 flex items-center border-b-2 justify-center transition-all duration-200 p-1 bg-white',
+                          item.active ? 'border-green-600' : 'border-transparent'
+                        )}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => {
+                            item.onClick();
+                          }}
+                          disabled={item.disabled}
+                          className="flex items-center justify-center p-1.5 rounded-xl transition-colors cursor-pointer flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                          title={item.label}
+                        >
+                          <Icon
+                            className={cn(
+                              'w-5 h-5 transition-colors',
+                              item.iconClassName
+                                ? item.iconClassName
+                                : item.active
+                                ? 'text-black'
+                                : 'text-black/60 hover:text-black'
+                            )}
+                          />
+                        </button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
             </motion.div>
           </>
         )}

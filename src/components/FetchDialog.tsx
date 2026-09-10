@@ -1,16 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import { CloudDownloadIcon, X } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { CheckIcon, Loader2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 import type { FetchOptions } from '@/types';
 import { buildCloudQueryOptions, CloudQueryFields } from './QueryFields';
-import { CustomButton } from './ui/button';
+import QueryDrawer from './QueryDrawer';
 
 interface FetchDialogProps {
   open: boolean;
@@ -29,45 +26,84 @@ export default function FetchDialog({
   const [count, setCount] = useState(1);
   const [important, setImportant] = useState(false);
   const [starred, setStarred] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const fields = { provider, setProvider, unread, setUnread, days, setDays, count, setCount, important, setImportant, starred, setStarred };
 
+  useEffect(() => {
+    if (!open) {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      setLoading(false);
+      setConfirmed(false);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
   const handleFetch = () => {
-    onFetchFromCloud(buildCloudQueryOptions(fields));
-    onOpenChange(false);
+    if (!confirmed || loading) return;
+    setLoading(true);
+    timeoutRef.current = setTimeout(() => {
+      onFetchFromCloud(buildCloudQueryOptions(fields));
+      onOpenChange(false);
+      setLoading(false);
+    }, 1000);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        showCloseButton={false}
-        className="w-full sm:w-80 rounded-t-4xl sm:rounded-2xl bg-white sm:border-b border border-b-0 text-black shadow-2xl p-0 gap-0 overflow-hidden sm:overflow-visible"
-      >
-        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b">
-          <div>
-            <DialogTitle className="text-sm font-semibold text-black">Email Service Providers</DialogTitle>
-            <DialogDescription className="text-[10px] text-black/50">Query email with custom filters</DialogDescription>
+    <QueryDrawer
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Email Service Providers"
+      description="Query email with custom filters"
+      footerAction={
+        <div className="w-full flex items-center justify-between gap-3 select-none">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="confirm-fetch"
+              checked={confirmed}
+              className='data-checked:bg-blue-600 data-checked:border-blue-600'
+              onCheckedChange={(c) => setConfirmed(c === true)}
+            />
+            <Label
+              htmlFor="confirm-fetch"
+              className="cursor-pointer text-xs font-medium text-black select-none"
+            >
+              Confirm
+            </Label>
           </div>
+
           <button
             type="button"
-            onClick={() => onOpenChange(false)}
-            title="Close dialog"
-            className="rounded cursor-pointer p-1 text-black/50 hover:text-red-600! transition"
+            onClick={handleFetch}
+            disabled={!confirmed || loading}
+            className={cn(
+              'flex disabled:cursor-not-allowed items-center justify-center gap-2 px-3.5 py-2 cursor-pointer rounded-lg text-xs font-medium transition-all duration-200 border select-none outline-none',
+              (!confirmed || loading) && "text-black/30"
+            )}
           >
-            <X className="h-3.5 w-3.5" />
+            <span>Continue</span>
+            {loading ? (
+              <Loader2 className="w-3.5 h-3.5 text-blue-600 animate-spin" />
+            ) : (
+              <CheckIcon
+                className={cn(
+                  'w-3.5 h-3.5 transition-colors',
+                  confirmed ? 'text-blue-600' : 'text-black/30'
+                )}
+              />
+            )}
           </button>
         </div>
-
-        <div className="px-4 py-3 max-h-[75vh] overflow-y-auto sm:overflow-visible">
-          <CloudQueryFields {...fields} />
-        </div>
-
-        <div className="flex items-center justify-end gap-2 px-4 py-3 border-t">
-          <CustomButton onClick={handleFetch} size="sm" color='green'>
-            <CloudDownloadIcon className="w-3.5 h-3.5" />
-            <span>Fetch Mails</span>
-          </CustomButton>
-        </div>
-      </DialogContent>
-    </Dialog>
+      }
+    >
+      <CloudQueryFields {...fields} />
+    </QueryDrawer>
   );
 }

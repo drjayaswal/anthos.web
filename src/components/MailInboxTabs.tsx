@@ -27,7 +27,7 @@ export default function MailInboxTabs({
   ];
 
   return (
-    <div data-tour="inbox-tabs" className="absolute sm:top-3 bg-black/5 backdrop-blur-md rounded-4xl top-18 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1.5 transition-all duration-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]">
+    <div data-tour="inbox-tabs" className="absolute sm:top-2 top-18 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1.5">
       {tabs.map((tab) => {
         const isActive = active === tab.id;
 
@@ -43,10 +43,10 @@ export default function MailInboxTabs({
             {isActive && (
               <motion.div
                 layoutId="active-mail-inbox-tab"
-                className="absolute inset-0 rounded-full bg-linear-to-b from-white to-gray-100 border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)]"
+                className="absolute inset-0 border-b-2 border-green-600"
               />
             )}
-            <span className="relative z-10">{tab.label}</span>
+            <span className="relative z-10 text-black">{tab.label}</span>
             {tab.count > 0 && (
               <span
                 className={cn(

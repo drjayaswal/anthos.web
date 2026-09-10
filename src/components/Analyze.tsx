@@ -19,7 +19,6 @@ import MailSheet from './MailSheet';
 import MailInboxTabs, { type MailInboxTab } from './MailInboxTabs';
 import FetchDialog from './FetchDialog';
 import AnalyzeDialog from './AnalyzeDialog';
-import InsightDialog from './InsightDialog';
 import AnalyzedMailsPriorityGraph, {
   getPriorityPercent,
   getConfidencePercent,
@@ -70,8 +69,6 @@ export default function Analyze({
   const [loadDialogOpen, setLoadDialogOpen] = useState(false);
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
   const [analyzeDialogOpen, setAnalyzeDialogOpen] = useState(false);
-  const [insightDialogOpen, setInsightDialogOpen] = useState(false);
-  const [insightTargetMail, setInsightTargetMail] = useState<Mail | null>(null);
   const [insightLoading, setInsightLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [detailMail, setDetailMail] = useState<Mail | null>(null);
@@ -149,35 +146,9 @@ export default function Analyze({
     [fetchedMails, selectedFetchedIds],
   );
 
-
-  const handleOpenInsightDialog = () => {
-    if (activeTab !== 'fetched') {
-      setActiveTab('fetched');
-    }
-    if (selectedFetchedIds.size === 0) {
-      toast.error('Select 1 mail to get insight');
-      return;
-    }
-    if (selectedFetchedIds.size > 1) {
-      toast.error('Insight is only available for 1 mail at a time. Please select only 1 mail.');
-      return;
-    }
-    const mail = fetchedMails.find((m) => selectedFetchedIds.has(m.id));
-    if (!mail) {
-      toast.error('Selected mail not found');
-      return;
-    }
-    setInsightTargetMail(mail);
-    setInsightDialogOpen(true);
-  };
-
-  const handleInsightSingleMail = (mail: Mail) => {
-    setInsightTargetMail(mail);
-    setInsightDialogOpen(true);
-  };
-
   const handleGetInsight = async (mail: Mail) => {
     setInsightLoading(true);
+    toast.info('Generating insight...');
     try {
       const res = await getSingleMailInsightAction(mail);
       if (!res.ok || !res.mail) {
@@ -191,7 +162,6 @@ export default function Analyze({
       setEncryptedMails((prev) =>
         prev.map((m) => (m.id === updatedMail.id ? updatedMail : m))
       );
-      setInsightDialogOpen(false);
       setDetailMail(updatedMail);
       toast.success('Insight generated successfully');
     } catch (err: unknown) {
@@ -433,10 +403,8 @@ export default function Analyze({
           loading={loading}
           onAccount={() => setAccountDialogOpen(true)}
           onAnalyze={openAnalyzeDialog}
-          onInsight={handleOpenInsightDialog}
           selectedCount={selectedFetchedIds.size}
           analyzeDisabled={selectedFetchedIds.size === 0 || selectedFetchedIds.size > 5}
-          insightDisabled={selectedFetchedIds.size === 0 || selectedFetchedIds.size > 1}
           onFetch={() => setFetchDialogOpen(true)}
           onLoadDataFromDatabase={() => setLoadDialogOpen(true)}
           hasAnalysisProgress={analysisActive && isAnalysisStreaming}
@@ -472,7 +440,7 @@ export default function Analyze({
               onLoadDataFromDatabase={() => setLoadDialogOpen(true)}
               onGoToFetched={() => setActiveTab('fetched')}
               onAnalyzeMail={handleAnalyzeSingleMail}
-              onInsightMail={handleInsightSingleMail}
+              onInsightMail={handleGetInsight}
               selectedIds={activeTab === 'fetched' ? selectedFetchedIds : activeTab === 'encrypted' ? selectedEncryptedIds : selectedAnalyzedIds}
               onToggleSelect={(id) => {
                 if (activeTab === 'fetched') {
@@ -547,13 +515,6 @@ export default function Analyze({
         onOpenChange={setAnalyzeDialogOpen}
         selectedCount={selectedFetchedIds.size}
         onAnalyze={handleAnalyzeSelected}
-      />
-      <InsightDialog
-        open={insightDialogOpen}
-        onOpenChange={setInsightDialogOpen}
-        mail={insightTargetMail}
-        onGetInsight={handleGetInsight}
-        loading={insightLoading}
       />
       {analysisTargetModel && (
         <AnalysisProgressDrawer

@@ -5,21 +5,21 @@ import { Slot } from "radix-ui"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button cursor-pointer inline-flex shrink-0 items-center justify-center rounded-md! border-0! bg-clip-padding text-sm whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-0.5 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button cursor-pointer inline-flex shrink-0 items-center justify-center text-sm border-black/20! whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50  disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         custom_button:
-          "bg-white text-black border border-dashed hover:border-transparent rounded-md! duration-150! shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-0.5",
+          "bg-white text-black border border-dashed hover:border-transparent rounded-md! duration-150!  active:translate-y-0.5",
         custom:
-          "bg-white text-black border border-dashed hover:border-transparent rounded-xl duration-200 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
-        light: "border border-gray-200/75 bg-white hover:-translate-y-px active:translate-y-0.5 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] text-black rounded-xl",
-        classic: "bg-white hover:opacity-85 text-black hover:-translate-y-px active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)]",
-        classic_accent: "bg-white hover:bg-accent hover:text-black text-black hover:-translate-y-px active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)]",
+          "bg-white text-black border border-dashed hover:border-transparent rounded-xl duration-200  hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
+        light: "border border-gray-200/75 bg-white hover:-translate-y-px active:translate-y-0.5  text-black rounded-xl",
+        classic: "bg-white hover:opacity-85 text-black hover:-translate-y-px active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0 ",
+        classic_accent: "bg-white hover:bg-accent hover:text-black text-black hover:-translate-y-px active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0 ",
         accent: "bg-accent text-white hover:opacity-90 hover:-translate-y-px active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.25),0_2px_4px_rgba(0,0,0,0.1)]",
         ghost: "bg-transparent border text-black hover:-translate-y-px active:translate-y-0.5 rounded-xl shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)]",
         no_outline: "bg-transparent text-foreground active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0 shadow-none",
-        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.3),0_2px_4px_rgba(0,0,0,0.1)] hover:-translate-y-px active:translate-y-0.5",
+        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
         outline:
           "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground shadow-[inset_0_-3px_6px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.05)] hover:-translate-y-px active:translate-y-0.5",
         secondary:
@@ -36,7 +36,7 @@ const buttonVariants = cva(
         blue: "bg-linear-to-b from-blue-600 to-blue-700 text-white active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
         teal: "bg-linear-to-b from-teal-600 to-teal-700 text-white active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
         green: "bg-linear-to-b from-green-600 to-green-700 text-white active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
-        black: "bg-linear-to-b from-white to-gray-100 active:to-white active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
+        black: "bg-white",
       },
       size: {
         default:

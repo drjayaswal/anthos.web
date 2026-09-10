@@ -13,7 +13,6 @@ import {
   PlusIcon,
   Layers,
   ChevronDown,
-  Sparkles,
   Edit2Icon,
   Trash2Icon,
   Copy,
@@ -27,12 +26,10 @@ import {
 } from "@/app/actions";
 import { toast } from "@/lib/toast";
 import { CustomButton } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+import QueryDrawer from "./QueryDrawer";
 import { PROVIDERS, type Provider, isSupportedProvider, getProviderByName } from "@/lib/providers";
 
 const HARDCODED_DEFAULT_MODEL: ModelItem = {
@@ -206,7 +203,15 @@ export default function Settings({ settings: initialSettings }: { settings: User
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  const [confirmed, setConfirmed] = useState(false);
+
   const providerDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      setConfirmed(false);
+    }
+  }, [isModalOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -233,6 +238,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
     setApiKey("");
     setLogo("");
     setShowApiKey(false);
+    setConfirmed(false);
     setIsModalOpen(true);
   };
 
@@ -247,6 +253,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
     setApiKey(model.apiKey);
     setLogo(model.logo || "");
     setShowApiKey(false);
+    setConfirmed(false);
     setIsModalOpen(true);
   };
 
@@ -255,6 +262,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
     setIsModalOpen(false);
     setProviderDropdownOpen(false);
     setEditingModel(null);
+    setConfirmed(false);
   };
 
   const handleProviderSelect = (providerName: string) => {
@@ -268,6 +276,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
 
   const handleSaveModel = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!confirmed || isSubmitting) return;
     if (!selectedProviderName || !isSupportedProvider(selectedProviderName)) {
       toast.error("Please select a valid supported provider.");
       return;
@@ -386,7 +395,6 @@ export default function Settings({ settings: initialSettings }: { settings: User
             <CustomButton
               onClick={() => openAddModal()}
               title="Add new model parameter"
-              color="green"
             >
               <PlusIcon className="h-3.5 w-3.5" />
               <span>Add</span>
@@ -431,164 +439,168 @@ export default function Settings({ settings: initialSettings }: { settings: User
         </section>
       </main>
 
-      <Dialog open={isProvidersListOpen} onOpenChange={setIsProvidersListOpen}>
-        <DialogContent
-          showCloseButton={false}
-          className="w-full sm:max-w-90 max-h-[85vh] flex flex-col rounded-t-4xl sm:rounded-2xl bg-white border text-black shadow-2xl p-0 gap-0 overflow-hidden"
-        >
-          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b shrink-0">
-            <div className="flex items-center gap-2">
-              <Layers className="h-4 w-4 text-black" />
-              <DialogTitle className="text-sm font-semibold text-black">
-                Supported AI Providers ({PROVIDERS.length})
-              </DialogTitle>
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsProvidersListOpen(false)}
-              title="Close dialog"
-              className="rounded cursor-pointer p-1 text-black/50 hover:text-red-600 transition"
+      <QueryDrawer
+        open={isProvidersListOpen}
+        onOpenChange={setIsProvidersListOpen}
+        title={`Supported AI Providers (${PROVIDERS.length})`}
+        description="We natively support various AI providers with BYOK architecture"
+      >
+        <div className="grid grid-cols-1 gap-1.5">
+          {PROVIDERS.map((provider: Provider) => (
+            <div
+              key={provider.id}
+              onClick={() => {
+                setIsProvidersListOpen(false);
+                openAddModal(provider.name);
+              }}
+              className="flex items-center justify-between p-2.5 cursor-pointer hover:bg-black/5 rounded-xl transition"
             >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
-
-          <div className="p-4 overflow-y-auto space-y-2.5 flex-1">
-            <DialogDescription className="text-xs text-black/60">
-              We natively supports the various AI providers with BYOK architecture
-            </DialogDescription>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-              {PROVIDERS.map((provider: Provider) => (
-                <div
-                  key={provider.id}
-                  onClick={() => {
-                    setIsProvidersListOpen(false);
-                    openAddModal(provider.name);
-                  }}
-                  className="flex items-center justify-between p-2.5 cursor-pointer hover:bg-black/5 rounded-xl transition"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-6 h-6 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
-                      <Image
-                        src={provider.logo}
-                        alt={provider.name}
-                        width={24}
-                        height={24}
-                        unoptimized
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-semibold text-black truncate">
-                        {provider.name}
-                      </div>
-                      <div className="text-[10px] text-black/50 font-mono truncate">
-                        {provider.description || ""}
-                      </div>
-                    </div>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
+                  <Image
+                    src={provider.logo}
+                    alt={provider.name}
+                    width={24}
+                    height={24}
+                    unoptimized
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-semibold text-black truncate">
+                    {provider.name}
+                  </div>
+                  <div className="text-[10px] text-black/50 font-mono truncate">
+                    {provider.description || ""}
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          ))}
+        </div>
+      </QueryDrawer>
 
-      <Dialog
+      <QueryDrawer
         open={isModalOpen}
         onOpenChange={(open) => {
           if (!open) closeModal();
         }}
-      >
-        <DialogContent
-          showCloseButton={false}
-          className="w-full sm:max-w-80 max-h-[90vh] flex flex-col rounded-t-4xl sm:rounded-2xl bg-white border text-black shadow-2xl p-0 gap-0 overflow-hidden"
-        >
-          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b shrink-0">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-3.5 w-3.5 fill-black" />
-              <DialogTitle className="text-xs font-semibold text-black">
-                {editingModel ? "Edit Model" : "Add Model Parameter"}
-              </DialogTitle>
-              <DialogDescription className="sr-only">
-                Configure your AI model identifier, API key and parameters
-              </DialogDescription>
+        title={editingModel ? "Edit Model" : "Add Model Parameter"}
+        description="Configure your AI model identifier, API key and parameters"
+        footerAction={
+          <div className="w-full flex items-center justify-between gap-3 select-none">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="confirm-model"
+                checked={confirmed}
+                className="data-checked:bg-blue-600 data-checked:border-blue-600"
+                onCheckedChange={(c) => setConfirmed(c === true)}
+              />
+              <Label
+                htmlFor="confirm-model"
+                className="cursor-pointer text-xs font-medium text-black select-none"
+              >
+                Confirm
+              </Label>
             </div>
+
             <button
-              type="button"
-              onClick={closeModal}
-              disabled={isSubmitting}
-              title="Close dialog"
-              className="rounded cursor-pointer p-1 text-black/50 hover:text-red-600 transition"
+              type="submit"
+              form="model-form"
+              disabled={!confirmed || isSubmitting}
+              className={cn(
+                'flex disabled:cursor-not-allowed items-center justify-center gap-2 px-3.5 py-2 cursor-pointer rounded-lg text-xs font-medium transition-all duration-200 border select-none outline-none',
+                (!confirmed || isSubmitting) && 'text-black/30'
+              )}
             >
-              <X className="h-3.5 w-3.5" />
+              <span>{editingModel ? 'Update' : 'Connect'}</span>
+              {isSubmitting ? (
+                <Loader2 className="w-3.5 h-3.5 text-blue-600 animate-spin" />
+              ) : (
+                <Check
+                  className={cn(
+                    'w-3.5 h-3.5 transition-colors',
+                    confirmed ? 'text-blue-600' : 'text-black/30'
+                  )}
+                />
+              )}
             </button>
           </div>
-          <form onSubmit={handleSaveModel} className="px-4 py-3 space-y-3 overflow-y-auto flex-1">
-            <div className="space-y-1.5" ref={providerDropdownRef}>
-              <div className="flex items-center justify-between">
-                <label className="block text-[10px] font-medium text-black/60 uppercase tracking-wide">
-                  AI Provider <span className="text-red-400">*</span>
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsModalOpen(false);
-                    setIsProvidersListOpen(true);
-                  }}
-                  className="text-[10px] text-accent hover:underline cursor-pointer"
-                >
-                  10 Supported
-                </button>
-              </div>
+        }
+      >
+        <form id="model-form" onSubmit={handleSaveModel} className="space-y-3">
+          <div className="space-y-1.5" ref={providerDropdownRef}>
+            <div className="sm:hidden flex items-center justify-between">
+              <label className="block text-[10px] font-medium text-black/60 uppercase tracking-wide">
+                AI Provider <span className="text-red-400">*</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setIsProvidersListOpen(true);
+                }}
+                className="text-[10px] text-accent hover:underline cursor-pointer"
+              >
+                10 Supported
+              </button>
+            </div>
 
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setProviderDropdownOpen((prev) => !prev)}
-                  className={`w-full flex items-center justify-between p-2.5 ${providerDropdownOpen && 'rounded-b-none border-b-0'} rounded-2xl bg-white border transition cursor-pointer text-left`}
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
-                      <Image
-                        src={getProviderByName(selectedProviderName)?.logo || '/providers/openai.png'}
-                        alt={selectedProviderName}
-                        width={20}
-                        height={20}
-                        unoptimized
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-semibold text-black truncate">
-                        {selectedProviderName}
-                      </p>
-                    </div>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setProviderDropdownOpen((prev) => !prev)}
+                className={`w-full flex items-center justify-between p-2.5 ${providerDropdownOpen && 'rounded-b-none border-b-0'} rounded-2xl bg-white border transition cursor-pointer text-left`}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
+                    <Image
+                      src={getProviderByName(selectedProviderName)?.logo || '/providers/openai.png'}
+                      alt={selectedProviderName}
+                      width={20}
+                      height={20}
+                      unoptimized
+                      className="w-full h-full object-contain"
+                    />
                   </div>
-                  <ChevronDown
-                    className={`w-4 h-4 text-black/50 transition-transform duration-200 shrink-0 ml-1 ${providerDropdownOpen ? "rotate-180" : ""
-                      }`}
-                  />
-                </button>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-black truncate">
+                      {selectedProviderName}
+                    </p>
+                    <p className="text-[9px] text-black/50 truncate font-normal">
+                      {getProviderByName(selectedProviderName)?.description || selectedProviderName}
+                    </p>
+                  </div>
+                </div>
+                <ChevronDown
+                  className={`w-4 h-4 text-black/50 transition-transform duration-200 shrink-0 ml-1 ${providerDropdownOpen ? "rotate-180" : ""
+                    }`}
+                />
+              </button>
 
-                <AnimatePresence>
-                  {providerDropdownOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0, y: -4 }}
-                      animate={{ opacity: 1, height: "auto", y: 0 }}
-                      exit={{ opacity: 0, height: 0, y: -4 }}
-                      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <div className="rounded-b-2xl border border-t-0 p-2 scrollbar-none bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] max-h-48 overflow-y-auto overscroll-contain space-y-1.5">
-                        {PROVIDERS.map((provider) => (
+              <AnimatePresence>
+                {providerDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0, y: -4 }}
+                    animate={{ opacity: 1, height: "auto", y: 0 }}
+                    exit={{ opacity: 0, height: 0, y: -4 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="overflow-hidden"
+                  >
+                    <div className="rounded-b-2xl border border-t-0 p-2 scrollbar-none max-h-48 overflow-y-auto overscroll-contain space-y-1.5">
+                      {PROVIDERS.map((provider) => {
+                        const isSelected = selectedProviderName === provider.name;
+                        return (
                           <motion.button
                             key={provider.id}
                             type="button"
                             whileTap={{ scale: 0.98 }}
                             onClick={() => handleProviderSelect(provider.name)}
-                            className={`w-full flex px-3 py-2 items-center gap-2 transition-all duration-200 cursor-pointer text-left text-black ${selectedProviderName === provider.name ? "rounded-xl bg-white shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)]" : "hover:bg-black/5 rounded-xl"
-                              }`}
+                            className={`w-full flex px-3 py-2 items-center gap-2.5 transition-all duration-200 text-left text-black ${
+                              isSelected
+                                ? "border border-dashed border-black/30 bg-white rounded-xl cursor-pointer"
+                                : "hover:bg-black/5 rounded-xl cursor-pointer"
+                            }`}
                           >
                             <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
                               <Image
@@ -608,96 +620,63 @@ export default function Settings({ settings: initialSettings }: { settings: User
                                 {provider.description || provider.name}
                               </div>
                             </div>
+                            {isSelected && (
+                              <Check className="size-3.5 text-green-600 shrink-0" strokeWidth={2.5} />
+                            )}
                           </motion.button>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
+          </div>
 
-            <div className="space-y-1">
-              <label className="block text-[10px] font-medium text-black/60 uppercase tracking-wide">
-                Model Identifier <span className="text-red-400">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                placeholder={
-                  selectedProviderName === "Anthropic"
-                    ? "claude-3-7-sonnet-20250219"
-                    : selectedProviderName === "OpenAI"
-                      ? "gpt-4o"
-                      : selectedProviderName === "Google"
-                        ? "gemini-2.0-flash"
-                        : selectedProviderName === "DeepSeek"
-                          ? "deepseek-chat"
-                          : selectedProviderName === "Ollama"
-                            ? "llama3.3"
-                            : "model-identifier"
-                }
-                title="Enter the exact model identifier name"
-                value={name}
-                onChange={(e) => setname(e.target.value)}
-                className="w-full rounded-lg bg-black/5 px-2.5 py-1.5 font-mono text-xs text-black placeholder:text-black/30 outline-none"
-              />
-            </div>
+          <div>
+            <input
+              type="text"
+              required
+              placeholder="Model Identifier"
+              title="Model Identifier"
+              value={name}
+              onChange={(e) => setname(e.target.value)}
+              className="w-full rounded-lg border px-2.5 py-2 font-mono text-xs text-black placeholder:text-black/40 outline-none"
+            />
+          </div>
 
-            <div className="space-y-1">
-              <div className="flex items-center justify-between">
-                <label className="block text-[10px] font-medium text-black/60 uppercase tracking-wide">
-                  API Key <span className="text-red-400">*</span>
-                </label>
-              </div>
-              <div className="relative">
-                <input
-                  type={showApiKey ? "text" : "password"}
-                  required
-                  placeholder={"sk-..."}
-                  title="Enter your provider API key"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  className="w-full rounded-lg bg-black/5 pl-2.5 pr-8 py-1.5 font-mono text-xs text-black placeholder:text-black/30 outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowApiKey(!showApiKey)}
-                  title={showApiKey ? "Hide API key" : "Show API key"}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-black/50 hover:text-black"
-                >
-                  {showApiKey ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
-                </button>
-              </div>
-            </div>
+          <div className="relative">
+            <input
+              type={showApiKey ? "text" : "password"}
+              required
+              placeholder="API Key"
+              title="API Key"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              className="w-full rounded-lg border pl-2.5 pr-8 py-2 font-mono text-xs text-black placeholder:text-black/40 outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => setShowApiKey(!showApiKey)}
+              title={showApiKey ? "Hide API key" : "Show API key"}
+              className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-black/50 hover:text-black"
+            >
+              {showApiKey ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+            </button>
+          </div>
 
-            <div className="space-y-1">
-              <label className="block text-[10px] font-medium text-black/60 uppercase tracking-wide">
-                Logo URL <span className="text-black/40 normal-case font-normal">(optional custom image URL)</span>
-              </label>
-              <input
-                type="url"
-                placeholder="https://... (optional)"
-                title="Enter a custom logo image URL to store in database (optional)"
-                value={logo}
-                onChange={(e) => setLogo(e.target.value)}
-                className="w-full rounded-lg bg-black/5 px-2.5 py-1.5 text-xs text-black placeholder:text-black/30 outline-none"
-              />
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-3 border-t">
-              <CustomButton
-                disabled={isSubmitting}
-                size="sm"
-                color={isSubmitting ? "black" : "green"}
-              >
-                {isSubmitting ? <Loader2 className="h-3 w-3 animate-spin" /> : <PlusIcon className="h-3 w-3" />}
-                {editingModel ? "Save Model" : "Add Model"}
-              </CustomButton>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+          <div>
+            <input
+              type="url"
+              placeholder="Logo URL (optional)"
+              title="Logo URL (optional)"
+              value={logo}
+              onChange={(e) => setLogo(e.target.value)}
+              className="w-full rounded-lg border px-2.5 py-2 text-xs text-black placeholder:text-black/40 outline-none"
+            />
+          </div>
+        </form>
+      </QueryDrawer>
     </div>
   );
 }

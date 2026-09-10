@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { ChevronDown, ChevronRightIcon, Minus, Plus } from 'lucide-react';
+import { ChevronDown, Minus, Plus, Check, Ban } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { CloudQueryOptions, DatabaseQueryOptions } from '@/types';
 
@@ -66,11 +66,13 @@ function FlagRow({
   return (
     <div
       ref={rowRef}
-      className={cn('relative', isOpen ? 'z-30' : 'z-0 hover:z-20')}
+      className={cn(
+        'rounded-lg border bg-white transition-all duration-200 overflow-hidden'
+      )}
     >
       <div
         onClick={() => onCheckedChange(!checked)}
-        className={`relative z-10 flex items-center justify-between transition-all duration-200 rounded-2xl p-2 border bg-white shadow-[inset_0_-2px_4px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer ${checked && isOpen ? "border-green-600" : isOpen ? "border-blue-600" : "border-border"}`}
+        className="flex items-center justify-between p-2 cursor-pointer select-none"
       >
         <div className="flex items-center space-x-2">
           <Checkbox
@@ -94,34 +96,37 @@ function FlagRow({
               e.stopPropagation();
               setIsOpen((prev) => !prev);
             }}
-            className={cn(
-              'p-1 -m-1 rounded-full cursor-pointer flex items-center justify-center transition-colors outline-none',
-              isOpen && checked ? 'text-green-700 hover:text-green-800' : isOpen ? 'text-blue-700 hover:text-blue-800' : 'text-black/40 hover:text-black/80'
-            )}
+            className="p-1 -m-1 rounded-full cursor-pointer flex items-center justify-center transition-colors outline-none text-black/40 hover:text-black/80"
             title={isOpen ? 'Hide info' : 'Show info'}
             aria-label={`Info about ${label}`}
             aria-expanded={isOpen}
           >
-            <ChevronRightIcon className={`h-3 w-3 transition-transform duration-200 ease-in-out ${isOpen ? 'rotate-180' : 'rotate-0'}`} strokeWidth={2.5}/>
+            <ChevronDown
+              className={cn(
+                'h-3 w-3 transition-transform duration-200 shrink-0',
+                isOpen ? 'rotate-180 text-black' : 'text-black/40'
+              )}
+            />
           </button>
         ) : null}
       </div>
 
       {tip ? (
-        <AnimatePresence>
+        <AnimatePresence initial={false}>
           {isOpen && (
             <motion.div
-              initial={{ x: -24, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -24, opacity: 0 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsOpen(false);
-              }}
-              className={`absolute left-[calc(100%-16px)] top-[0.025px] z-0 h-9.5 bg-linear-to-b rounded-l-none rounded-r-xl pl-5 pr-3 ${checked ? "from-green-600 to-green-800" : "from-blue-600 to-blue-800"} border ${checked ? "border-green-600" : "border-blue-600"} text-[10px] text-white font-medium whitespace-nowrap flex items-center cursor-pointer`}
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden"
             >
-              <p>{tip}</p>
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="px-2.5 py-2 text-[10px] text-black/50 leading-relaxed font-normal select-none"
+              >
+                <p>{tip}</p>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -198,7 +203,7 @@ function Counter({
     <div className="flex items-center gap-2">
       <button
         type="button"
-        className={`h-6 w-6 rounded-lg bg-white ${value <= min || "border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.18),0_1px_2px_rgba(0,0,0,0.06)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]"} text-black flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none`}
+        className={`h-6 w-6 rounded-lg bg-white ${value <= min || "border"} text-black flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none`}
         onMouseDown={handleMinusStart}
         onTouchStart={handleMinusStart}
         onMouseUp={handleMinusEnd}
@@ -211,7 +216,7 @@ function Counter({
       <span className="w-5 text-center font-mono text-xs font-semibold text-black select-none">{value}</span>
       <button
         type="button"
-        className={`h-6 w-6 rounded-lg bg-white ${value >= max || "border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.18),0_1px_2px_rgba(0,0,0,0.06)] hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]"} text-black flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none`}
+        className={`h-6 w-6 rounded-lg bg-white ${value >= max || "border"} text-black flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none`}
         onMouseDown={handlePlusStart}
         onTouchStart={handlePlusStart}
         onMouseUp={handlePlusEnd}
@@ -251,7 +256,7 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
     <div className="space-y-3">
       {p.setProvider && (
         <div className="space-y-1.5" ref={providerDropdownRef}>
-          <label className="block text-[10px] font-medium text-black/60 uppercase tracking-wide">
+          <label className="sm:hidden block text-[10px] font-medium text-black/60 uppercase tracking-wide">
             Service Provider
           </label>
           <div className="relative">
@@ -296,7 +301,7 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   className="overflow-hidden"
                 >
-                  <div className="rounded-b-2xl border border-t-0 p-2 scrollbar-none bg-black/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] max-h-48 overflow-y-auto overscroll-contain space-y-1.5">
+                  <div className="rounded-b-2xl border border-t-0 p-2 scrollbar-none max-h-48 overflow-y-auto overscroll-contain space-y-1.5">
                     {EMAIL_PROVIDERS.map((prov) => {
                       const isSelected = currentProviderId === prov.id;
                       const isGoogle = prov.id === 'google';
@@ -304,6 +309,7 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
                         <motion.button
                           key={prov.id}
                           type="button"
+                          title={isGoogle ? "Connected" : "Not Connected"}
                           disabled={!isGoogle}
                           whileTap={isGoogle ? { scale: 0.98 } : {}}
                           onClick={() => {
@@ -316,7 +322,7 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
                             !isGoogle
                               ? 'opacity-40 cursor-not-allowed rounded-xl'
                               : isSelected
-                                ? 'rounded-xl bg-white shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] cursor-pointer'
+                                ? 'border border-dashed border-black/30 bg-white rounded-xl cursor-pointer'
                                 : 'hover:bg-black/5 rounded-xl cursor-pointer'
                           }`}
                         >
@@ -331,20 +337,18 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
                             />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-semibold text-black truncate">
-                                {prov.name}
-                              </span>
-                              {!isGoogle && (
-                                <span className="text-[8px] px-1.5 py-0.2 rounded-full bg-red-600/10 text-red-600 font-medium shrink-0">
-                                  Not Connected
-                                </span>
-                              )}
+                            <div className="text-xs font-semibold text-black truncate">
+                              {prov.name}
                             </div>
                             <div className="text-[9px] truncate text-black/50 font-normal">
                               {prov.description}
                             </div>
                           </div>
+                          {isGoogle ? (
+                            <Check className="size-3.5 text-green-600 shrink-0" strokeWidth={2.5} />
+                          ) : (
+                            <Ban className="size-3.5 text-red-600 shrink-0" strokeWidth={2} />
+                          )}
                         </motion.button>
                       );
                     })}
@@ -368,10 +372,10 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
       </div>
 
       <div className="space-y-1.5 pt-1">
-        <label className="block text-[10px] font-medium text-black/60 uppercase tracking-wide">
+        <label className="sm:hidden block text-[10px] font-medium text-black/60 uppercase tracking-wide">
           Status &amp; Flags
         </label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 items-start">
           <FlagRow
             id="unread"
             label="Unread"
