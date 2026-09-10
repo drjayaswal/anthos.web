@@ -116,21 +116,35 @@ export default function AnalysisProgressDrawer({
     setLogs((prev) => [...prev, item]);
   }, []);
 
+  const callbacksRef = useRef({ onStreamStateChange, onComplete, onOpenChange });
+  useEffect(() => {
+    callbacksRef.current = { onStreamStateChange, onComplete, onOpenChange };
+  }, [onStreamStateChange, onComplete, onOpenChange]);
+
+  const emailsRef = useRef(emails);
+  const modelRef = useRef(model);
+  useEffect(() => {
+    emailsRef.current = emails;
+    modelRef.current = model;
+  }, [emails, model]);
+
   const finishAnalysis = useCallback((results: EmailAnalysisResult[]) => {
     pendingResultsRef.current = results;
     setIsDone(true);
     setStatusMessage(`Analysis complete! ${results.length} email(s) processed.`);
-    onStreamStateChange?.(false, true);
+    callbacksRef.current.onStreamStateChange?.(false, true);
     setTimeout(() => {
-      onOpenChange(false);
-      onComplete(results);
+      callbacksRef.current.onOpenChange(false);
+      callbacksRef.current.onComplete(results);
     }, 600);
-  }, [onStreamStateChange, onComplete, onOpenChange]);
+  }, []);
 
   useEffect(() => {
     if (!active) {
       if (wsRef.current) {
-        wsRef.current.close(1000, 'Inactive');
+        try {
+          wsRef.current.close(1000, 'Inactive');
+        } catch {}
         wsRef.current = null;
       }
       return;
@@ -141,16 +155,21 @@ export default function AnalysisProgressDrawer({
     setHasError(false);
     setStatusMessage('Connecting to Anthos AI stream...');
     pendingResultsRef.current = null;
-    onStreamStateChange?.(true, false);
+    callbacksRef.current.onStreamStateChange?.(true, false);
+
+    const currentEmails = emailsRef.current;
+    const currentModel = modelRef.current;
 
     const aiHttpUrl = process.env.NEXT_PUBLIC_AI_SERVER_URL || 'http://localhost:8000';
     const wsUrl = aiHttpUrl.replace(/^http/, 'ws').replace(/\/+$/, '') + '/analyse';
 
     let socket: WebSocket | null = null;
     let fallbackTriggered = false;
+    let completed = false;
+    let unmounted = false;
 
     const triggerHttpFallback = async (reason: string) => {
-      if (fallbackTriggered) return;
+      if (fallbackTriggered || completed || unmounted) return;
       fallbackTriggered = true;
 
       pushLogItem(`WebSocket connection closed: ${reason}`, 'WARN', 'info');
@@ -158,22 +177,25 @@ export default function AnalysisProgressDrawer({
       setStatusMessage('Analyzing emails via HTTP fallback...');
 
       try {
-        const res = await runEmailAnalysisAction(emails, model);
+        const res = await runEmailAnalysisAction(currentEmails, currentModel);
+        if (unmounted) return;
         if (res.ok && res.results) {
+          completed = true;
           pushLogItem(`HTTP Analysis succeeded for ${res.results.length} email(s)`, 'INFO', 'complete');
           finishAnalysis(res.results);
         } else {
           pushLogItem(`Analysis failed: ${res.error || 'Unknown error'}`, 'ERROR', 'error');
           setStatusMessage(res.error || 'Failed to analyze emails');
           setHasError(true);
-          onStreamStateChange?.(false, false);
+          callbacksRef.current.onStreamStateChange?.(false, false);
         }
       } catch (err: unknown) {
+        if (unmounted) return;
         const msg = err instanceof Error ? err.message : 'HTTP fallback error';
         pushLogItem(`Fallback error: ${msg}`, 'ERROR', 'error');
         setStatusMessage(msg);
         setHasError(true);
-        onStreamStateChange?.(false, false);
+        callbacksRef.current.onStreamStateChange?.(false, false);
       }
     };
 
@@ -182,11 +204,12 @@ export default function AnalysisProgressDrawer({
       wsRef.current = socket;
 
       socket.onopen = () => {
+        if (unmounted) return;
         pushLogItem('Connected to Anthos AI WebSocket stream', 'INFO', 'info');
         setStatusMessage('Transmitting emails and model settings...');
 
         const payload = {
-          emails: emails.map((m) => ({
+          emails: currentEmails.map((m) => ({
             id: m.id,
             subject: m.subject || null,
             body: m.body || '',
@@ -194,12 +217,12 @@ export default function AnalysisProgressDrawer({
             threadId: m.threadId || m.id,
           })),
           model: {
-            id: model.id,
-            name: model.name,
-            provider: model.provider,
+            id: currentModel.id,
+            name: currentModel.name,
+            provider: currentModel.provider,
             default: true,
-            settingId: model.settingId || null,
-            setting_id: model.settingId || null,
+            settingId: currentModel.settingId || null,
+            setting_id: currentModel.settingId || null,
           },
         };
 
@@ -207,10 +230,11 @@ export default function AnalysisProgressDrawer({
       };
 
       socket.onmessage = (event) => {
+        if (unmounted) return;
         try {
           const data = JSON.parse(event.data);
           if (data.type === 'confirmation') {
-            setStatusMessage(data.message || `Processing ${data.email_count || emails.length} email(s)...`);
+            setStatusMessage(data.message || `Processing ${data.email_count || currentEmails.length} email(s)...`);
             pushLogItem(`[CONFIRMED] ${data.message}`, 'INFO', 'clean');
           } else if (data.type === 'log') {
             if (data.message && !data.message.includes('AFC is enabled') && !data.message.includes('Direct use of automatic function calling')) {
@@ -219,6 +243,7 @@ export default function AnalysisProgressDrawer({
             }
           } else if (data.type === 'complete') {
             if (data.results && Array.isArray(data.results)) {
+              completed = true;
               pushLogItem(`All emails processed successfully (${data.results.length} result(s))`, 'INFO', 'complete');
               finishAnalysis(data.results);
             }
@@ -226,7 +251,7 @@ export default function AnalysisProgressDrawer({
             pushLogItem(`[ERROR] ${data.message || 'Server error'}: ${data.detail || ''}`, 'ERROR', 'error');
             setStatusMessage(data.message || 'Analysis error');
             setHasError(true);
-            onStreamStateChange?.(false, false);
+            callbacksRef.current.onStreamStateChange?.(false, false);
           }
         } catch {
           pushLogItem(String(event.data), 'INFO', 'info');
@@ -234,11 +259,13 @@ export default function AnalysisProgressDrawer({
       };
 
       socket.onerror = () => {
-        triggerHttpFallback('Network error or origin policy mismatch');
+        if (!unmounted && !completed) {
+          triggerHttpFallback('Network error or origin policy mismatch');
+        }
       };
 
       socket.onclose = (event) => {
-        if (!isDone && !pendingResultsRef.current && event.code !== 1000) {
+        if (!unmounted && !completed && !pendingResultsRef.current && event.code !== 1000) {
           triggerHttpFallback(`Code ${event.code} ${event.reason || ''}`);
         }
       };
@@ -248,12 +275,16 @@ export default function AnalysisProgressDrawer({
     }
 
     return () => {
-      if (wsRef.current) {
-        wsRef.current.close(1000, 'Unmounted');
-        wsRef.current = null;
+      unmounted = true;
+      if (socket) {
+        try {
+          socket.close(1000, 'Unmounted');
+        } catch {}
       }
+      wsRef.current = null;
     };
-  }, [active, emails, model, pushLogItem, finishAnalysis, onStreamStateChange, isDone]);
+  }, [active, pushLogItem, finishAnalysis]);
+
 
   useEffect(() => {
     if (open && autoScroll && terminalEndRef.current) {
