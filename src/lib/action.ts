@@ -115,6 +115,7 @@ export async function getDatabaseMails(opts: DatabaseQueryOptions): Promise<Mail
       .select()
       .from(encryptedMail)
       .where(eq(encryptedMail.userId, session.user.id!))
+      .orderBy(encryptedMail.createdAt)
       .limit(opts.count);
 
     const messages = res || [];
@@ -127,6 +128,23 @@ export async function getDatabaseMails(opts: DatabaseQueryOptions): Promise<Mail
       try {
         const decryptedPayload = decryptJsonPayload<Mail>(msg.ciphertext);
 
+        const dbCategories = msg.categories?.filter(Boolean) ?? [];
+        const dbPriority = msg.priority?.filter(Boolean) ?? [];
+        const dbConfidence = msg.confidence?.filter(Boolean) ?? [];
+        const dbVersions = msg.version?.filter(Boolean) ?? [];
+
+        const priorityScore = dbPriority.length > 0
+          ? parseFloat(dbPriority[0])
+          : (decryptedPayload.priority_score ?? null);
+
+        const confidenceScore = dbConfidence.length > 0
+          ? parseFloat(dbConfidence[0])
+          : (decryptedPayload.confidence_score ?? null);
+
+        const category = dbCategories.length > 0
+          ? dbCategories[0]
+          : (decryptedPayload.category ?? null);
+
         mails.push({
           id: msg.gmailMessageId,
           threadId: decryptedPayload.threadId ?? null,
@@ -137,8 +155,14 @@ export async function getDatabaseMails(opts: DatabaseQueryOptions): Promise<Mail
           status: decryptedPayload.status ?? 'unread',
           labels: decryptedPayload.labels ?? [],
           createdAt: msg.createdAt.toISOString(),
-          categories: msg.categories,
-          priority: msg.priority,
+          categories: dbCategories.length > 0 ? dbCategories : (decryptedPayload.categories ?? null),
+          category,
+          priority: dbPriority.length > 0 ? dbPriority : (decryptedPayload.priority ?? null),
+          priority_score: !isNaN(priorityScore as number) ? priorityScore : null,
+          confidence_score: !isNaN(confidenceScore as number) ? confidenceScore : null,
+          versions: dbVersions.length > 0 ? dbVersions.map(Number) : (decryptedPayload.versions ?? null),
+          summary: msg.summary ?? decryptedPayload.summary ?? null,
+          description: msg.description ?? decryptedPayload.description ?? undefined,
         });
       } catch (decryptionError) {
         console.error(`Failed to decrypt mail item with message ID: ${msg.gmailMessageId}`, decryptionError);

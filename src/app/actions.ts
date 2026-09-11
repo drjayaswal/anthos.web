@@ -388,9 +388,7 @@ export async function runEmailAnalysisAction(
         id: model.id,
         name: model.name,
         provider: model.provider,
-        default: true,
-        settingId: model.settingId || null,
-        setting_id: model.settingId || null,
+        default: model.default === true,
       },
     };
 

@@ -46,6 +46,7 @@ export default function Analyze({
   sessionUserId?: string | null;
 }) {
   const [appLoading, setAppLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [activeTab, setActiveTab] = useState<MailInboxTab>('fetched');
   const [fetchedMails, setFetchedMails] = useState<Mail[]>([]);
   const [analyzedMails, setAnalyzedMails] = useState<Mail[]>([]);
@@ -99,7 +100,8 @@ export default function Analyze({
 
   const handleFetchFromCloud = (opts: FetchOptions) => {
     void (async () => {
-      setLoading(true);
+      setFetchDialogOpen(false);
+      setIsFetching(true);
       setActiveTab('fetched');
       try {
         const result = await fetchMailsAction(opts);
@@ -136,7 +138,7 @@ export default function Analyze({
           })();
         }
       } finally {
-        setLoading(false);
+        setIsFetching(false);
       }
     })();
   };
@@ -247,8 +249,7 @@ export default function Analyze({
       id: selectedModel?.id || '6b73ef82-7a41-451e-ac2b-a0107475cb38',
       provider: selectedModel?.provider || 'Google',
       name: selectedModel?.name || 'gemma-4-26b-a4b-it',
-      default: true,
-      settingId: selectedModel?.settingId || '42821d65-9f24-4b44-b88b-6d3b1c85a12f',
+      default: selectedModel?.default === true,
     };
 
     setAnalyzeDialogOpen(false);
@@ -376,6 +377,35 @@ export default function Analyze({
     });
   };
 
+  const selectedAnalyzedMails = useMemo(
+    () => analyzedMails.filter((m) => selectedAnalyzedIds.has(m.id)),
+    [analyzedMails, selectedAnalyzedIds],
+  );
+
+  const handleStoreSelectedAnalyzed = () => {
+    const selection = selectedAnalyzedMails;
+    if (selection.length === 0) {
+      toast.error('Select analyzed mails to store');
+      return;
+    }
+    void (async () => {
+      setLoading(true);
+      try {
+        const res = await syncEncryptedMailsToDb(selection);
+        if (res.ok) {
+          toast.success(`${selection.length} mail(s) stored encrypted in database`);
+          setSelectedAnalyzedIds(new Set());
+        } else {
+          toast.error(res.error ?? 'Failed to store encrypted mails');
+        }
+      } catch {
+        toast.error('Failed to store encrypted mails');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  };
+
   const handleStoreSingleEncrypted = (mail: Mail) => {
     void (async () => {
       setLoading(true);
@@ -431,20 +461,12 @@ export default function Analyze({
           progressDrawerOpen={progressDrawerOpen}
           sessionUserEmail={sessionUserEmail}
           hasCategories={hasCategories}
+          isFetching={isFetching}
+          activeTab={activeTab}
+          selectedAnalyzedCount={selectedAnalyzedIds.size}
+          onStoreAnalyzed={handleStoreSelectedAnalyzed}
         />
-        <AnimatePresence>
-          {loading && (
-            <motion.div
-              key="loading-blur-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="w-full h-full fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-sm cursor-wait pointer-events-auto"
-            >
-            </motion.div>
-          )}
-        </AnimatePresence>
+
         <Card className="w-full bg-transparent border-0 min-w-0 m-0! overflow-hidden">
           <CardContent className="min-w-0 px-2 sm:px-4 py-3 border-none">
             <MailTable
@@ -544,7 +566,6 @@ export default function Analyze({
             provider: 'Google',
             name: 'gemma-4-26b-a4b-it',
             default: true,
-            settingId: '42821d65-9f24-4b44-b88b-6d3b1c85a12f',
           }}
           savedLogs={analysisLogs}
           onLogsChange={(newLogs) => {

@@ -19,6 +19,9 @@ export const encryptedMail = pgTable("encrypted_mail", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   categories: text("categories").array(),
   priority: decimal("priority", { precision: 10, scale: 4 }).array().notNull().default([]),
+  confidence: decimal("confidence", { precision: 10, scale: 4 }).array().notNull().default([]),
+  summary: text("summary"),
+  description: text("description"), 
   version: text("version").array().notNull().default([]),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 }, (table) => [

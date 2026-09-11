@@ -196,7 +196,7 @@ export default function AnalysisProgressDrawer({
     setLogs([]);
     setIsDone(false);
     setHasError(false);
-    setStatusMessage('Connecting to Anthos AI stream...');
+    setStatusMessage('Connecting to Anthos AI...');
     pendingResultsRef.current = null;
     callbacksRef.current.onStreamStateChange?.(true, false);
 
@@ -215,8 +215,8 @@ export default function AnalysisProgressDrawer({
       if (fallbackTriggered || completed || unmounted) return;
       fallbackTriggered = true;
 
-      pushLogItem(`WebSocket connection closed: ${reason}`, 'WARN', 'info');
-      pushLogItem('Falling back to HTTP /analyse endpoint...', 'INFO', 'llm');
+      pushLogItem(`Connection closed: ${reason}`, 'WARN', 'info');
+      pushLogItem('Falling back to HTTP interaction...', 'INFO', 'llm');
       setStatusMessage('Analyzing emails via HTTP fallback...');
 
       try {
@@ -248,7 +248,7 @@ export default function AnalysisProgressDrawer({
 
       socket.onopen = () => {
         if (unmounted) return;
-        pushLogItem('Connected to Anthos AI WebSocket stream', 'INFO', 'info');
+        pushLogItem('Connected to Anthos AI stream', 'INFO', 'info');
         setStatusMessage('Transmitting emails and model settings...');
 
         const payload = {
@@ -263,12 +263,9 @@ export default function AnalysisProgressDrawer({
             id: currentModel.id,
             name: currentModel.name,
             provider: currentModel.provider,
-            default: true,
-            settingId: currentModel.settingId || null,
-            setting_id: currentModel.settingId || null,
+            default: currentModel.default === true,
           },
         };
-
         socket?.send(JSON.stringify(payload));
       };
 
@@ -313,7 +310,7 @@ export default function AnalysisProgressDrawer({
         }
       };
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to instantiate WebSocket';
+      const msg = err instanceof Error ? err.message : 'Failed to instantiate connection';
       triggerHttpFallback(msg);
     }
 
@@ -392,7 +389,7 @@ export default function AnalysisProgressDrawer({
                       {active ? (
                         <>
                           <RotateCw className="size-3.5 animate-spin" />
-                          <span>Connecting to WebSocket stream at /analyse...</span>
+                          <span>Connecting to stream...</span>
                         </>
                       ) : (
                         <span>No analysis logs available.</span>
@@ -422,7 +419,7 @@ export default function AnalysisProgressDrawer({
                           <span className={cn('px-1.5 py-0.2 text-[9px] rounded text-white font-bold shrink-0', tagBg)}>
                             {log.tag}
                           </span>
-                          <span className={cn('break-all truncate text-[10.5px]', log.stage === 'error' ? 'text-red-600 font-semibold' : log.stage === 'complete' ? 'text-green-600 font-semibold' : 'text-black/50')}>
+                          <span className="break-all truncate text-[10.5px] font-semibold text-black/50">
                             {log.message}
                           </span>
                         </motion.div>

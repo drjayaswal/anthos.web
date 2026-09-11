@@ -9,8 +9,11 @@ import {
   LoaderCircleIcon,
   MailIcon,
   Database,
+  DatabaseBackup,
+  Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { MailInboxTab } from './MailInboxTabs';
 
 interface HeaderProps {
   searchTerm?: string;
@@ -30,6 +33,10 @@ interface HeaderProps {
   progressDrawerOpen?: boolean;
   sessionUserEmail?: string | null;
   hasCategories?: boolean;
+  isFetching?: boolean;
+  activeTab?: MailInboxTab;
+  selectedAnalyzedCount?: number;
+  onStoreAnalyzed?: () => void;
 }
 
 function useIsDesktop() {
@@ -61,6 +68,10 @@ export default function Header({
   progressDrawerOpen = false,
   hasCategories = true,
   sessionUserEmail,
+  isFetching = false,
+  activeTab = 'fetched',
+  selectedAnalyzedCount = 0,
+  onStoreAnalyzed,
 }: HeaderProps) {
   const [optionsOpen, setOptionsOpen] = useState(false);
   const isDesktop = useIsDesktop();
@@ -140,14 +151,30 @@ export default function Header({
       });
     }
 
+    if (activeTab === 'analyzed' && selectedAnalyzedCount > 0 && onStoreAnalyzed) {
+      list.push({
+        id: 'store-analyzed',
+        label: loading ? 'Storing…' : 'Store',
+        description: `Encrypt & save ${selectedAnalyzedCount} selected mail(s)`,
+        show: true,
+        disabled: loading,
+        icon: DatabaseBackup,
+        iconClassName: loading ? 'animate-spin text-emerald-600' : undefined,
+        onClick: () => {
+          onStoreAnalyzed();
+          closeOptions();
+        },
+      });
+    }
+
     list.push({
       id: 'fetch',
-      label: loading ? 'Fetching...' : 'ESPs',
+      label: isFetching ? 'Fetching...' : 'ESPs',
       description: 'Fetch new messages from Gmail',
       show: true,
-      disabled: loading,
+      disabled: isFetching || loading,
       icon: MailIcon,
-      iconClassName: undefined,
+      iconClassName: isFetching ? 'animate-spin text-blue-600' : undefined,
       onClick: () => {
         onFetch();
         closeOptions();
@@ -184,6 +211,7 @@ export default function Header({
 
     return list;
   }, [
+    isFetching,
     hasAnalysisProgress,
     isAnalysisStreaming,
     isAnalysisDone,
@@ -194,11 +222,14 @@ export default function Header({
     loading,
     analyzeDisabled,
     sessionUserEmail,
+    activeTab,
+    selectedAnalyzedCount,
     onToggleProgressDrawer,
     onAnalyze,
     onFetch,
     onLoadDataFromDatabase,
     onAccount,
+    onStoreAnalyzed,
   ]);
 
   const containerVariants = {
@@ -220,8 +251,49 @@ export default function Header({
   return (
     <>
       <header className="flex w-full items-center justify-between gap-3">
-        {!optionsOpen && !loading && (
-          <div data-tour="options-button" className="fixed top-2 right-1 z-40 flex items-center gap-2">
+        <div
+          data-tour="options-button"
+          className={cn(
+            'fixed top-2 z-40 flex items-center gap-1.5 transition-all duration-300',
+            optionsOpen ? 'right-20' : 'right-1'
+          )}
+        >
+          <AnimatePresence mode="popLayout">
+            {isFetching && (
+              <motion.button
+                key="fetching-button"
+                type="button"
+                disabled
+                initial={{ opacity: 0, scale: 0.9, x: 8 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.9, x: 8 }}
+                transition={{ duration: 0.15 }}
+                className="relative px-3 py-1.5 text-xs font-semibold tracking-tight text-black flex items-center gap-1.5 select-none cursor-default disabled:opacity-100"
+                aria-label="Fetching mails"
+              >
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
+                <span>Fetching...</span>
+              </motion.button>
+            )}
+            {loading && (
+              <motion.button
+                key="loading-button"
+                type="button"
+                disabled
+                initial={{ opacity: 0, scale: 0.9, x: 8 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.9, x: 8 }}
+                transition={{ duration: 0.15 }}
+                className="relative px-3 py-1.5 text-xs font-semibold tracking-tight text-black flex items-center gap-1.5 select-none cursor-default disabled:opacity-100"
+                aria-label="Loading"
+              >
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-black" />
+                <span>Loading...</span>
+              </motion.button>
+            )}
+          </AnimatePresence>
+
+          {!optionsOpen && (
             <button
               type="button"
               onClick={() => setOptionsOpen(true)}
@@ -238,12 +310,12 @@ export default function Header({
                 )}
               </div>
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </header>
 
       <AnimatePresence>
-        {optionsOpen && !loading && (
+        {optionsOpen && (
           <>
             <motion.div
               key="options-backdrop"

@@ -12,19 +12,44 @@ export async function upsertEncryptedMailsForUser(
   const now = new Date();
   for (const m of mails) {
     const ciphertext = encryptJsonPayload(m);
+
+    const mailCategories: string[] = m.categories?.filter(Boolean) as string[] ??
+      (m.category ? [m.category] : []);
+    const mailPriority: string[] = m.priority?.filter(Boolean) as string[] ??
+      (m.priority_score != null ? [String(m.priority_score)] : []);
+    const mailConfidence: string[] =
+      m.confidence_score != null ? [String(m.confidence_score)] : [];
+    const mailSummary: string | undefined = m.summary ?? undefined;
+    const mailDescription: string | undefined = m.description ?? undefined;
+    const mailVersion: string[] = m.versions?.map(String) ?? [];
+
+    const values = {
+      userId,
+      gmailMessageId: m.id,
+      ciphertext,
+      categories: mailCategories.length > 0 ? mailCategories : undefined,
+      priority: mailPriority.length > 0 ? mailPriority : undefined,
+      confidence: mailConfidence.length > 0 ? mailConfidence : undefined,
+      summary: mailSummary,
+      description: mailDescription,
+      version: mailVersion.length > 0 ? mailVersion : undefined,
+      createdAt: now,
+      updatedAt: now,
+    };
+
     await db
       .insert(encryptedMail)
-      .values({
-        userId,
-        gmailMessageId: m.id,
-        ciphertext,
-        createdAt: now,
-        updatedAt: now,
-      })
+      .values(values)
       .onConflictDoUpdate({
         target: [encryptedMail.userId, encryptedMail.gmailMessageId],
         set: {
           ciphertext,
+          categories: mailCategories.length > 0 ? mailCategories : undefined,
+          priority: mailPriority.length > 0 ? mailPriority : undefined,
+          confidence: mailConfidence.length > 0 ? mailConfidence : undefined,
+          summary: mailSummary,
+          description: mailDescription,
+          version: mailVersion.length > 0 ? mailVersion : undefined,
           updatedAt: now,
         },
       });

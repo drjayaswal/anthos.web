@@ -432,13 +432,12 @@ export default function MailTable({
 
             <button
               type="button"
-              disabled
               onClick={() => {
                 const targetMail = contextMenu.mail;
                 setContextMenu(null);
                 onStoreEncryptedMail?.(targetMail);
               }}
-              className="disabled:cursor-not-allowed opacity-50 group flex w-full items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium not-disabled:hover:bg-black/5 cursor-pointer"
+              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium hover:bg-black/5 cursor-pointer"
             >
               <span className="text-black">Store</span>
             </button>

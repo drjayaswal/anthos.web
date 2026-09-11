@@ -78,7 +78,6 @@ function ModelCard({
         size="xs"
         onClick={(e) => { e.stopPropagation(); onToggleKey?.(model.id); }}
         title={isKeyVisible ? "Hide Key" : "Show Key"}
-        color="black"
       >
         {isKeyVisible ? <EyeOff className="h-3 w-3 sm:block hidden" /> : <Eye className="h-3 w-3 sm:block hidden" />}
         <span>{isKeyVisible ? "Hide" : "Show"}</span>
@@ -86,7 +85,6 @@ function ModelCard({
       <CustomButton
         size="xs"
         onClick={(e) => { e.stopPropagation(); onCopy?.(model.apiKey, model.id); }}
-        color={copiedId === model.id ? "green" : "black"}
       >
         {copiedId === model.id ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3 sm:block hidden" />}
         <span>{copiedId === model.id ? "Copied!" : "Copy"}</span>
@@ -95,7 +93,6 @@ function ModelCard({
         size="xs"
         onClick={(e) => { e.stopPropagation(); onEdit?.(model); }}
         title="Edit model"
-        color="blue"
       >
         <Edit2Icon className="h-3 w-3 sm:block hidden" />
         <span>Edit</span>
@@ -105,7 +102,7 @@ function ModelCard({
         onClick={(e) => { e.stopPropagation(); onDelete?.(model); }}
         disabled={isDeleting}
         title="Delete model"
-        color="red"
+        className="text-red-600"
       >
         {isDeleting ? (
           <Loader2 className="h-3 w-3 animate-spin" />
@@ -119,7 +116,7 @@ function ModelCard({
 
   return (
     <div
-      className={`overflow-hidden sm:pb-0 pb-1 ${isReadOnly ? "cursor-not-allowed" : "rounded-3xl bg-white border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] transition-all duration-200"
+      className={`overflow-hidden sm:pb-0 pb-1 ${isReadOnly ? "cursor-not-allowed" : "rounded-3xl bg-white border "
         } text-black`}
       onMouseEnter={() => !isReadOnly && setIsModelHovered(true)}
       onMouseLeave={() => !isReadOnly && setIsModelHovered(false)}
