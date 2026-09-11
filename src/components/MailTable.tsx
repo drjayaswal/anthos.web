@@ -16,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { CustomButton } from '@/components/ui/button';
 import { Mail } from '@/types';
@@ -113,7 +112,12 @@ export default function MailTable({
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdFired = useRef(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; mail: Mail } | null>(null);
-  const allSelected = selectable && mails.length > 0 && mails.every((m) => selectedIds?.has(m.id));
+  const allSelected =
+    selectable &&
+    mails.length > 0 &&
+    (mails.length > 10 && activeTab === 'fetched'
+      ? mails.slice(0, 10).every((m) => selectedIds?.has(m.id))
+      : mails.every((m) => selectedIds?.has(m.id)));
 
   const hasAnyCategoryOrPriority = useMemo(() => {
     return (

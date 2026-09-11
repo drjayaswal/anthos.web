@@ -118,14 +118,14 @@ export default function AnalyzeDialog({
     onOpenChange(false);
   };
 
-  const isSubmitDisabled = selectedCount === 0 || selectedCount > 5;
+  const isSubmitDisabled = selectedCount === 0 || selectedCount > 10;
 
   return (
     <QueryDrawer
       open={open}
       onOpenChange={onOpenChange}
       title="Analyze Mails"
-      description="Select an AI model to analyze up to 5 emails"
+      description="Select an AI model to analyze up to 10 emails"
       footerAction={
         <div className="w-full flex items-center justify-between gap-3 select-none">
           <div className="flex items-center space-x-2">
@@ -291,13 +291,14 @@ export default function AnalyzeDialog({
               )}
             </AnimatePresence>
             <p className="text-[10px] text-black/45 px-1 pt-1">
-              Custom Model feature is in beta, use default instead.
+              Custom Model feature is in beta,
+              Default Models are Gemma 4 26B & Gemini 3.5 Flash Lite
             </p>
           </div>
 
-          {selectedCount > 5 && (
+          {selectedCount > 10 && (
             <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-700 text-xs">
-              Maximum 5 mails allowed for analysis (currently selected: {selectedCount}).
+              Maximum 10 mails allowed for analysis (currently selected: {selectedCount}).
             </div>
           )}
         </div>

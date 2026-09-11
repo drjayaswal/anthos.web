@@ -367,8 +367,8 @@ export async function runEmailAnalysisAction(
   error?: string;
 }> {
   try {
-    if (emails.length > 5) {
-      return { ok: false, error: "Maximum 5 emails are allowed for analysis" };
+    if (emails.length > 10) {
+      return { ok: false, error: "Maximum 10 emails are allowed for analysis" };
     }
 
     const aiServerUrl = process.env.AI_SERVER_URL || "http://localhost:8000";

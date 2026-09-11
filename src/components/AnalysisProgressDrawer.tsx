@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RotateCw } from 'lucide-react';
+import { RotateCw, X } from 'lucide-react';
 import type { Mail, AnalysisModel, EmailAnalysisResult } from '@/types';
 import { runEmailAnalysisAction } from '@/app/actions';
 import { cn } from '@/lib/utils';
 
-interface LiveLogItem {
+export interface LiveLogItem {
   id: string;
   time: string;
   level: string;
@@ -25,6 +25,8 @@ interface AnalysisProgressDrawerProps {
   onComplete: (results: EmailAnalysisResult[]) => void;
   onStreamStateChange?: (streaming: boolean, done: boolean) => void;
   onDismiss?: () => void;
+  savedLogs?: LiveLogItem[];
+  onLogsChange?: (logs: LiveLogItem[]) => void;
 }
 
 function parseLogStage(message: string): {
@@ -84,10 +86,16 @@ export default function AnalysisProgressDrawer({
   model,
   onComplete,
   onStreamStateChange,
+  savedLogs,
+  onLogsChange,
 }: AnalysisProgressDrawerProps) {
-  const [logs, setLogs] = useState<LiveLogItem[]>([]);
-  const [statusMessage, setStatusMessage] = useState<string>('Connecting to Anthos AI stream...');
-  const [isDone, setIsDone] = useState<boolean>(false);
+  const [logs, setLogs] = useState<LiveLogItem[]>(() => savedLogs || []);
+  const [statusMessage, setStatusMessage] = useState<string>(() =>
+    savedLogs && savedLogs.length > 0
+      ? `Analysis complete (${savedLogs.length} logs recorded)`
+      : 'Connecting to Anthos AI stream...'
+  );
+  const [isDone, setIsDone] = useState<boolean>(() => !active && Boolean(savedLogs && savedLogs.length > 0));
   const [hasError, setHasError] = useState<boolean>(false);
   const [autoScroll, setAutoScroll] = useState<boolean>(true);
 
@@ -95,6 +103,24 @@ export default function AnalysisProgressDrawer({
   const terminalContainerRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const pendingResultsRef = useRef<EmailAnalysisResult[] | null>(null);
+
+  const logsRef = useRef(logs);
+  useEffect(() => {
+    logsRef.current = logs;
+  }, [logs]);
+
+  const onLogsChangeRef = useRef(onLogsChange);
+  useEffect(() => {
+    onLogsChangeRef.current = onLogsChange;
+  }, [onLogsChange]);
+
+  useEffect(() => {
+    if (!active && savedLogs && savedLogs.length > 0 && logs.length === 0) {
+      setLogs(savedLogs);
+      setIsDone(true);
+      setStatusMessage(`Analysis complete (${savedLogs.length} logs recorded)`);
+    }
+  }, [savedLogs, active, logs.length]);
 
   const pushLogItem = useCallback((
     rawMsg: string,
@@ -116,6 +142,20 @@ export default function AnalysisProgressDrawer({
     setLogs((prev) => [...prev, item]);
   }, []);
 
+  useEffect(() => {
+    if ((isDone || hasError || !open) && logs.length > 0) {
+      onLogsChangeRef.current?.(logs);
+    }
+  }, [isDone, hasError, open, logs]);
+
+  useEffect(() => {
+    return () => {
+      if (logsRef.current.length > 0) {
+        onLogsChangeRef.current?.(logsRef.current);
+      }
+    };
+  }, []);
+
   const callbacksRef = useRef({ onStreamStateChange, onComplete, onOpenChange });
   useEffect(() => {
     callbacksRef.current = { onStreamStateChange, onComplete, onOpenChange };
@@ -133,6 +173,9 @@ export default function AnalysisProgressDrawer({
     setIsDone(true);
     setStatusMessage(`Analysis complete! ${results.length} email(s) processed.`);
     callbacksRef.current.onStreamStateChange?.(false, true);
+    if (logsRef.current.length > 0) {
+      onLogsChangeRef.current?.(logsRef.current);
+    }
     setTimeout(() => {
       callbacksRef.current.onOpenChange(false);
       callbacksRef.current.onComplete(results);
@@ -321,12 +364,20 @@ export default function AnalysisProgressDrawer({
             transition={{ type: 'spring', damping: 30, stiffness: 320 }}
             className="fixed top-0 right-0 bottom-0 z-50 w-xs bg-white shadow-2xl flex flex-col h-full overflow-hidden text-black select-text"
           >
-            <div className="py-3 px-5 border-b border-black/10 flex items-start justify-between gap-3 shrink-0">
+            <div className="py-3 px-5 border-b border-black/10 flex items-center justify-between gap-3 shrink-0">
               <div className="space-y-1 min-w-0 flex-1">
                 <p className="text-xs text-black/60 truncate font-mono">
                   {statusMessage}
                 </p>
               </div>
+              <button
+                type="button"
+                onClick={() => onOpenChange(false)}
+                className="p-1 rounded-lg text-black/50 hover:text-black hover:bg-black/5 transition-colors cursor-pointer shrink-0"
+                aria-label="Close"
+              >
+                <X className="size-4" />
+              </button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
@@ -338,8 +389,14 @@ export default function AnalysisProgressDrawer({
                 >
                   {logs.length === 0 ? (
                     <div className="h-full flex items-center justify-center text-zinc-500 text-xs gap-2">
-                      <RotateCw className="size-3.5 animate-spin" />
-                      <span>Connecting to WebSocket stream at /analyse...</span>
+                      {active ? (
+                        <>
+                          <RotateCw className="size-3.5 animate-spin" />
+                          <span>Connecting to WebSocket stream at /analyse...</span>
+                        </>
+                      ) : (
+                        <span>No analysis logs available.</span>
+                      )}
                     </div>
                   ) : (
                     logs.map((log) => {

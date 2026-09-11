@@ -29,7 +29,7 @@ import LoadDialog from './LoadDialog';
 import AccountDialog from './AccountDialog';
 import { useRouter } from 'next/navigation';
 import Loader from './Loader';
-import AnalysisProgressDrawer from './AnalysisProgressDrawer';
+import AnalysisProgressDrawer, { LiveLogItem } from './AnalysisProgressDrawer';
 
 export function toggleInSet(prev: Set<string>, id: string): Set<string> {
   const next = new Set(prev);
@@ -63,6 +63,7 @@ export default function Analyze({
   const [progressDrawerOpen, setProgressDrawerOpen] = useState(false);
   const [isAnalysisStreaming, setIsAnalysisStreaming] = useState(false);
   const [isAnalysisDone, setIsAnalysisDone] = useState(false);
+  const [analysisLogs, setAnalysisLogs] = useState<LiveLogItem[]>([]);
   const [analysisTargetMails, setAnalysisTargetMails] = useState<Mail[]>([]);
   const [analysisTargetModel, setAnalysisTargetModel] = useState<AnalysisModel | null>(null);
   const [fetchDialogOpen, setFetchDialogOpen] = useState(false);
@@ -82,6 +83,16 @@ export default function Analyze({
         setCategories(res.categories);
       }
     })();
+    try {
+      const saved = localStorage.getItem('anthos_analysis_logs');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setAnalysisLogs(parsed);
+          setIsAnalysisDone(true);
+        }
+      }
+    } catch {}
   }, []);
 
   const hasCategories = categories.length > 0;
@@ -184,8 +195,8 @@ export default function Analyze({
       toast.error('Select fetched mails to analyze');
       return;
     }
-    if (selectedFetchedIds.size > 5) {
-      toast.error('Maximum 5 emails can be analyzed at a time');
+    if (selectedFetchedIds.size > 10) {
+      toast.error('Maximum 10 emails can be analyzed at a time');
       return;
     }
     setAnalyzeDialogOpen(true);
@@ -227,8 +238,8 @@ export default function Analyze({
       toast.error('Select fetched mails to analyze');
       return;
     }
-    if (selection.length > 5) {
-      toast.error('Maximum 5 emails can be analyzed at a time');
+    if (selection.length > 10) {
+      toast.error('Maximum 10 emails can be analyzed at a time');
       return;
     }
 
@@ -241,13 +252,17 @@ export default function Analyze({
     };
 
     setAnalyzeDialogOpen(false);
+    setAnalysisLogs([]);
+    try {
+      localStorage.removeItem('anthos_analysis_logs');
+    } catch {}
     setAnalysisTargetMails(selection);
     setAnalysisTargetModel(modelObject);
     setAnalysisActive(true);
     setIsAnalysisStreaming(true);
     setIsAnalysisDone(false);
-    setProgressDrawerOpen(false);
-    toast.success('Analysis started! Click Progress in top-right to view live stream.');
+    setProgressDrawerOpen(true);
+    toast.success('Analysis started!');
   };
 
   const handleAnalysisComplete = (results: EmailAnalysisResult[]) => {
@@ -333,14 +348,16 @@ export default function Analyze({
   const toggleAllFetched = () => {
     if (activeTab !== 'fetched') return;
     if (filteredMails.length === 0) return;
-    if (filteredMails.every((m) => selectedFetchedIds.has(m.id))) {
+    const maxSelect = Math.min(filteredMails.length, 10);
+    const firstN = filteredMails.slice(0, maxSelect);
+    const areAllFirstNSelected = firstN.every((m) => selectedFetchedIds.has(m.id));
+    if (areAllFirstNSelected) {
       setSelectedFetchedIds(new Set());
       return;
     }
-    const toSelect = filteredMails.slice(0, 5);
-    setSelectedFetchedIds(new Set(toSelect.map((m) => m.id)));
-    if (filteredMails.length > 5) {
-      toast.info('Selected first 5 emails (maximum 5 allowed for analysis)');
+    setSelectedFetchedIds(new Set(firstN.map((m) => m.id)));
+    if (filteredMails.length > 10) {
+      toast.info('Selected first 10 emails (maximum 10 allowed for analysis)');
     }
   };
 
@@ -404,10 +421,10 @@ export default function Analyze({
           onAccount={() => setAccountDialogOpen(true)}
           onAnalyze={openAnalyzeDialog}
           selectedCount={selectedFetchedIds.size}
-          analyzeDisabled={selectedFetchedIds.size === 0 || selectedFetchedIds.size > 5}
+          analyzeDisabled={selectedFetchedIds.size === 0 || selectedFetchedIds.size > 10}
           onFetch={() => setFetchDialogOpen(true)}
           onLoadDataFromDatabase={() => setLoadDialogOpen(true)}
-          hasAnalysisProgress={analysisActive && isAnalysisStreaming}
+          hasAnalysisProgress={analysisActive || isAnalysisStreaming || isAnalysisDone || analysisLogs.length > 0}
           isAnalysisStreaming={isAnalysisStreaming}
           isAnalysisDone={isAnalysisDone}
           onToggleProgressDrawer={() => setProgressDrawerOpen((prev) => !prev)}
@@ -445,8 +462,8 @@ export default function Analyze({
               onToggleSelect={(id) => {
                 if (activeTab === 'fetched') {
                   setSelectedFetchedIds((prev) => {
-                    if (!prev.has(id) && prev.size >= 5) {
-                      toast.error('Maximum 5 emails can be selected for analysis');
+                    if (!prev.has(id) && prev.size >= 10) {
+                      toast.error('Maximum 10 emails can be selected for analysis');
                       return prev;
                     }
                     return toggleInSet(prev, id);
@@ -461,8 +478,8 @@ export default function Analyze({
               onRowHoldSelect={(mail) => {
                 if (activeTab === 'fetched') {
                   setSelectedFetchedIds((prev) => {
-                    if (!prev.has(mail.id) && prev.size >= 5) {
-                      toast.error('Maximum 5 emails can be selected for analysis');
+                    if (!prev.has(mail.id) && prev.size >= 10) {
+                      toast.error('Maximum 10 emails can be selected for analysis');
                       return prev;
                     }
                     return toggleInSet(prev, mail.id);
@@ -516,13 +533,26 @@ export default function Analyze({
         selectedCount={selectedFetchedIds.size}
         onAnalyze={handleAnalyzeSelected}
       />
-      {analysisTargetModel && (
+      {(analysisTargetModel || analysisLogs.length > 0) && (
         <AnalysisProgressDrawer
           open={progressDrawerOpen}
           onOpenChange={setProgressDrawerOpen}
           active={analysisActive}
           emails={analysisTargetMails}
-          model={analysisTargetModel}
+          model={analysisTargetModel || {
+            id: '6b73ef82-7a41-451e-ac2b-a0107475cb38',
+            provider: 'Google',
+            name: 'gemma-4-26b-a4b-it',
+            default: true,
+            settingId: '42821d65-9f24-4b44-b88b-6d3b1c85a12f',
+          }}
+          savedLogs={analysisLogs}
+          onLogsChange={(newLogs) => {
+            setAnalysisLogs(newLogs);
+            try {
+              localStorage.setItem('anthos_analysis_logs', JSON.stringify(newLogs));
+            } catch {}
+          }}
           onComplete={handleAnalysisComplete}
           onStreamStateChange={(streaming, done) => {
             setIsAnalysisStreaming(streaming);

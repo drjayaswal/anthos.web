@@ -222,31 +222,6 @@ export default function Header({
       <header className="flex w-full items-center justify-between gap-3">
         {!optionsOpen && !loading && (
           <div data-tour="options-button" className="fixed top-2 right-1 z-40 flex items-center gap-2">
-            <AnimatePresence>
-              {hasAnalysisProgress && (
-                <motion.button
-                  key="progress-button"
-                  type="button"
-                  onClick={onToggleProgressDrawer}
-                  initial={{ opacity: 0, scale: 0.9, x: 6 }}
-                  animate={{ opacity: 1, scale: 1, x: 0 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  className={cn(
-                    'px-3.5 py-1.5 rounded-full text-xs font-semibold outline-none cursor-pointer select-none flex items-center gap-1.5',
-                  )}
-                  aria-label="Toggle Progress Drawer"
-                >
-                  {isAnalysisStreaming ? (
-                    <LoaderCircleIcon className="size-3.5 text-green-600 animate-spin" />
-                  ) : isAnalysisDone ? (
-                    <BadgeCheckIcon className="size-3.5 text-green-600" />
-                  ) : (
-                    <SearchIcon className="size-3.5 text-[#4F46E5] fill-[#4F46E5]/30" />
-                  )}
-                  <span>Processing...</span>
-                </motion.button>
-              )}
-            </AnimatePresence>
             <button
               type="button"
               onClick={() => setOptionsOpen(true)}
@@ -256,8 +231,11 @@ export default function Header({
                 'relative px-3 py-2 cursor-pointer flex items-center gap-1.5 group select-none',
               )}
             >
-              <div className="text-xs font-semibold tracking-tight text-black transition-colors">
-                Options
+              <div className="text-xs font-semibold tracking-tight text-black transition-colors flex items-center gap-1.5">
+                <span>Options</span>
+                {isAnalysisStreaming && (
+                  <span className="size-1.5 rounded-full bg-green-600 animate-pulse" />
+                )}
               </div>
             </button>
           </div>
