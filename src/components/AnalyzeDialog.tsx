@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Bot, ChevronDown, Check } from 'lucide-react';
+import { Bot, ChevronDown, Check, Loader2 } from 'lucide-react';
 import { getAnalysisModelsAction } from '@/app/actions';
 import { cn } from '@/lib/utils';
 import type { AnalysisModel } from '@/types';
@@ -150,27 +150,26 @@ export default function AnalyzeDialog({
             <span>
               Analyze {selectedCount > 1 ? "Mails" : "Mail"}
             </span>
-            <Check
-              className={cn(
-                'w-3.5 h-3.5 transition-colors',
-                confirmed ? 'text-blue-600' : 'text-black/30'
-              )}
-            />
+            {loadingModels ? (
+              <Loader2 className="w-3.5 h-3.5 text-blue-600 animate-spin" />
+            ) : (
+              <Check
+                className={cn(
+                  'w-3.5 h-3.5 transition-colors',
+                  confirmed ? 'text-blue-600' : 'text-black/30'
+                )}
+              />
+            )}
           </button>
         </div>
       }
     >
       <form id="analyze-form" onSubmit={handleSubmit} className="space-y-3">
         <div className="space-y-1.5" ref={dropdownRef}>
-          <div className="sm:hidden flex items-center justify-between">
+          <div className="flex items-center justify-between">
             <Label className="text-[11px] font-semibold text-black/90 flex items-center gap-1.5">
               <span>Select AI Model</span>
             </Label>
-            {loadingModels && (
-              <span className="text-[9px] text-black/40 animate-pulse">
-                Loading models...
-              </span>
-            )}
           </div>
 
           <div className="relative">
@@ -214,7 +213,12 @@ export default function AnalyzeDialog({
                   </p>
                 </div>
               </div>
-              <ChevronDown className={`w-4 h-4 text-black/50 transition-transform duration-200 shrink-0 ml-1 ${dropdownOpen ? 'rotate-180' : ''}`} />
+              <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                {loadingModels && (
+                  <Loader2 className="w-3.5 h-3.5 text-blue-600 animate-spin" />
+                )}
+                <ChevronDown className={`w-4 h-4 text-black/50 transition-transform duration-200 shrink-0 ${dropdownOpen ? 'rotate-180' : ''}`} />
+              </div>
             </button>
 
             <AnimatePresence>
@@ -290,10 +294,6 @@ export default function AnalyzeDialog({
                 </motion.div>
               )}
             </AnimatePresence>
-            <p className="text-[10px] text-black/45 px-1 pt-1">
-              Custom Model feature is in beta,
-              Default Models are Gemma 4 26B & Gemini 3.5 Flash Lite
-            </p>
           </div>
 
           {selectedCount > 10 && (

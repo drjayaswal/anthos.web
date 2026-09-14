@@ -205,6 +205,10 @@ export default function Settings({ settings: initialSettings }: { settings: User
   const providerDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setSettings(initialSettings);
+  }, [initialSettings]);
+
+  useEffect(() => {
     if (!isModalOpen) {
       setConfirmed(false);
     }
@@ -271,9 +275,13 @@ export default function Settings({ settings: initialSettings }: { settings: User
     }
   };
 
-  const handleSaveModel = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!confirmed || isSubmitting) return;
+  const handleSaveModel = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (isSubmitting) return;
+    if (!confirmed) {
+      toast.error("Please confirm to proceed.");
+      return;
+    }
     if (!selectedProviderName || !isSupportedProvider(selectedProviderName)) {
       toast.error("Please select a valid supported provider.");
       return;
@@ -490,8 +498,8 @@ export default function Settings({ settings: initialSettings }: { settings: User
               <Checkbox
                 id="confirm-model"
                 checked={confirmed}
-                className="data-checked:bg-blue-600 data-checked:border-blue-600"
                 onCheckedChange={(c) => setConfirmed(c === true)}
+                className="data-checked:bg-blue-600 data-checked:border-blue-600 cursor-pointer"
               />
               <Label
                 htmlFor="confirm-model"
@@ -505,6 +513,19 @@ export default function Settings({ settings: initialSettings }: { settings: User
               type="submit"
               form="model-form"
               disabled={!confirmed || isSubmitting}
+              onClick={(e) => {
+                const form = document.getElementById("model-form") as HTMLFormElement | null;
+                if (form) {
+                  if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                  }
+                  if (typeof form.requestSubmit === "function") {
+                    e.preventDefault();
+                    form.requestSubmit();
+                  }
+                }
+              }}
               className={cn(
                 'flex disabled:cursor-not-allowed items-center justify-center gap-2 px-3.5 py-2 cursor-pointer rounded-lg text-xs font-medium transition-all duration-200 border select-none outline-none',
                 (!confirmed || isSubmitting) && 'text-black/30'
@@ -664,7 +685,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
 
           <div>
             <input
-              type="url"
+              type="text"
               placeholder="Logo URL (optional)"
               title="Logo URL (optional)"
               value={logo}

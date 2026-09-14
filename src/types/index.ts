@@ -86,8 +86,10 @@ export interface WsLogFrame {
   type: 'log';
   status: string;
   level: string;
-  name: string;
-  message: string;
+  tag?: string;
+  stage?: string;
+  name?: string;
+  message?: string;
   timestamp: string;
 }
 
@@ -100,8 +102,10 @@ export interface WsCompleteFrame {
 export interface WsErrorFrame {
   type: 'error';
   status: string;
+  error_code: string;
   message: string;
   detail?: string;
+  field?: string;
 }
 
 export type WsAnalysisFrame =

@@ -408,7 +408,14 @@ export async function runEmailAnalysisAction(
 
     if (!res.ok) {
       const errText = await res.text();
-      return { ok: false, error: `AI Server error (${res.status}): ${errText}` };
+      let cleanDetail = "";
+      try {
+        const parsed = JSON.parse(errText);
+        if (parsed && typeof parsed.detail === "string") {
+          cleanDetail = parsed.detail;
+        }
+      } catch {}
+      return { ok: false, error: cleanDetail || `AI Server error (${res.status})` };
     }
 
     const data = (await res.json()) as { results?: EmailAnalysisResult[] };

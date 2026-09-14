@@ -555,11 +555,12 @@ export default function Analyze({
         selectedCount={selectedFetchedIds.size}
         onAnalyze={handleAnalyzeSelected}
       />
-      {(analysisTargetModel || analysisLogs.length > 0) && (
+      {(analysisTargetModel || analysisLogs.length > 0 || progressDrawerOpen) && (
         <AnalysisProgressDrawer
           open={progressDrawerOpen}
           onOpenChange={setProgressDrawerOpen}
           active={analysisActive}
+          onActiveChange={setAnalysisActive}
           emails={analysisTargetMails}
           model={analysisTargetModel || {
             id: '6b73ef82-7a41-451e-ac2b-a0107475cb38',
@@ -571,13 +572,27 @@ export default function Analyze({
           onLogsChange={(newLogs) => {
             setAnalysisLogs(newLogs);
             try {
-              localStorage.setItem('anthos_analysis_logs', JSON.stringify(newLogs));
+              if (newLogs.length === 0) {
+                localStorage.removeItem('anthos_analysis_logs');
+              } else {
+                localStorage.setItem('anthos_analysis_logs', JSON.stringify(newLogs));
+              }
+            } catch {}
+          }}
+          onClearLogs={() => {
+            setAnalysisLogs([]);
+            setIsAnalysisDone(false);
+            try {
+              localStorage.removeItem('anthos_analysis_logs');
             } catch {}
           }}
           onComplete={handleAnalysisComplete}
           onStreamStateChange={(streaming, done) => {
             setIsAnalysisStreaming(streaming);
             setIsAnalysisDone(done);
+            if (!streaming) {
+              setAnalysisActive(false);
+            }
           }}
           onDismiss={handleDismissAnalysis}
         />

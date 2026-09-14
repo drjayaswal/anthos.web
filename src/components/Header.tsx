@@ -5,7 +5,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   UserIcon,
   SearchIcon,
-  BadgeCheckIcon,
+  SearchAlertIcon,
+  BadgeInfoIcon,
   LoaderCircleIcon,
   MailIcon,
   Database,
@@ -121,13 +122,13 @@ export default function Header({
         icon: isAnalysisStreaming
           ? LoaderCircleIcon
           : isAnalysisDone
-          ? BadgeCheckIcon
-          : SearchIcon,
+          ? BadgeInfoIcon
+          : SearchAlertIcon,
         iconClassName: isAnalysisStreaming
           ? 'text-green-600 animate-spin'
           : isAnalysisDone
-          ? 'text-green-600'
-          : 'text-[#4F46E5] fill-[#4F46E5]/30',
+          ? 'text-blue-600'
+          : 'text-indigo-600',
         onClick: () => {
           onToggleProgressDrawer?.();
           closeOptions();
