@@ -288,7 +288,7 @@ export default function Header({
                 className="relative px-3 py-1.5 text-xs font-semibold tracking-tight text-black flex items-center gap-1.5 select-none cursor-default disabled:opacity-100"
                 aria-label="Loading"
               >
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-black" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
                 <span>Loading...</span>
               </motion.button>
             )}

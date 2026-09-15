@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { ChevronRightIcon } from 'lucide-react';
 
 interface QueryDrawerProps {
   open: boolean;
@@ -150,7 +151,7 @@ export default function QueryDrawer({
               transition={{ type: 'spring', stiffness: 320, damping: 32 }}
               className="fixed top-0 right-0 bottom-0 z-70 w-80 h-screen bg-white border-l flex flex-col overflow-hidden text-black select-text"
             >
-              <div className="sm:hidden flex items-center justify-between px-4 pt-4 pb-3 border-b shrink-0">
+              <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b shrink-0">
                 <div>
                   <h2 className="text-sm font-semibold text-black">{title}</h2>
                   <p className="text-[10px] text-black/50">{description}</p>
@@ -158,10 +159,9 @@ export default function QueryDrawer({
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
-                  title="Close dialog"
-                  className="rounded cursor-pointer p-1 text-black/50 hover:text-red-600! transition"
+                  className="flex items-center gap-1 p-1.5 transition-all duration-200 rounded-4xl disabled:opacity-20 disabled:cursor-not-allowed text-xs cursor-pointer"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <ChevronRightIcon className="size-3.5" />
                 </button>
               </div>
 
@@ -200,10 +200,9 @@ export default function QueryDrawer({
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
-                  title="Close dialog"
-                  className="rounded cursor-pointer p-1 text-black/50 hover:text-red-600! transition"
+                  className="flex items-center gap-1 p-1.5 transition-all duration-200 rounded-4xl disabled:opacity-20 disabled:cursor-not-allowed text-xs cursor-pointer"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <ChevronRightIcon className="size-3.5" />
                 </button>
               </div>
 

@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { X, Clock, ExternalLink } from 'lucide-react';
+import { ChevronRightIcon, Clock, ExternalLink } from 'lucide-react';
 import { Mail } from '@/types';
 import { cn, formatEmailContent } from '@/lib/utils';
 import { getSenderCategory } from '@/lib/sender-category';
@@ -101,14 +101,15 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            title="Close dialog"
-            className="shrink-0 rounded cursor-pointer p-1 text-black/50 hover:text-red-600! transition"
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
+          <div className="flex items-center shrink-0">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex items-center gap-1 p-1.5 transition-all duration-200 rounded-4xl disabled:opacity-20 disabled:cursor-not-allowed text-xs cursor-pointer"
+            >
+              <ChevronRightIcon className="size-3.5" />
+            </button>
+          </div>
         </div>
 
         <div className="px-4 py-3 space-y-2.5 overflow-y-auto overscroll-contain flex-1">

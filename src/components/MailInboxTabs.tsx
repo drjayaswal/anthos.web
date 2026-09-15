@@ -43,7 +43,7 @@ export default function MailInboxTabs({
             {isActive && (
               <motion.div
                 layoutId="active-mail-inbox-tab"
-                className="absolute inset-0 border-b-2 border-green-600"
+                className={`absolute inset-0 border-b-2 ${tab.label === "Fetched" ? 'border-green-600' : tab.label === "Analyzed" ? 'border-sky-500' : 'border-pink-500'}`}
               />
             )}
             <span className="relative z-10 text-black">{tab.label}</span>
@@ -51,7 +51,8 @@ export default function MailInboxTabs({
               <span
                 className={cn(
                   'absolute top-0 right-1 z-10 h-2 w-2 -mr-1 text-[10px] p-1 font-bold text-white rounded-full transition-colors duration-200',
-                  tab.count > 0 && 'bg-green-600'
+                tab.label === "Fetched" ? 'bg-green-600' : tab.label === "Analyzed" ? 'bg-sky-500' : 'bg-pink-500',
+                isActive || 'bg-gray-600/20!'
                 )}/>
             )}
           </button>

@@ -116,7 +116,6 @@ function getShortErrorMessage(rawError?: string, errorCode?: string): string {
   const trimmed = rawError.trim();
   const lower = trimmed.toLowerCase();
 
-  // Model not found or unavailable
   if (
     lower.includes('model_not_found') ||
     lower.includes('model not found') ||
@@ -128,7 +127,6 @@ function getShortErrorMessage(rawError?: string, errorCode?: string): string {
     return ERROR_DISPLAY_MAP.LLM_INIT_FAILED;
   }
 
-  // API key / Authentication
   if (
     lower.includes('api key') ||
     lower.includes('api_key') ||
@@ -141,7 +139,6 @@ function getShortErrorMessage(rawError?: string, errorCode?: string): string {
     return ERROR_DISPLAY_MAP.INVALID_API_KEY;
   }
 
-  // Rate limits
   if (
     lower.includes('rate limit') ||
     lower.includes('429') ||
@@ -152,7 +149,6 @@ function getShortErrorMessage(rawError?: string, errorCode?: string): string {
     return ERROR_DISPLAY_MAP.RATE_LIMIT_EXCEEDED;
   }
 
-  // Token limits
   if (
     lower.includes('context length') ||
     lower.includes('maximum context') ||
@@ -162,12 +158,10 @@ function getShortErrorMessage(rawError?: string, errorCode?: string): string {
     return ERROR_DISPLAY_MAP.TOKEN_LIMIT_EXCEEDED;
   }
 
-  // Provider unsupported
   if (lower.includes('unsupported provider')) {
     return ERROR_DISPLAY_MAP.INVALID_PROVIDER;
   }
 
-  // Unreachable / connection
   if (
     lower.includes('connection refused') ||
     lower.includes('timed out') ||
@@ -181,7 +175,6 @@ function getShortErrorMessage(rawError?: string, errorCode?: string): string {
     return ERROR_DISPLAY_MAP.PROVIDER_UNAVAILABLE;
   }
 
-  // If message contains JSON syntax or traceback or is verbose, use clean generic message
   if (trimmed.includes('{') || trimmed.includes('Traceback') || trimmed.length > 75) {
     return ERROR_DISPLAY_MAP.ANALYSIS_FAILED;
   }
@@ -374,7 +367,6 @@ export default function AnalysisProgressDrawer({
       return;
     }
 
-    // New analysis starting: delete old logs from state, parent, and localStorage
     try {
       localStorage.removeItem('anthos_analysis_logs');
     } catch { }
@@ -477,7 +469,6 @@ export default function AnalysisProgressDrawer({
             const errorCode: string = data.error_code || 'ANALYSIS_FAILED';
             handleAnalysisError(data.message, errorCode);
           } else {
-            // Unexpected response or unrecognized message format
             completed = true;
             const unexpectedMsg =
               (typeof data.message === 'string' && data.message) ||
@@ -553,9 +544,8 @@ export default function AnalysisProgressDrawer({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 320 }}
-            className="fixed top-0 right-0 z-10000 w-full sm:w-60 h-full bg-white border-l flex flex-col overflow-hidden text-black select-text"
+            className="fixed top-0 right-0 z-10000 w-full sm:w-80 h-full bg-white border-l flex flex-col overflow-hidden text-black select-text"
           >
-            {/* Header */}
             <div className="py-3 px-4 sm:px-3 border-b border-black/10 flex items-center justify-between gap-3 shrink-0 bg-white/95 backdrop-blur-xs">
               <div className="flex items-center shrink-0">
                 <button
@@ -584,7 +574,6 @@ export default function AnalysisProgressDrawer({
               </div>
             </div>
 
-            {/* Terminal logs list */}
             <div className="flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
               <div
                 ref={terminalContainerRef}
@@ -613,12 +602,10 @@ export default function AnalysisProgressDrawer({
                         animate={{ opacity: 1, x: 0 }}
                         className="flex items-center gap-2 leading-relaxed py-0.5"
                       >
-                        {/* Timestamp */}
                         <span className="w-13 text-black/40 text-[10px] shrink-0 select-none">
                           {log.time}
                         </span>
 
-                        {/* Fixed-size Badge */}
                         <span
                           className={cn(
                             'inline-flex items-center justify-center w-16 h-4 text-[8.5px] rounded text-white font-bold shrink-0 tracking-wide',
@@ -628,7 +615,6 @@ export default function AnalysisProgressDrawer({
                           {log.tag}
                         </span>
 
-                        {/* Meaningful short message (<= 5 words) */}
                         {log.message && (
                           <span className="text-black/80 text-[11px] font-sans font-medium truncate min-w-0 flex-1 select-text">
                             {log.message}
