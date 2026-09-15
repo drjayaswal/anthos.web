@@ -5,14 +5,14 @@ import { Slot } from "radix-ui"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button cursor-pointer inline-flex shrink-0 items-center justify-center text-sm border-black/20! whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50  disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button cursor-pointer inline-flex shrink-0 items-center justify-center text-sm border-black/30! whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50  disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         custom_button:
-          "bg-white text-black border border-dashed hover:border-transparent rounded-md! duration-150!  active:translate-y-0.5",
+          "bg-white text-black border border-dashed border-black/30 hover:border-transparent rounded-md! duration-150!  active:translate-y-0.5",
         custom:
-          "bg-white text-black border border-dashed hover:border-transparent rounded-xl duration-200  hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
+          "bg-white text-black border border-dashed border-black/30 hover:border-transparent rounded-xl duration-200  hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
         light: "border border-gray-200/75 bg-white hover:-translate-y-px active:translate-y-0.5  text-black rounded-xl",
         classic: "bg-white hover:opacity-85 text-black hover:-translate-y-px active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0 ",
         classic_accent: "bg-white hover:bg-accent hover:text-black text-black hover:-translate-y-px active:translate-y-0.5 rounded-xl ring-0 outline-0 border-0 ",

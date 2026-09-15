@@ -255,7 +255,7 @@ export default function Header({
         <div
           data-tour="options-button"
           className={cn(
-            'fixed top-2 z-40 flex items-center gap-1.5 transition-all duration-300',
+            'fixed top-1 z-40 flex items-center gap-1.5 transition-all duration-300',
             optionsOpen ? 'right-20' : 'right-1'
           )}
         >
@@ -272,8 +272,7 @@ export default function Header({
                 className="relative px-3 py-1.5 text-xs font-semibold tracking-tight text-black flex items-center gap-1.5 select-none cursor-default disabled:opacity-100"
                 aria-label="Fetching mails"
               >
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
-                <span>Fetching...</span>
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-green-600" />
               </motion.button>
             )}
             {loading && (
@@ -288,8 +287,7 @@ export default function Header({
                 className="relative px-3 py-1.5 text-xs font-semibold tracking-tight text-black flex items-center gap-1.5 select-none cursor-default disabled:opacity-100"
                 aria-label="Loading"
               >
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
-                <span>Loading...</span>
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-pink-600" />
               </motion.button>
             )}
           </AnimatePresence>

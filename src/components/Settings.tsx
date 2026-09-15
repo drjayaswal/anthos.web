@@ -116,7 +116,7 @@ function ModelCard({
 
   return (
     <div
-      className={`overflow-hidden sm:pb-0 pb-1 ${isReadOnly ? "cursor-not-allowed" : "rounded-3xl bg-white border "
+      className={`overflow-hidden sm:pb-0 pb-1 ${isReadOnly ? "cursor-not-allowed" : "rounded-3xl bg-white border border-dashed border-black/30"
         } text-black`}
       onMouseEnter={() => !isReadOnly && setIsModelHovered(true)}
       onMouseLeave={() => !isReadOnly && setIsModelHovered(false)}
@@ -375,7 +375,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
   return (
     <div className="min-h-0 text-black">
       <main className="sm:mx-auto mx-2 max-w-4xl sm:mt-0 mt-10 px-3 sm:px-6 py-4 sm:py-10 space-y-4 sm:space-y-6">
-        <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 border-b border-dashed pb-4 sm:pb-5">
+        <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 border-b border-dashed border-black/30 pb-4 sm:pb-5">
           <div className="space-y-0.5 min-w-0">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center text-black shrink-0">

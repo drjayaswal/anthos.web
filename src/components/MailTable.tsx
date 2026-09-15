@@ -183,13 +183,13 @@ export default function MailTable({
   if (!loading && mails.length === 0) {
     return (
       <div data-tour="empty-state-card" className="w-full flex flex-col items-center justify-center py-12 sm:py-16 px-4 text-center">
-        <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center mb-4 text-black/70">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center mb-4">
           {activeTab === 'encrypted' ? (
-            <DatabaseBackup className="w-6 h-6 sm:w-10 sm:h-10" />
+            <DatabaseBackup className="w-6 h-6 sm:w-10 sm:h-10 text-pink-500" />
           ) : activeTab === 'analyzed' ? (
-            <Sparkles className="w-6 h-6 sm:w-10 fill-border sm:h-10" />
+            <Sparkles className="w-6 h-6 sm:w-10 sm:h-10 text-sky-500" />
           ) : (
-            <Inbox className="w-6 h-6 sm:w-10 sm:h-10" />
+            <Inbox className="w-6 h-6 sm:w-10 sm:h-10 text-green-600" />
           )}
         </div>
 
@@ -233,7 +233,7 @@ export default function MailTable({
   }
 
   return (
-    <div className="w-full sm:m-0 mt-15 overflow-x-auto no-scrollbar">
+    <div className="w-full sm:m-0 mt-5 overflow-x-auto no-scrollbar">
       {loading || <Table className="w-full min-w-125 sm:min-w-full table-fixed text-left!">
         <TableHeader>
           <TableRow className="border-b hover:bg-transparent">

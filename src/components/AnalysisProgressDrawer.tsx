@@ -30,6 +30,19 @@ const TAG_STYLES: Record<string, string> = {
   CONNECT: 'bg-sky-600',
 };
 
+const TAG_BORDERS: Record<string, string> = {
+  CLEAN: 'border-cyan-500',
+  REGEX: 'border-teal-500',
+  REVIEW: 'border-amber-500',
+  LLM: 'border-purple-600',
+  APPROVED: 'border-emerald-600',
+  RETRY: 'border-orange-500',
+  DONE: 'border-green-600',
+  ERROR: 'border-red-600',
+  INFO: 'border-blue-600',
+  START: 'border-indigo-500',
+  CONNECT: 'border-sky-600',
+};
 
 interface AnalysisProgressDrawerProps {
   open: boolean;
@@ -566,7 +579,7 @@ export default function AnalysisProgressDrawer({
                   disabled={logs.length === 0 || isDrawerActive}
                   title="Delete logs from local storage"
                   aria-label="Delete logs from local storage"
-                  className="flex items-center gap-1 px-2 py-1.5 border border-dashed border-black/20 hover:border-red-600 hover:bg-red-600 transition-all duration-200 rounded-md disabled:opacity-20 disabled:cursor-not-allowed text-xs cursor-pointer"
+                  className="flex items-center gap-1 px-2 py-1.5 border border-dashed border-black/30 hover:border-red-600 hover:bg-red-600 transition-all duration-200 rounded-md disabled:opacity-20 disabled:cursor-not-allowed text-xs cursor-pointer"
                 >
                   <span className='hidden sm:block text-xs'>Erase</span>
                   <Trash2 className="size-3.5" />
@@ -578,7 +591,7 @@ export default function AnalysisProgressDrawer({
               <div
                 ref={terminalContainerRef}
                 onScroll={handleScroll}
-                className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-5 py-3 font-mono text-[11px] space-y-1.5 scrollbar-thin w-full"
+                className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-3 py-3 font-mono text-[11px] space-y-1.5 scrollbar-thin w-full"
               >
                 {logs.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-zinc-400 text-xs gap-2 py-16">
@@ -594,6 +607,7 @@ export default function AnalysisProgressDrawer({
                 ) : (
                   logs.map((log) => {
                     const tagBg = TAG_STYLES[log.tag] ?? 'bg-black';
+                    const tagBorder = TAG_BORDERS[log.tag] ?? 'border-black';
 
                     return (
                       <motion.div
@@ -602,21 +616,23 @@ export default function AnalysisProgressDrawer({
                         animate={{ opacity: 1, x: 0 }}
                         className="flex items-center gap-2 leading-relaxed py-0.5"
                       >
-                        <span className="w-13 text-black/40 text-[10px] shrink-0 select-none">
+                        <span className="w-10 text-black/40 text-[10px] shrink-0 select-none">
                           {log.time}
                         </span>
 
-                        <span
-                          className={cn(
-                            'inline-flex items-center justify-center w-16 h-4 text-[8.5px] rounded text-white font-bold shrink-0 tracking-wide',
-                            tagBg
-                          )}
-                        >
-                          {log.tag}
-                        </span>
+                        <div className={cn("pt-0 px-0.5 pb-0.5 border border-dashed rounded-md border-black", tagBorder)}>
+                          <span
+                            className={cn(
+                              'inline-flex items-center justify-center w-16 h-4 text-[8.5px] rounded-sm text-white font-bold shrink-0 tracking-wide',
+                              tagBg
+                            )}
+                          >
+                            {log.tag}
+                          </span>
+                        </div>
 
                         {log.message && (
-                          <span className="text-black/80 text-[11px] font-sans font-medium truncate min-w-0 flex-1 select-text">
+                          <span className="text-black/40 text-[11px] font-sans font-medium truncate min-w-0 flex-1 select-text">
                             {log.message}
                           </span>
                         )}

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ShieldIcon } from "lucide-react";
+import { LaptopIcon, ShieldIcon } from "lucide-react";
 import type { UserProfile } from "@/app/api/_db/profile";
 import { parseUserAgent } from "@/lib/utils";
 
@@ -68,9 +68,9 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
           </p>
         </div>
 
-        <section className="overflow-hidden rounded-4xl bg-white border shadow-sm">
+        <section className="overflow-hidden rounded-4xl bg-white border border-dashed border-black/30">
           <div className="flex items-center gap-3 border-b p-3 sm:gap-4 sm:p-4">
-            <div className={profile.emailVerified ? "p-0.5 rounded-full ring-2 ring-green-600 shrink-0" : "shrink-0"}>
+            <div className={profile.emailVerified ? "p-0.5 rounded-full border-2 border-dashed border-green-600 shrink-0" : "shrink-0"}>
               <Image
                 src={profile.image || "/anthos.png"}
                 alt=""
@@ -110,14 +110,14 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
           </dl>
         </section>
 
-        <section className="mt-3 overflow-hidden rounded-2xl border bg-white shadow-sm sm:mt-4">
+        <section className="mt-3 overflow-hidden rounded-2xl bg-white border border-dashed border-black/30 sm:mt-4">
           <div className="border-b px-3 py-2 sm:px-4 sm:py-2.5">
             <h2 className="flex items-center gap-1.5 text-xs font-medium sm:text-sm text-black">
               <ShieldIcon className="h-3.5 w-3.5 text-black/50" />
               Sign-in &amp; access
             </h2>
           </div>
-          <dl className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:gap-x-4 px-3 sm:px-4 pb-2">
+          <dl className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:gap-x-4 px-3 sm:px-4 pb-2">
             <Field
               label="Provider"
               value={
@@ -170,8 +170,9 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
           </dl>
         </section>
 
-        <section className="mt-3 overflow-hidden rounded-2xl bg-white border shadow-sm sm:mt-4">
-          <div className="border-b px-3 py-2 sm:px-4 sm:py-2.5">
+        <section className="mt-3 overflow-hidden rounded-2xl bg-white border border-dashed border-black/30 sm:mt-4">
+          <div className="flex items-center gap-2 border-b px-3 py-2 sm:px-4 sm:py-2.5">
+              <LaptopIcon className="h-3.5 w-3.5 text-black/50" />
             <h2 className="text-xs font-medium sm:text-sm text-black">Active Sessions</h2>
           </div>
           <div className="overflow-x-auto">

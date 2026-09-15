@@ -176,7 +176,7 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
             </div>
           )}
 
-          <div className="relative p-3 min-h-36 border border-black/25 border-dashed overflow-hidden flex items-center justify-center">
+          <div className="relative p-3 min-h-36 border border-dashed border-black/30 overflow-hidden flex items-center justify-center">
             <div className="absolute inset-0 p-3 overflow-hidden select-none pointer-events-none blur-xs opacity-50 text-xs leading-relaxed text-black/75 whitespace-pre-wrap wrap-break-word font-normal">
               {formatEmailContent(mail.body) || 'No message content available.'}
             </div>

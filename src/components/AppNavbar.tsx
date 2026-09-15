@@ -155,7 +155,7 @@ export default function AppNavbar({
 
   return (
     <>
-      <header data-tour="navbar-menu" className="fixed top-2 left-10 -translate-x-1/2 z-40">
+      <header data-tour="navbar-menu" className="fixed top-1 left-8 -translate-x-1/2 z-40">
         <button
           type="button"
           onClick={() => setMenuOpen((prev) => !prev)}

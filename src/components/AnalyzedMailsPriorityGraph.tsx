@@ -388,20 +388,20 @@ export default function AnalyzedMailsPriorityGraph({
           </div>
         </div>
 
-        <div className="flex items-center flex-wrap gap-3">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-4 items-center gap-3">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs">
             <span className="text-[10px] text-black/50 font-medium">Average Priority:</span>
             <span className="font-mono font-semibold text-black">{avgPriority}%</span>
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs">
             <span className="text-[10px] text-black/50 font-medium">Peak Priority:</span>
             <span className="font-mono font-semibold text-black">{maxPriority}%</span>
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs">
             <span className="text-[10px] text-black/50 font-medium">Average Confidence:</span>
             <span className="font-mono font-semibold text-black">{avgConfidence}%</span>
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs">
             <span className="text-[10px] text-black/50 font-medium">Max Confidence:</span>
             <span className="font-mono font-semibold text-black">{maxConfidence}%</span>
           </div>
