@@ -65,7 +65,7 @@ export default function LoadDialog({
             <Checkbox
               id="confirm-load"
               checked={confirmed}
-              className="data-checked:bg-blue-600 data-checked:border-blue-600"
+              className="data-checked:bg-pink-600 data-checked:border-pink-600"
               onCheckedChange={(c) => setConfirmed(c === true)}
             />
             <Label
@@ -87,12 +87,12 @@ export default function LoadDialog({
           >
             <span>Continue</span>
             {loading ? (
-              <Loader2 className="w-3.5 h-3.5 text-blue-600 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 text-pink-600 animate-spin" />
             ) : (
               <CheckIcon
                 className={cn(
                   'w-3.5 h-3.5 transition-colors',
-                  confirmed ? 'text-blue-600' : 'text-black/30'
+                  confirmed ? 'text-pink-600' : 'text-black/30'
                 )}
               />
             )}

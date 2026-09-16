@@ -127,7 +127,7 @@ export default function AnalyzeDialog({
             <Checkbox
               id="confirm-analyze"
               checked={confirmed}
-              className="data-checked:bg-blue-600 data-checked:border-blue-600"
+              className="data-checked:bg-sky-600 data-checked:border-sky-600"
               onCheckedChange={(c) => setConfirmed(c === true)}
             />
             <Label
@@ -151,12 +151,12 @@ export default function AnalyzeDialog({
               Analyze {selectedCount > 1 ? "Mails" : "Mail"}
             </span>
             {loadingModels ? (
-              <Loader2 className="w-3.5 h-3.5 text-blue-600 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 text-sky-600 animate-spin" />
             ) : (
               <Check
                 className={cn(
                   'w-3.5 h-3.5 transition-colors',
-                  confirmed ? 'text-blue-600' : 'text-black/30'
+                  confirmed ? 'text-sky-600' : 'text-black/30'
                 )}
               />
             )}

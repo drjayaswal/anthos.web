@@ -68,7 +68,7 @@ export default function FetchDialog({
             <Checkbox
               id="confirm-fetch"
               checked={confirmed}
-              className='data-checked:bg-blue-600 data-checked:border-blue-600'
+              className='data-checked:bg-green-600 data-checked:border-green-600'
               onCheckedChange={(c) => setConfirmed(c === true)}
             />
             <Label
@@ -90,12 +90,12 @@ export default function FetchDialog({
           >
             <span>Continue</span>
             {loading ? (
-              <Loader2 className="w-3.5 h-3.5 text-blue-600 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 text-green-600 animate-spin" />
             ) : (
               <CheckIcon
                 className={cn(
                   'w-3.5 h-3.5 transition-colors',
-                  confirmed ? 'text-blue-600' : 'text-black/30'
+                  confirmed ? 'text-green-600' : 'text-black/30'
                 )}
               />
             )}

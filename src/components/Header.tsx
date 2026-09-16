@@ -256,20 +256,9 @@ export default function Header({
           data-tour="options-button"
           className={cn(
             'fixed top-1 z-40 flex items-center gap-1.5 transition-all duration-300',
-            optionsOpen ? 'right-20' : 'right-0'
+            optionsOpen ? 'right-20' : 'right-1'
           )}
         >
-          {isFetching && (
-            <div>
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-green-600" />
-            </div>
-          )}
-          {loading && (
-            <div>
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-pink-600" />
-            </div>
-          )}
-
           {!optionsOpen && (
             <button
               type="button"
@@ -283,7 +272,13 @@ export default function Header({
               <div className="text-xs font-semibold tracking-tight text-black transition-colors flex items-center gap-1.5">
                 <span>Options</span>
                 {isAnalysisStreaming && (
-                  <span className="size-1.5 rounded-full bg-green-600 animate-pulse" />
+                  <span className="absolute top-0 right-0 size-1.5 rounded-full bg-amber-600 animate-pulse" />
+                )}
+                {isFetching && (
+                  <span className="absolute top-0 right-0 size-1.5 rounded-full bg-green-600 animate-pulse" />
+                )}
+                {loading && (
+                  <span className="absolute top-0 right-0 size-1.5 rounded-full bg-pink-600 animate-pulse" />
                 )}
               </div>
             </button>

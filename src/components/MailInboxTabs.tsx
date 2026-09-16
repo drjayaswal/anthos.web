@@ -27,7 +27,7 @@ export default function MailInboxTabs({
   ];
 
   return (
-    <div data-tour="inbox-tabs" className="absolute sm:top-2 top-7 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1.5">
+    <div data-tour="inbox-tabs" className="absolute top-1 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1.5">
       {tabs.map((tab) => {
         const isActive = active === tab.id;
 
@@ -52,7 +52,7 @@ export default function MailInboxTabs({
                 className={cn(
                   'absolute top-0 right-1 z-10 h-2 w-2 -mr-1 text-[10px] p-1 font-bold text-white rounded-full transition-colors duration-200',
                 tab.label === "Fetched" ? 'bg-green-600' : tab.label === "Analyzed" ? 'bg-sky-500' : 'bg-pink-500',
-                isActive || 'bg-gray-600/20!'
+                !isActive || 'bg-white!'
                 )}/>
             )}
           </button>
