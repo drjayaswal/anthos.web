@@ -1,15 +1,17 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { ChevronRightIcon, Clock, ExternalLink } from 'lucide-react';
+import { Clock, ExternalLink, XIcon } from 'lucide-react';
 import { Mail } from '@/types';
 import { cn, formatEmailContent } from '@/lib/utils';
 import { getSenderCategory } from '@/lib/sender-category';
+import QueryDrawer from './QueryDrawer';
 
 interface MailDetailSheetProps {
   mail: Mail | null;
@@ -32,7 +34,22 @@ function parseSender(senderStr: string) {
   return { name, email, initials };
 }
 
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkIsDesktop = () => setIsDesktop(window.innerWidth >= 640);
+    checkIsDesktop();
+    window.addEventListener('resize', checkIsDesktop);
+    return () => window.removeEventListener('resize', checkIsDesktop);
+  }, []);
+
+  return isDesktop;
+}
+
 export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
+  const isDesktop = useIsDesktop();
+
   if (!mail) return null;
 
   const { name, email, initials } = parseSender(mail.sender);
@@ -48,6 +65,148 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
   });
 
   const gmailUrl = `https://mail.google.com/mail/u/0/#all/${mail.id}`;
+
+  const contentMarkup = (
+    <div className="space-y-2.5">
+      <div className="flex items-center gap-2.5 pb-2 border-b">
+        <div className="shrink-0 h-9 w-9 rounded-full bg-linear-to-br from-red-600 via-red-500 to-rose-400 flex items-center justify-center shadow-xs">
+          <span className="text-xs font-bold text-white">{initials}</span>
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-xs font-semibold text-black truncate">
+              {name}
+            </span>
+            <span
+              className={cn(
+                'text-[9px] font-semibold px-2 py-0.2 rounded capitalize shrink-0',
+                mail.status === 'unread'
+                  ? 'bg-red-50 text-red-600'
+                  : 'bg-emerald-50 text-emerald-600'
+              )}
+            >
+              {mail.status}
+            </span>
+            {category && (
+              <span
+                className={cn(
+                  'text-[9px] font-medium px-2 py-0.5 rounded shrink-0 leading-none',
+                  category.className
+                )}
+              >
+                {category.label}
+              </span>
+            )}
+          </div>
+          {email && (
+            <p className="text-[10px] text-black/50 truncate font-mono leading-tight mt-0.5">
+              {email}
+            </p>
+          )}
+          <div className="flex items-center gap-1 mt-0.5">
+            <Clock className="h-3 w-3 text-black/40 shrink-0" />
+            <span className="text-[10px] text-black/40 truncate">
+              {formattedDate}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-2.5 border border-dashed border-amber-500/50 space-y-1">
+        <span className="text-[9px] font-bold uppercase tracking-wider text-amber-500 block">
+          Subject
+        </span>
+        <h2 className="text-xs font-semibold text-black leading-snug wrap-break-word">
+          {mail.subject || '(No Subject)'}
+        </h2>
+      </div>
+
+      {mail.description && (
+        <div className="p-2.5 space-y-1 border border-dashed border-purple-500/50">
+          <span className="text-[9px] font-bold uppercase tracking-wider text-purple-600 block">
+            Description
+          </span>
+          <p className="text-xs text-black/85 font-medium leading-relaxed">{mail.description}</p>
+        </div>
+      )}
+
+      {mail.summary && (
+        <div className="p-2.5 space-y-1 border border-dashed border-blue-600/50">
+          <span className="text-[9px] font-bold uppercase tracking-wider text-blue-600 block">
+            Summary
+          </span>
+          <p className="text-xs text-black/80 leading-relaxed whitespace-pre-line">{mail.summary}</p>
+        </div>
+      )}
+
+      {(mail.category || mail.priority_score !== undefined || mail.confidence_score !== undefined || mail.versions || mail.retry_count !== undefined) && (
+        <div className="p-2.5 space-y-1.5 border border-dashed border-green-600/50">
+          <span className="text-[9px] font-bold uppercase tracking-wider text-green-600 block">
+            AI Classification & Priority
+          </span>
+          <div className="grid grid-cols-2 gap-2 pt-1 text-xs">
+            {mail.category && (
+              <div className="p-2">
+                <span className="text-[9px] text-black/50 block">Category</span>
+                <span className="font-semibold text-black text-xs">{mail.category}</span>
+              </div>
+            )}
+            {mail.priority_score !== undefined && mail.priority_score !== null && (
+              <div className="p-2">
+                <span className="text-[9px] text-black/50 block">Priority Score</span>
+                <span className="font-semibold font-mono text-black text-xs">{((mail.priority_score * 100) / 10).toFixed(2)}%</span>
+              </div>
+            )}
+            {mail.confidence_score !== undefined && mail.confidence_score !== null && (
+              <div className="p-2">
+                <span className="text-[9px] text-black/50 block">Confidence</span>
+                <span className="font-semibold font-mono text-black text-xs">{(mail.confidence_score * 100).toFixed(2)}%</span>
+              </div>
+            )}
+            {(mail.versions || mail.retry_count !== undefined) && (
+              <div className="p-2">
+                <span className="text-[9px] text-black/50 block">Version & Retries</span>
+                <span className="font-semibold font-mono text-black text-xs">
+                  v{mail.versions?.[0] ?? 1} (retry: {mail.retry_count ?? 0})
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="relative p-3 min-h-50 sm:h-67 sm:border-0 border border-dashed border-black/30 overflow-hidden flex items-center justify-center">
+        <div className="absolute inset-0 p-3 overflow-hidden select-none pointer-events-none blur-xs opacity-50 text-xs leading-relaxed text-black/75 whitespace-pre-wrap wrap-break-word font-normal">
+          {formatEmailContent(mail.body) || 'No message content available.'}
+        </div>
+
+        <div className="relative z-10 flex items-center justify-center">
+          <a
+            href={gmailUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-1.5 duration-200 text-black px-5 py-2 text-xs font-semibold cursor-pointer"
+          >
+            <span>Open</span>
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (isDesktop) {
+    return (
+      <QueryDrawer
+        open={!!mail}
+        onOpenChange={(open) => !open && onClose()}
+        title="Email Details"
+        description="Detailed view & AI insights"
+      >
+        {contentMarkup}
+      </QueryDrawer>
+    );
+  }
 
   return (
     <Dialog open={!!mail} onOpenChange={(open) => !open && onClose()}>
@@ -107,92 +266,13 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
               onClick={onClose}
               className="flex items-center gap-1 p-1.5 transition-all duration-200 rounded-4xl disabled:opacity-20 disabled:cursor-not-allowed text-xs cursor-pointer"
             >
-              <ChevronRightIcon className="size-3.5" />
+              <XIcon className="size-3.5" />
             </button>
           </div>
         </div>
 
         <div className="px-4 py-3 space-y-2.5 overflow-y-auto overscroll-contain flex-1">
-          <div className="p-2.5 border border-dashed border-amber-500/50 space-y-1">
-            <span className="text-[9px] font-bold uppercase tracking-wider text-amber-500 block">
-              Subject
-            </span>
-            <h2 className="text-xs font-semibold text-black leading-snug wrap-break-word">
-              {mail.subject || '(No Subject)'}
-            </h2>
-          </div>
-
-          {mail.description && (
-            <div className="p-2.5 space-y-1 border border-dashed border-purple-500/50">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-purple-600 block">
-                Description
-              </span>
-              <p className="text-xs text-black/85 font-medium leading-relaxed">{mail.description}</p>
-            </div>
-          )}
-
-          {mail.summary && (
-            <div className="p-2.5 space-y-1 border border-dashed border-blue-600/50">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-blue-600 block">
-                Summary
-              </span>
-              <p className="text-xs text-black/80 leading-relaxed whitespace-pre-line">{mail.summary}</p>
-            </div>
-          )}
-
-          {(mail.category || mail.priority_score !== undefined || mail.confidence_score !== undefined || mail.versions || mail.retry_count !== undefined) && (
-            <div className="p-2.5 space-y-1.5 border border-dashed border-green-600/50">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-green-600 block">
-                AI Classification & Priority
-              </span>
-              <div className="grid grid-cols-2 gap-2 pt-1 text-xs">
-                {mail.category && (
-                  <div className="p-2">
-                    <span className="text-[9px] text-black/50 block">Category</span>
-                    <span className="font-semibold text-black text-xs">{mail.category}</span>
-                  </div>
-                )}
-                {mail.priority_score !== undefined && mail.priority_score !== null && (
-                  <div className="p-2">
-                    <span className="text-[9px] text-black/50 block">Priority Score</span>
-                    <span className="font-semibold font-mono text-black text-xs">{((mail.priority_score * 100)/10).toFixed(2)}%</span>
-                  </div>
-                )}
-                {mail.confidence_score !== undefined && mail.confidence_score !== null && (
-                  <div className="p-2">
-                    <span className="text-[9px] text-black/50 block">Confidence</span>
-                    <span className="font-semibold font-mono text-black text-xs">{(mail.confidence_score * 100).toFixed(2)}%</span>
-                  </div>
-                )}
-                {(mail.versions || mail.retry_count !== undefined) && (
-                  <div className="p-2">
-                    <span className="text-[9px] text-black/50 block">Version & Retries</span>
-                    <span className="font-semibold font-mono text-black text-xs">
-                      v{mail.versions?.[0] ?? 1} (retry: {mail.retry_count ?? 0})
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          <div className="relative p-3 min-h-36 border border-dashed border-black/30 overflow-hidden flex items-center justify-center">
-            <div className="absolute inset-0 p-3 overflow-hidden select-none pointer-events-none blur-xs opacity-50 text-xs leading-relaxed text-black/75 whitespace-pre-wrap wrap-break-word font-normal">
-              {formatEmailContent(mail.body) || 'No message content available.'}
-            </div>
-
-            <div className="relative z-10 flex items-center justify-center">
-              <a
-                href={gmailUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 duration-200 text-black px-5 py-2 text-xs font-semibold cursor-pointer"
-              >
-                <span>Open</span>
-                <ExternalLink className="h-3.5 w-3.5" />
-              </a>
-            </div>
-          </div>
+          {contentMarkup}
         </div>
       </DialogContent>
     </Dialog>

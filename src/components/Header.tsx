@@ -5,13 +5,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   UserIcon,
   SearchIcon,
-  SearchAlertIcon,
-  BadgeInfoIcon,
+  CheckIcon,
   LoaderCircleIcon,
   MailIcon,
   Database,
   DatabaseBackup,
-  Loader2,
+  CircleAlertIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { MailInboxTab } from './MailInboxTabs';
@@ -122,13 +121,13 @@ export default function Header({
         icon: isAnalysisStreaming
           ? LoaderCircleIcon
           : isAnalysisDone
-            ? BadgeInfoIcon
-            : SearchAlertIcon,
+            ? CheckIcon
+            : CircleAlertIcon,
         iconClassName: isAnalysisStreaming
           ? 'text-green-600 animate-spin'
           : isAnalysisDone
-            ? 'text-blue-600'
-            : 'text-indigo-600',
+            ? 'text-green-600'
+            : 'text-red-500',
         onClick: () => {
           onToggleProgressDrawer?.();
           closeOptions();
