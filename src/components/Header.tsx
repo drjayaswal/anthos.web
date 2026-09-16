@@ -114,21 +114,21 @@ export default function Header({
         description: isAnalysisStreaming
           ? 'Streaming live AI analysis logs'
           : isAnalysisDone
-          ? 'Analysis completed - view logs'
-          : 'Live progress and logs',
+            ? 'Analysis completed - view logs'
+            : 'Live progress and logs',
         show: true,
         active: progressDrawerOpen,
         disabled: false,
         icon: isAnalysisStreaming
           ? LoaderCircleIcon
           : isAnalysisDone
-          ? BadgeInfoIcon
-          : SearchAlertIcon,
+            ? BadgeInfoIcon
+            : SearchAlertIcon,
         iconClassName: isAnalysisStreaming
           ? 'text-green-600 animate-spin'
           : isAnalysisDone
-          ? 'text-blue-600'
-          : 'text-indigo-600',
+            ? 'text-blue-600'
+            : 'text-indigo-600',
         onClick: () => {
           onToggleProgressDrawer?.();
           closeOptions();
@@ -256,41 +256,19 @@ export default function Header({
           data-tour="options-button"
           className={cn(
             'fixed top-1 z-40 flex items-center gap-1.5 transition-all duration-300',
-            optionsOpen ? 'right-20' : 'right-1'
+            optionsOpen ? 'right-20' : 'right-0'
           )}
         >
-          <AnimatePresence mode="popLayout">
-            {isFetching && (
-              <motion.button
-                key="fetching-button"
-                type="button"
-                disabled
-                initial={{ opacity: 0, scale: 0.9, x: 8 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.9, x: 8 }}
-                transition={{ duration: 0.15 }}
-                className="relative px-3 py-1.5 text-xs font-semibold tracking-tight text-black flex items-center gap-1.5 select-none cursor-default disabled:opacity-100"
-                aria-label="Fetching mails"
-              >
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-green-600" />
-              </motion.button>
-            )}
-            {loading && (
-              <motion.button
-                key="loading-button"
-                type="button"
-                disabled
-                initial={{ opacity: 0, scale: 0.9, x: 8 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.9, x: 8 }}
-                transition={{ duration: 0.15 }}
-                className="relative px-3 py-1.5 text-xs font-semibold tracking-tight text-black flex items-center gap-1.5 select-none cursor-default disabled:opacity-100"
-                aria-label="Loading"
-              >
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-pink-600" />
-              </motion.button>
-            )}
-          </AnimatePresence>
+          {isFetching && (
+            <div>
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-green-600" />
+            </div>
+          )}
+          {loading && (
+            <div>
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-pink-600" />
+            </div>
+          )}
 
           {!optionsOpen && (
             <button
@@ -299,7 +277,7 @@ export default function Header({
               aria-expanded={optionsOpen}
               aria-label="Open options menu"
               className={cn(
-                'relative px-3 py-2 cursor-pointer flex items-center gap-1.5 group select-none',
+                'relative pr-3 py-2 cursor-pointer flex items-center gap-1.5 group select-none',
               )}
             >
               <div className="text-xs font-semibold tracking-tight text-black transition-colors flex items-center gap-1.5">
@@ -370,8 +348,8 @@ export default function Header({
                               item.iconClassName
                                 ? item.iconClassName
                                 : item.active
-                                ? 'text-black'
-                                : 'text-black/60 hover:text-black'
+                                  ? 'text-black'
+                                  : 'text-black/60 hover:text-black'
                             )}
                           />
                         </button>

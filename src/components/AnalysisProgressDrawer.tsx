@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RotateCw, X, Trash2, ChevronRightIcon } from 'lucide-react';
+import { RotateCw, X, Trash2, ChevronRightIcon, MessageSquare, AlertTriangle } from 'lucide-react';
 import type { Mail, AnalysisModel, EmailAnalysisResult } from '@/types';
 import { runEmailAnalysisAction } from '@/app/actions';
 import { cn } from '@/lib/utils';
@@ -28,6 +28,7 @@ const TAG_STYLES: Record<string, string> = {
   INFO: 'bg-blue-600',
   START: 'bg-indigo-500',
   CONNECT: 'bg-sky-600',
+  TIME: 'bg-fuchsia-700',
 };
 
 const TAG_BORDERS: Record<string, string> = {
@@ -42,6 +43,7 @@ const TAG_BORDERS: Record<string, string> = {
   INFO: 'border-blue-600',
   START: 'border-indigo-500',
   CONNECT: 'border-sky-600',
+  TIME: 'border-fuchsia-700',
 };
 
 interface AnalysisProgressDrawerProps {
@@ -92,9 +94,6 @@ function parseLogStage(message: string): {
   }
   if (lower.includes('running llm categorization') || lower.includes('semaphore for categorization') || lower.includes('classification llm') || lower.includes('sending to llm')) {
     return { stage: 'llm', tag: 'LLM', cleanMessage: 'Running LLM categorization' };
-  }
-  if (lower.includes('completed') || lower.includes('finished analysis') || lower.includes('total analysis time')) {
-    return { stage: 'complete', tag: 'DONE', cleanMessage: 'Analysis completed successfully' };
   }
   if (lower.includes('error') || lower.includes('failed')) {
     return { stage: 'error', tag: 'ERROR', cleanMessage: 'Analysis execution failed' };
@@ -218,11 +217,14 @@ export default function AnalysisProgressDrawer({
   const [hasError, setHasError] = useState<boolean>(false);
   const [internalActive, setInternalActive] = useState<boolean>(active);
   const [autoScroll, setAutoScroll] = useState<boolean>(true);
+  const [showMessages, setShowMessages] = useState<boolean>(false);
+  const [showConfirmClear, setShowConfirmClear] = useState<boolean>(false);
 
   useEffect(() => {
     setInternalActive(active);
     if (active) {
       setHasError(false);
+      setShowConfirmClear(false);
     }
   }, [active]);
 
@@ -248,7 +250,17 @@ export default function AnalysisProgressDrawer({
     onClearLogsRef.current = onClearLogs;
   }, [onClearLogs]);
 
-  const handleClearLogs = useCallback(() => {
+  const requestClearLogs = useCallback(() => {
+    if (logs.length === 0 || isDrawerActive) return;
+    setShowConfirmClear(true);
+  }, [logs.length, isDrawerActive]);
+
+  const cancelClearLogs = useCallback(() => {
+    setShowConfirmClear(false);
+  }, []);
+
+  const confirmClearLogs = useCallback(() => {
+    setShowConfirmClear(false);
     try {
       localStorage.removeItem('anthos_analysis_logs');
     } catch { }
@@ -262,13 +274,19 @@ export default function AnalysisProgressDrawer({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onOpenChange(false);
+      if (e.key === 'Escape') {
+        if (showConfirmClear) {
+          setShowConfirmClear(false);
+          return;
+        }
+        onOpenChange(false);
+      }
     };
     if (open) {
       window.addEventListener('keydown', handleKeyDown);
     }
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, onOpenChange]);
+  }, [open, onOpenChange, showConfirmClear]);
 
   useEffect(() => {
     if (!active && savedLogs && savedLogs.length > 0 && logs.length === 0) {
@@ -356,7 +374,6 @@ export default function AnalysisProgressDrawer({
     callbacksRef.current.onActiveChange?.(false);
     callbacksRef.current.onStreamStateChange?.(false, false);
     const cleanMsg = getShortErrorMessage(errorMessage, errorCode);
-    pushLogItem('ERROR', 'ERROR', 'error', 'Analysis failed');
     setStatusMessage(cleanMsg);
     if (logsRef.current.length > 0) {
       onLogsChangeRef.current?.(logsRef.current);
@@ -415,7 +432,6 @@ export default function AnalysisProgressDrawer({
         if (unmounted) return;
         if (res.ok && res.results) {
           completed = true;
-          pushLogItem('DONE', 'INFO', 'complete', 'Analysis completed successfully');
           finishAnalysis(res.results);
         } else {
           completed = true;
@@ -471,7 +487,6 @@ export default function AnalysisProgressDrawer({
           } else if (data.type === 'complete') {
             if (data.results && Array.isArray(data.results)) {
               completed = true;
-              pushLogItem('DONE', 'INFO', 'complete', 'Analysis completed successfully');
               finishAnalysis(data.results);
             } else {
               completed = true;
@@ -556,10 +571,16 @@ export default function AnalysisProgressDrawer({
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 320 }}
-            className="fixed top-0 right-0 z-10000 w-full sm:w-80 h-full bg-white border-l flex flex-col overflow-hidden text-black select-text"
+            transition={{
+              x: { type: 'spring', damping: 32, stiffness: 300, mass: 0.8 },
+              width: { duration: 0.28, ease: [0.32, 0.72, 0, 1] },
+            }}
+            className={cn(
+              "fixed top-0 right-0 z-10000 h-full bg-white border-l flex flex-col overflow-hidden text-black select-text transition-[width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+              showMessages ? "w-full sm:w-85" : "w-full sm:w-37"
+            )}
           >
-            <div className="py-3 px-4 sm:px-3 border-b border-black/10 flex items-center justify-between gap-3 shrink-0 bg-white/95 backdrop-blur-xs">
+            <div className="py-3 px-4 sm:px-3 border-b border-black/10 flex items-center justify-between gap-2 shrink-0 bg-white/95 backdrop-blur-xs">
               <div className="flex items-center shrink-0">
                 <button
                   type="button"
@@ -572,26 +593,52 @@ export default function AnalysisProgressDrawer({
                 </button>
               </div>
 
-              <div className="flex items-center gap-1 shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   type="button"
-                  onClick={handleClearLogs}
-                  disabled={logs.length === 0 || isDrawerActive}
-                  title="Delete logs from local storage"
-                  aria-label="Delete logs from local storage"
-                  className="flex items-center gap-1 px-2 py-1.5 border border-dashed border-black/30 hover:border-red-600 hover:bg-red-600 transition-all duration-200 rounded-md disabled:opacity-20 disabled:cursor-not-allowed text-xs cursor-pointer"
+                  onClick={() => {
+                    if (!showConfirmClear) {
+                      setShowMessages((prev) => !prev)
+                    }
+                  }}
+                  title={showMessages ? "Hide messages" : "Show messages"}
+                  aria-label={showMessages ? "Hide messages" : "Show messages"}
+                  className={cn(
+                    "flex items-center justify-center gap-1 px-2 py-1.5 transition-all rounded-md duration-200 text-xs cursor-pointer select-none",
+                    showMessages
+                      ? "text-indigo-600 bg-indigo-600/10"
+                      : "text-black"
+                  )}
                 >
-                  <span className='hidden sm:block text-xs'>Erase</span>
-                  <Trash2 className="size-3.5" />
+                  <span className="hidden sm:inline text-xs">{showMessages ? "Hide Logs" : "Show Logs"}</span>
+                  <MessageSquare className="size-3.5 sm:hidden" />
                 </button>
+                {showMessages &&
+                  <button
+                    type="button"
+                    onClick={requestClearLogs}
+                    disabled={logs.length === 0 || isDrawerActive}
+                    title="Delete logs from local storage"
+                    aria-label="Delete logs from local storage"
+                    className="flex items-center justify-center gap-1 sm:px-2 sm:py-1.5 not-disabled:hover:text-red-600 transition-all duration-200 rounded-md disabled:opacity-20 disabled:cursor-not-allowed text-xs cursor-pointer"
+                  >
+                    <span className="hidden sm:inline text-xs">Clear</span>
+                    <Trash2 className="size-3.5 sm:hidden" />
+                  </button>
+                }
               </div>
             </div>
 
-            <div className="flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
+            <div className="relative flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
               <div
                 ref={terminalContainerRef}
                 onScroll={handleScroll}
-                className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-3 py-3 font-mono text-[11px] space-y-1.5 scrollbar-thin w-full"
+                className={cn(
+                  "flex-1 min-h-0 px-4 sm:px-3 py-3 font-mono text-[11px] space-y-1.5 scrollbar-thin w-full transition-all duration-200",
+                  showConfirmClear
+                    ? "overflow-hidden filter blur-xs pointer-events-none select-none opacity-50"
+                    : "overflow-y-auto"
+                )}
               >
                 {logs.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-zinc-400 text-xs gap-2 py-16">
@@ -601,7 +648,7 @@ export default function AnalysisProgressDrawer({
                         <span className="font-sans text-zinc-500">Connecting to stream...</span>
                       </>
                     ) : (
-                      <span className="font-sans">Nothing to show here...</span>
+                      <span className="font-sans">{showMessages ? "Nothing to show" : "No messages"}</span>
                     )}
                   </div>
                 ) : (
@@ -620,7 +667,7 @@ export default function AnalysisProgressDrawer({
                           {log.time}
                         </span>
 
-                        <div className={cn("pt-0 px-0.5 pb-0.5 border border-dashed rounded-md border-black", tagBorder)}>
+                        <div className={cn("pt-0 px-0.5 pb-0.5 border border-dashed rounded-md border-black shrink-0", tagBorder)}>
                           <span
                             className={cn(
                               'inline-flex items-center justify-center w-16 h-4 text-[8.5px] rounded-sm text-white font-bold shrink-0 tracking-wide',
@@ -631,7 +678,7 @@ export default function AnalysisProgressDrawer({
                           </span>
                         </div>
 
-                        {log.message && (
+                        {showMessages && log.message && (
                           <span className="text-black/40 text-[11px] font-sans font-medium truncate min-w-0 flex-1 select-text">
                             {log.message}
                           </span>
@@ -642,6 +689,48 @@ export default function AnalysisProgressDrawer({
                 )}
                 <div ref={terminalEndRef} />
               </div>
+
+              <AnimatePresence>
+                {showConfirmClear && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute inset-0 z-20 flex items-center justify-center p-4 bg-white/40 backdrop-blur-xs select-none"
+                  >
+                    <div className="w-full max-w-65 bg-white border border-dashed border-black/30 rounded-xl p-4 flex flex-col items-center text-center space-y-3">
+                      <div className="p-2 rounded-full bg-red-600/10 text-red-600">
+                        <AlertTriangle className="size-4" />
+                      </div>
+
+                      <div className="space-y-1">
+                        <h4 className="text-xs font-semibold text-black tracking-tight">Clear all logs?</h4>
+                        <p className="text-[11px] text-black/60 leading-normal">
+                          This will remove all recorded session logs from storage.
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 w-full pt-1">
+                        <button
+                          type="button"
+                          onClick={cancelClearLogs}
+                          className="flex-1 px-3 py-1.5 text-black text-xs font-medium transition-colors cursor-pointer"
+                        >
+                          No
+                        </button>
+                        <button
+                          type="button"
+                          onClick={confirmClearLogs}
+                          className="flex-1 px-3 py-1.5 rounded-lg border border-dashed border-red-600 text-red-600 hover:text-white hover:bg-red-600 text-xs font-medium transition-colors shadow-xs cursor-pointer"
+                        >
+                          Yes, clear
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.aside>
         </>
