@@ -20,7 +20,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { CustomButton } from '@/components/ui/button';
 import { Mail } from '@/types';
 import { formatEmailContent, cn } from '@/lib/utils';
-import { getSenderCategory } from '@/lib/sender-category';
+import { getSenderCategory, SENDER_CATEGORY_RULES } from '@/lib/sender-category';
 import type { MailInboxTab } from './MailInboxTabs';
 
 const HOLD_MS = 450;
@@ -233,7 +233,26 @@ export default function MailTable({
   }
 
   return (
-    <div className="w-full sm:m-0 mt-5 overflow-x-auto no-scrollbar">
+    <div className="w-full sm:m-0 mt-5 space-y-3 overflow-x-auto no-scrollbar">
+      {mails.length > 0 && !loading && (
+        <div className="flex items-center gap-2 overflow-x-auto py-1 px-1 no-scrollbar select-none">
+          {SENDER_CATEGORY_RULES.map((rule) => (
+            <div
+              key={rule.label}
+              title={`${rule.label}: ${rule.description}`}
+              className="flex items-center gap-1.5 shrink-0 text-[10px] cursor-help"
+            >
+              <span className={cn('px-1.5 py-0.2 rounded font-semibold text-[9px]', rule.className)}>
+                {rule.label}
+              </span>
+              <span className="text-black/50 text-[10px] truncate max-w-36 font-mono">
+                {rule.description}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {loading || <Table className="w-full min-w-125 sm:min-w-full table-fixed text-left!">
         <TableHeader>
           <TableRow className="border-b hover:bg-transparent">

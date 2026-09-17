@@ -697,7 +697,7 @@ export default function AnalysisProgressDrawer({
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute inset-0 z-20 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs select-none"
+                    className="absolute inset-0 z-20 flex items-center justify-center p-4 bg-white/40 backdrop-blur-xs select-none"
                   >
                     <div className="w-full max-w-65 bg-white border border-dashed border-black/30 rounded-xl p-4 flex flex-col items-center text-center space-y-3">
                       <div className="p-2 rounded-full bg-red-600/10 text-red-600">
