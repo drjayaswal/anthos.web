@@ -270,15 +270,6 @@ export default function Header({
             >
               <div className="text-xs font-semibold tracking-tight text-black transition-colors flex items-center gap-1.5">
                 <span>Options</span>
-                {isAnalysisStreaming && (
-                  <span className="absolute top-0 right-0 size-1.5 rounded-full bg-amber-600 animate-pulse" />
-                )}
-                {isFetching && (
-                  <span className="absolute top-0 right-0 size-1.5 rounded-full bg-green-600 animate-pulse" />
-                )}
-                {loading && (
-                  <span className="absolute top-0 right-0 size-1.5 rounded-full bg-pink-600 animate-pulse" />
-                )}
               </div>
             </button>
           )}

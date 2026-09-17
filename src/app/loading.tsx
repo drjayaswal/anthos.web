@@ -16,20 +16,6 @@ export default function Loading() {
           quality={100}
           className="w-30 h-auto drop-shadow-xs"
         />
-
-        <div className="w-30 h-0.5 bg-red-400/10 rounded-full overflow-hidden relative">
-          <motion.div
-            initial={{ left: "-47%" }}
-            animate={{ left: "98%" }}
-            transition={{
-              repeat: Infinity,
-              repeatType: "reverse",
-              duration: 1.4,
-              ease: "easeInOut",
-            }}
-            className="absolute top-0 bottom-0 w-1/2 bg-red-600 rounded-full"
-          />
-        </div>
       </div>
     </div>
   );

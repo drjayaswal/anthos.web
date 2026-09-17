@@ -1243,10 +1243,6 @@ export default function AnalyzedMailsPriorityGraph({
             <span className="text-[10px]">Average Priority</span>
           </div>
         </div>
-
-        <div className="text-[10px] text-black/40 italic">
-          Hover node for % • Click node for details
-        </div>
       </div>
 
       <AnimatePresence>

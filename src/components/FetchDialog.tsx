@@ -26,7 +26,7 @@ export default function FetchDialog({
   const [count, setCount] = useState(1);
   const [important, setImportant] = useState(false);
   const [starred, setStarred] = useState(false);
-  const [confirmed, setConfirmed] = useState(false);
+  const [confirmed, setConfirmed] = useState(true);
   const [loading, setLoading] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -36,7 +36,7 @@ export default function FetchDialog({
     if (!open) {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       setLoading(false);
-      setConfirmed(false);
+      setConfirmed(true);
     }
   }, [open]);
 

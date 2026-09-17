@@ -93,7 +93,7 @@ export default function Analyze({
           setIsAnalysisDone(true);
         }
       }
-    } catch {}
+    } catch { }
   }, []);
 
   const hasCategories = categories.length > 0;
@@ -248,7 +248,7 @@ export default function Analyze({
     const modelObject: AnalysisModel = {
       id: selectedModel?.id || '6b73ef82-7a41-451e-ac2b-a0107475cb38',
       provider: selectedModel?.provider || 'Google',
-      name: selectedModel?.name || 'gemma-4-26b-a4b-it',
+      name: selectedModel?.name || 'gemini-3.5-flash-lite',
       default: selectedModel?.default === true,
     };
 
@@ -256,7 +256,7 @@ export default function Analyze({
     setAnalysisLogs([]);
     try {
       localStorage.removeItem('anthos_analysis_logs');
-    } catch {}
+    } catch { }
     setAnalysisTargetMails(selection);
     setAnalysisTargetModel(modelObject);
     setAnalysisActive(true);
@@ -424,7 +424,7 @@ export default function Analyze({
     })();
   };
 
-  if (appLoading) {
+  if (appLoading || isFetching || loading) {
     return <Loader />;
   }
 
@@ -565,7 +565,7 @@ export default function Analyze({
           model={analysisTargetModel || {
             id: '6b73ef82-7a41-451e-ac2b-a0107475cb38',
             provider: 'Google',
-            name: 'gemma-4-26b-a4b-it',
+            name: 'gemini-3.5-flash-lite',
             default: true,
           }}
           savedLogs={analysisLogs}
@@ -577,14 +577,14 @@ export default function Analyze({
               } else {
                 localStorage.setItem('anthos_analysis_logs', JSON.stringify(newLogs));
               }
-            } catch {}
+            } catch { }
           }}
           onClearLogs={() => {
             setAnalysisLogs([]);
             setIsAnalysisDone(false);
             try {
               localStorage.removeItem('anthos_analysis_logs');
-            } catch {}
+            } catch { }
           }}
           onComplete={handleAnalysisComplete}
           onStreamStateChange={(streaming, done) => {

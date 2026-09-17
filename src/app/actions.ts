@@ -319,24 +319,24 @@ export async function getAnalysisModelsAction(): Promise<{
 
     const userModels = userSettings.models || [];
     const gemmaModel = userModels.find(
-      (m) => m.name === "gemma-4-26b-a4b-it" || m.name.includes("gemma")
+      (m) => m.name === "gemini-3.5-flash-lite" || m.name.includes("gemma")
     );
 
     const defaultModel: AnalysisModel = gemmaModel
       ? {
-          id: gemmaModel.id,
-          provider: gemmaModel.provider,
-          name: gemmaModel.name,
-          default: true,
-          settingId: gemmaModel.settingId,
-        }
+        id: gemmaModel.id,
+        provider: gemmaModel.provider,
+        name: gemmaModel.name,
+        default: true,
+        settingId: gemmaModel.settingId,
+      }
       : {
-          id: "6b73ef82-7a41-451e-ac2b-a0107475cb38",
-          provider: "Google",
-          name: "gemma-4-26b-a4b-it",
-          default: true,
-          settingId: userSettings.id || "42821d65-9f24-4b44-b88b-6d3b1c85a12f",
-        };
+        id: "6b73ef82-7a41-451e-ac2b-a0107475cb38",
+        provider: "Google",
+        name: "gemini-3.5-flash-lite",
+        default: true,
+        settingId: userSettings.id || "42821d65-9f24-4b44-b88b-6d3b1c85a12f",
+      };
 
     const formattedUserModels: AnalysisModel[] = userModels
       .filter((m) => m.id !== defaultModel.id)
@@ -414,7 +414,7 @@ export async function runEmailAnalysisAction(
         if (parsed && typeof parsed.detail === "string") {
           cleanDetail = parsed.detail;
         }
-      } catch {}
+      } catch { }
       return { ok: false, error: cleanDetail || `AI Server error (${res.status})` };
     }
 

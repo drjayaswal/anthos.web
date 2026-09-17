@@ -15,7 +15,7 @@ import { getProviderByName } from '@/lib/providers';
 const FALLBACK_DEFAULT_MODEL: AnalysisModel = {
   id: '6b73ef82-7a41-451e-ac2b-a0107475cb38',
   provider: 'Google',
-  name: 'gemma-4-26b-a4b-it',
+  name: 'gemini-3.5-flash-lite',
   default: true,
 };
 
@@ -46,12 +46,12 @@ export default function AnalyzeDialog({
   );
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loadingModels, setLoadingModels] = useState(false);
-  const [confirmed, setConfirmed] = useState(false);
+  const [confirmed, setConfirmed] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) {
-      setConfirmed(false);
+      setConfirmed(true);
     }
   }, [open]);
 
@@ -245,11 +245,10 @@ export default function AnalyzeDialog({
                           onClick={() => {
                             handleSelectModel(model);
                           }}
-                          className={`w-full flex px-3 py-2 items-center gap-2.5 transition-all duration-200 text-left text-black ${
-                            isSelected
+                          className={`w-full flex px-3 py-2 items-center gap-2.5 transition-all duration-200 text-left text-black ${isSelected
                               ? 'border border-dashed border-black/30 bg-white rounded-xl cursor-pointer'
                               : 'hover:bg-black/5 rounded-xl cursor-pointer'
-                          }`}
+                            }`}
                         >
                           <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
                             {providerLogo ? (
