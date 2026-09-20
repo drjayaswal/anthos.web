@@ -411,7 +411,7 @@ export default function AnalysisProgressDrawer({
     const currentEmails = emailsRef.current;
     const currentModel = modelRef.current;
 
-    const aiHttpUrl = process.env.NEXT_PUBLIC_AI_SERVER_URL || 'http://localhost:8000';
+    const aiHttpUrl = process.env.AI_SERVER_URL || 'http://localhost:8000';
     const wsUrl = aiHttpUrl.replace(/^http/, 'ws').replace(/\/+$/, '') + '/analyse';
 
     let socket: WebSocket | null = null;
