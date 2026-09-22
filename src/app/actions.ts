@@ -371,7 +371,7 @@ export async function runEmailAnalysisAction(
       return { ok: false, error: "Maximum 10 emails are allowed for analysis" };
     }
 
-    const aiServerUrl = process.env.AI_SERVER_URL || "http://localhost:8000";
+    const aiServerUrl = process.env.AI_SERVER_URL || process.env.NEXT_PUBLIC_AI_SERVER_URL as string;
 
     const payload = {
       emails: emails.map((mail) => ({

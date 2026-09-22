@@ -16,17 +16,17 @@ import {
 } from "@/lib/auth-server";
 
 function authBaseUrl(): string {
-  const url = process.env.BETTER_AUTH_URL ?? process.env.NEXTAUTH_URL;
+  const url = process.env.BETTER_AUTH_URL;
   if (!url) {
-    throw new Error("BETTER_AUTH_URL or NEXTAUTH_URL must be set");
+    throw new Error("BETTER_AUTH_URL must be set");
   }
   return url.replace(/\/$/, "");
 }
 
 function authSecret(): string {
-  const secret = process.env.BETTER_AUTH_SECRET ?? process.env.AUTH_SECRET;
+  const secret = process.env.BETTER_AUTH_SECRET;
   if (!secret) {
-    throw new Error("BETTER_AUTH_SECRET or AUTH_SECRET must be set");
+    throw new Error("BETTER_AUTH_SECRET must be set");
   }
   return secret;
 }

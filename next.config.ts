@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     incomingRequests: false,
   },
   images: {
-    qualities: [70, 75, 90],
+    qualities: [70, 75, 90, 100],
     remotePatterns: [
       {
         protocol: "https",

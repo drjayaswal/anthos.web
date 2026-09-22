@@ -137,11 +137,9 @@ Create a `.env.local` file in the project root based on the configuration below:
 ```env
 # Application Base URL
 BETTER_AUTH_URL="http://localhost:3000"
-NEXTAUTH_URL="http://localhost:3000"
 
 # Authentication Security Secret (Minimum 32 random characters)
 BETTER_AUTH_SECRET="your-secure-random-secret"
-AUTH_SECRET="your-secure-random-secret"
 
 # PostgreSQL Database Connection
 DATABASE_URL="postgresql://user:password@localhost:5432/anthos"
@@ -155,7 +153,6 @@ ENCRYPTION_KEY="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
 
 # Anthos AI Backend URL
 AI_SERVER_URL="http://localhost:8000"
-NEXT_PUBLIC_AI_SERVER_URL="http://localhost:8000"
 
 # Optional Administrator Email
 ADMIN_EMAIL="admin@example.com"

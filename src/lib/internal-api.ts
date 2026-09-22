@@ -1,7 +1,7 @@
 import { cookies, headers } from "next/headers";
 
 function buildOrigin(): string {
-  const envBase = (process.env.BETTER_AUTH_URL ?? process.env.NEXTAUTH_URL)?.replace(
+  const envBase = (process.env.BETTER_AUTH_URL)?.replace(
     /\/$/,
     "",
   );
