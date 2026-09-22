@@ -12,6 +12,7 @@ import {
   FileText,
   SettingsIcon,
   LockIcon,
+  MenuIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -155,7 +156,7 @@ export default function AppNavbar({
 
   return (
     <>
-      <header data-tour="navbar-menu" className="fixed top-1 left-8 -translate-x-1/2 z-40">
+      <header data-tour="navbar-menu" className="fixed top-1 sm:left-8 left-5 -translate-x-1/2 z-40">
         <button
           type="button"
           onClick={() => setMenuOpen((prev) => !prev)}
@@ -165,8 +166,11 @@ export default function AppNavbar({
             'relative px-3 py-2 cursor-pointer flex items-center gap-1.5 group select-none',
           )}
         >
-          <div className="text-xs font-semibold tracking-tight text-black transition-colors">
+          <div className="sm:inline hidden text-xs font-semibold tracking-tight text-black transition-colors">
             Menu
+          </div>
+          <div className='inline sm:hidden'>
+            <MenuIcon className='w-4 h-4' />
           </div>
         </button>
       </header>

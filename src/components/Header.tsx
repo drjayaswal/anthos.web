@@ -11,6 +11,7 @@ import {
   Database,
   DatabaseBackup,
   CircleAlertIcon,
+  SettingsIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { MailInboxTab } from './MailInboxTabs';
@@ -269,7 +270,8 @@ export default function Header({
               )}
             >
               <div className="text-xs font-semibold tracking-tight text-black transition-colors flex items-center gap-1.5">
-                <span>Options</span>
+                <span className='sm:inline hidden'>Options</span>
+                <span className='inline sm:hidden'><SettingsIcon className='w-4 h-4'/></span>
               </div>
             </button>
           )}
