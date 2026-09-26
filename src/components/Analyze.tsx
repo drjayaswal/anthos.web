@@ -77,6 +77,31 @@ export default function Analyze({
   const [encryptedMails, setEncryptedMails] = useState<Mail[]>([]);
   const router = useRouter();
 
+  // Restore mails from sessionStorage after hydration (safe — runs client-only)
+  useEffect(() => {
+    try {
+      const tab = sessionStorage.getItem('anthos_active_tab') as MailInboxTab | null;
+      if (tab) setActiveTab(tab);
+      const fetched = sessionStorage.getItem('anthos_fetched_mails');
+      if (fetched) setFetchedMails(JSON.parse(fetched) as Mail[]);
+      const analyzed = sessionStorage.getItem('anthos_analyzed_mails');
+      if (analyzed) setAnalyzedMails(JSON.parse(analyzed) as Mail[]);
+    } catch { }
+  }, []);
+
+  // Persist back to sessionStorage on any change
+  useEffect(() => {
+    try { sessionStorage.setItem('anthos_fetched_mails', JSON.stringify(fetchedMails)); } catch { }
+  }, [fetchedMails]);
+
+  useEffect(() => {
+    try { sessionStorage.setItem('anthos_analyzed_mails', JSON.stringify(analyzedMails)); } catch { }
+  }, [analyzedMails]);
+
+  useEffect(() => {
+    try { sessionStorage.setItem('anthos_active_tab', activeTab); } catch { }
+  }, [activeTab]);
+
   useEffect(() => {
     (async () => {
       const res = await getCategoriesAction();

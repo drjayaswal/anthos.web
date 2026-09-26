@@ -75,11 +75,11 @@ export function getConfidencePercent(mail: Mail): number {
 }
 
 const GRADIENT_STOPS: { stop: number; rgb: [number, number, number] }[] = [
-  { stop: 0, rgb: [22, 163, 74] },
-  { stop: 25, rgb: [132, 204, 22] },
-  { stop: 50, rgb: [234, 179, 8] },
-  { stop: 75, rgb: [234, 88, 12] },
-  { stop: 100, rgb: [220, 38, 38] },
+  { stop: 0, rgb: [34, 197, 94] },
+  { stop: 25, rgb: [163, 230, 53] },
+  { stop: 50, rgb: [250, 204, 21] },
+  { stop: 75, rgb: [251, 146, 60] },
+  { stop: 100, rgb: [244, 63, 94] },
 ];
 
 function interpolateRgb(
@@ -103,15 +103,15 @@ function getPriorityColorHex(pct: number): string {
       return interpolateRgb(s1.rgb, s2.rgb, t);
     }
   }
-  return '#dc2626';
+  return '#f43f5e';
 }
 
 function getPriorityBadgeClass(pct: number): string {
-  if (pct <= 20) return 'bg-green-600/10 text-green-700 border-green-200/60';
-  if (pct <= 40) return 'bg-lime-600/10 text-lime-700 border-lime-200/60';
-  if (pct <= 60) return 'bg-yellow-600/10 text-yellow-700 border-yellow-200/60';
-  if (pct <= 80) return 'bg-orange-600/10 text-orange-700 border-orange-200/60';
-  return 'bg-red-600/10 text-red-700 border-red-200/60';
+  if (pct <= 20) return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+  if (pct <= 40) return 'bg-lime-500/15 text-lime-300 border-lime-500/30';
+  if (pct <= 60) return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
+  if (pct <= 80) return 'bg-orange-500/15 text-orange-300 border-orange-500/30';
+  return 'bg-rose-500/15 text-rose-300 border-rose-500/30';
 }
 
 function getPriorityTierLabel(pct: number): string {
@@ -377,33 +377,33 @@ export default function AnalyzedMailsPriorityGraph({
         <div className="flex items-center gap-2.5">
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-black">Priority Confidence Graph</h3>
-              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full text-black/60">
+              <h3 className="text-sm font-semibold text-foreground">Priority Confidence Graph</h3>
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full text-foreground/70">
                 {filteredMails.length} {filteredMails.length === 1 ? 'mail' : 'mails'}
               </span>
             </div>
-            <p className="text-[11px] text-black/45">
+            <p className="text-[11px] text-foreground/50">
               Chronological priority progression from AI classification
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 items-center gap-3">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs">
-            <span className="text-[10px] text-black/50 font-medium">Average Priority:</span>
-            <span className="font-mono font-semibold text-black">{avgPriority}%</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 items-center gap-2">
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs ">
+            <span className="text-[10px] text-foreground/50 font-medium">Average Priority:</span>
+            <span className="font-mono font-semibold text-foreground">{avgPriority}%</span>
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs">
-            <span className="text-[10px] text-black/50 font-medium">Peak Priority:</span>
-            <span className="font-mono font-semibold text-black">{maxPriority}%</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs ">
+            <span className="text-[10px] text-foreground/50 font-medium">Peak Priority:</span>
+            <span className="font-mono font-semibold text-foreground">{maxPriority}%</span>
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs">
-            <span className="text-[10px] text-black/50 font-medium">Average Confidence:</span>
-            <span className="font-mono font-semibold text-black">{avgConfidence}%</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs ">
+            <span className="text-[10px] text-foreground/50 font-medium">Average Confidence:</span>
+            <span className="font-mono font-semibold text-foreground">{avgConfidence}%</span>
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs">
-            <span className="text-[10px] text-black/50 font-medium">Max Confidence:</span>
-            <span className="font-mono font-semibold text-black">{maxConfidence}%</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs ">
+            <span className="text-[10px] text-foreground/50 font-medium">Max Confidence:</span>
+            <span className="font-mono font-semibold text-foreground">{maxConfidence}%</span>
           </div>
         </div>
       </div>
@@ -415,19 +415,19 @@ export default function AnalyzedMailsPriorityGraph({
               type="button"
               onClick={() => setOpenDropdown((prev) => (prev === 'category' ? null : 'category'))}
               className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition cursor-pointer select-none',
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition cursor-pointer select-none',
                 activeCategory !== 'ALL'
-                  ? 'text-black'
-                  : 'text-black/70 hover:text-black'
+                  ? 'text-foreground font-semibold'
+                  : 'text-foreground/75 hover:text-foreground'
               )}
             >
-              <span className="text-black/40 text-[10px] uppercase font-semibold">Category:</span>
+              <span className="text-foreground/45 text-[10px] uppercase font-semibold">Category:</span>
               <span className="truncate max-w-32">
                 {activeCategory === 'ALL'
                   ? 'All Categories'
                   : categoriesList.find((c) => c.key.toLowerCase() === activeCategory.toLowerCase())?.name || activeCategory}
               </span>
-              <ChevronDown className={cn('size-3 text-black/40 transition-transform duration-150', openDropdown === 'category' && 'rotate-180')} />
+              <ChevronDown className={cn('size-3 text-foreground/45 transition-transform duration-150', openDropdown === 'category' && 'rotate-180')} />
             </button>
 
             <AnimatePresence>
@@ -437,7 +437,7 @@ export default function AnalyzedMailsPriorityGraph({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 2, scale: 0.97 }}
                   transition={{ duration: 0.12 }}
-                  className="absolute top-full left-0 mt-1.5 z-40 min-w-44 bg-white rounded-xl p-1 shadow-xl border border-black/10 text-left max-h-56 overflow-y-auto"
+                  className="absolute top-full left-0 mt-1.5 z-40 min-w-48 bg-background/95 backdrop-blur-xl rounded-xl p-1.5 shadow-2xl border border-foreground/15 text-left max-h-56 overflow-y-auto"
                 >
                   {categoriesList.map((cat) => {
                     const isSelected = activeCategory.toLowerCase() === cat.key.toLowerCase();
@@ -452,15 +452,15 @@ export default function AnalyzedMailsPriorityGraph({
                         className={cn(
                           'w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition cursor-pointer text-left',
                           isSelected
-                            ? 'bg-black/5 font-semibold text-black'
-                            : 'text-black/70 hover:bg-black/3 hover:text-black'
+                            ? 'bg-foreground/15 font-semibold text-foreground'
+                            : 'text-foreground/75 hover:bg-foreground/10 hover:text-foreground'
                         )}
                       >
                         <div className="flex items-center gap-1.5 truncate pr-2">
-                          {isSelected && <Check className="size-3 text-black shrink-0" />}
+                          {isSelected && <Check className="size-3 text-foreground shrink-0" />}
                           <span className="truncate">{cat.name}</span>
                         </div>
-                        <span className="text-[10px] font-mono text-black/40 bg-black/4 px-1.5 py-0.2 rounded-full">
+                        <span className="text-[10px] font-mono text-foreground/60 bg-foreground/10 px-1.5 py-0.5 rounded-full">
                           {cat.count}
                         </span>
                       </button>
@@ -476,17 +476,17 @@ export default function AnalyzedMailsPriorityGraph({
               type="button"
               onClick={() => setOpenDropdown((prev) => (prev === 'priority' ? null : 'priority'))}
               className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition cursor-pointer select-none',
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition cursor-pointer select-none',
                 activePriorityRange !== 'ALL'
-                  ? 'text-black'
-                  : 'text-black/70 hover:text-black'
+                  ? 'text-foreground font-semibold'
+                  : 'text-foreground/75 hover:text-foreground'
               )}
             >
-              <span className="text-black/40 text-[10px] uppercase font-semibold">Priority:</span>
+              <span className="text-foreground/45 text-[10px] uppercase font-semibold">Priority:</span>
               <span className="truncate max-w-32">
                 {PRIORITY_RANGES.find((r) => r.key === activePriorityRange)?.label || 'All'}
               </span>
-              <ChevronDown className={cn('size-3 text-black/40 transition-transform duration-150', openDropdown === 'priority' && 'rotate-180')} />
+              <ChevronDown className={cn('size-3 text-foreground/45 transition-transform duration-150', openDropdown === 'priority' && 'rotate-180')} />
             </button>
 
             <AnimatePresence>
@@ -496,7 +496,7 @@ export default function AnalyzedMailsPriorityGraph({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 2, scale: 0.97 }}
                   transition={{ duration: 0.12 }}
-                  className="absolute top-full left-0 mt-1.5 z-40 min-w-52 bg-white rounded-xl p-1 shadow-xl border border-black/10 text-left"
+                  className="absolute top-full left-0 mt-1.5 z-40 min-w-52 bg-background/95 backdrop-blur-xl rounded-xl p-1.5 shadow-2xl border border-foreground/15 text-left"
                 >
                   {PRIORITY_RANGES.map((rng) => {
                     const isSelected = activePriorityRange === rng.key;
@@ -512,16 +512,16 @@ export default function AnalyzedMailsPriorityGraph({
                         className={cn(
                           'w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition cursor-pointer text-left',
                           isSelected
-                            ? 'font-semibold text-black'
-                            : 'text-black/70 hover:text-black'
+                            ? 'bg-foreground/15 font-semibold text-foreground'
+                            : 'text-foreground/75 hover:bg-foreground/10 hover:text-foreground'
                         )}
                       >
                         <div className="flex items-center gap-1.5 truncate pr-2">
-                          {isSelected && <Check className="size-3 text-black shrink-0" />}
+                          {isSelected && <Check className="size-3 text-foreground shrink-0" />}
                           <span className="font-medium">{rng.label}</span>
-                          <span className="text-[10px] text-black/40 font-mono">({rng.range})</span>
+                          <span className="text-[10px] text-foreground/50 font-mono">({rng.range})</span>
                         </div>
-                        <span className="text-[10px] font-mono text-black/40 bg-black/4 px-1.5 py-0.2 rounded-full">
+                        <span className="text-[10px] font-mono text-foreground/60 bg-foreground/10 px-1.5 py-0.5 rounded-full">
                           {count}
                         </span>
                       </button>
@@ -537,17 +537,17 @@ export default function AnalyzedMailsPriorityGraph({
               type="button"
               onClick={() => setOpenDropdown((prev) => (prev === 'confidence' ? null : 'confidence'))}
               className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition cursor-pointer select-none',
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition cursor-pointer select-none',
                 activeConfidenceRange !== 'ALL'
-                  ? 'text-black font-semibold'
-                  : 'text-black/70 hover:text-black'
+                  ? 'text-foreground font-semibold'
+                  : 'text-foreground/75 hover:text-foreground'
               )}
             >
-              <span className="text-black/40 text-[10px] uppercase font-semibold">Confidence:</span>
+              <span className="text-foreground/45 text-[10px] uppercase font-semibold">Confidence:</span>
               <span className="truncate max-w-32">
                 {CONFIDENCE_RANGES.find((r) => r.key === activeConfidenceRange)?.label || 'All'}
               </span>
-              <ChevronDown className={cn('size-3 text-black/40 transition-transform duration-150', openDropdown === 'confidence' && 'rotate-180')} />
+              <ChevronDown className={cn('size-3 text-foreground/45 transition-transform duration-150', openDropdown === 'confidence' && 'rotate-180')} />
             </button>
 
             <AnimatePresence>
@@ -557,7 +557,7 @@ export default function AnalyzedMailsPriorityGraph({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 2, scale: 0.97 }}
                   transition={{ duration: 0.12 }}
-                  className="absolute top-full left-0 mt-1.5 z-40 min-w-52 bg-white rounded-xl p-1 shadow-xl border border-black/10 text-left"
+                  className="absolute top-full left-0 mt-1.5 z-40 min-w-52 bg-background/95 backdrop-blur-xl rounded-xl p-1.5 shadow-2xl border border-foreground/15 text-left"
                 >
                   {CONFIDENCE_RANGES.map((rng) => {
                     const isSelected = activeConfidenceRange === rng.key;
@@ -573,16 +573,16 @@ export default function AnalyzedMailsPriorityGraph({
                         className={cn(
                           'w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition cursor-pointer text-left',
                           isSelected
-                            ? 'bg-black/5 font-semibold text-black'
-                            : 'text-black/70 hover:bg-black/3 hover:text-black'
+                            ? 'bg-foreground/15 font-semibold text-foreground'
+                            : 'text-foreground/75 hover:bg-foreground/10 hover:text-foreground'
                         )}
                       >
                         <div className="flex items-center gap-1.5 truncate pr-2">
-                          {isSelected && <Check className="size-3 text-black shrink-0" />}
+                          {isSelected && <Check className="size-3 text-foreground shrink-0" />}
                           <span className="font-medium">{rng.label}</span>
-                          <span className="text-[10px] text-black/40 font-mono">({rng.range})</span>
+                          <span className="text-[10px] text-foreground/50 font-mono">({rng.range})</span>
                         </div>
-                        <span className="text-[10px] font-mono text-black/40 bg-black/4 px-1.5 py-0.2 rounded-full">
+                        <span className="text-[10px] font-mono text-foreground/60 bg-foreground/10 px-1.5 py-0.5 rounded-full">
                           {count}
                         </span>
                       </button>
@@ -597,7 +597,7 @@ export default function AnalyzedMailsPriorityGraph({
             <button
               type="button"
               onClick={handleResetFilters}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-black/50 hover:text-black hover:bg-black/5 transition cursor-pointer"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-medium text-foreground/60 hover:text-foreground hover:bg-foreground/10 border border-foreground/15 transition cursor-pointer"
             >
               <X className="size-3" />
               <span>Reset Filters</span>
@@ -605,14 +605,14 @@ export default function AnalyzedMailsPriorityGraph({
           )}
         </div>
 
-        <div className="text-[11px] text-black/40 font-mono">
+        <div className="text-[11px] text-foreground/45 font-mono">
           Showing {filteredMails.length} of {mails.length}
         </div>
       </div>
 
       <div
         ref={containerRef}
-        className="relative w-full p-2 select-none overflow-hidden"
+        className="relative w-full rounded-2xl border border-foreground/10 bg-foreground/[0.02] p-2 select-none overflow-hidden"
         style={{ minHeight: 240 }}
       >
         <svg
@@ -629,8 +629,8 @@ export default function AnalyzedMailsPriorityGraph({
               y2={baselineY}
               gradientUnits="userSpaceOnUse"
             >
-              <stop offset="0%" stopColor="#4F46E5" stopOpacity="0.09" />
-              <stop offset="100%" stopColor="#4F46E5" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="#fef1e1" stopOpacity="0.10" />
+              <stop offset="100%" stopColor="#fef1e1" stopOpacity="0.0" />
             </linearGradient>
 
             <linearGradient
@@ -641,11 +641,11 @@ export default function AnalyzedMailsPriorityGraph({
               y2={baselineY}
               gradientUnits="userSpaceOnUse"
             >
-              <stop offset="0%" stopColor="#dc2626" stopOpacity="0.18" />
-              <stop offset="25%" stopColor="#ea580c" stopOpacity="0.14" />
-              <stop offset="50%" stopColor="#eab308" stopOpacity="0.10" />
-              <stop offset="75%" stopColor="#84cc16" stopOpacity="0.06" />
-              <stop offset="100%" stopColor="#16a34a" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.22" />
+              <stop offset="25%" stopColor="#fb923c" stopOpacity="0.16" />
+              <stop offset="50%" stopColor="#facc15" stopOpacity="0.12" />
+              <stop offset="75%" stopColor="#a3e635" stopOpacity="0.07" />
+              <stop offset="100%" stopColor="#22c55e" stopOpacity="0.0" />
             </linearGradient>
 
             <linearGradient
@@ -656,11 +656,11 @@ export default function AnalyzedMailsPriorityGraph({
               y2={padding.top}
               gradientUnits="userSpaceOnUse"
             >
-              <stop offset="0%" stopColor="#16a34a" />
-              <stop offset="25%" stopColor="#84cc16" />
-              <stop offset="50%" stopColor="#eab308" />
-              <stop offset="75%" stopColor="#ea580c" />
-              <stop offset="100%" stopColor="#dc2626" />
+              <stop offset="0%" stopColor="#22c55e" />
+              <stop offset="25%" stopColor="#a3e635" />
+              <stop offset="50%" stopColor="#facc15" />
+              <stop offset="75%" stopColor="#fb923c" />
+              <stop offset="100%" stopColor="#f43f5e" />
             </linearGradient>
           </defs>
 
@@ -673,7 +673,7 @@ export default function AnalyzedMailsPriorityGraph({
                   y1={y}
                   x2={dimensions.width - padding.right}
                   y2={y}
-                  stroke={tierPct === 0 ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.06)'}
+                  stroke={tierPct === 0 ? 'rgba(254,241,225,0.22)' : 'rgba(254,241,225,0.07)'}
                   strokeDasharray={tierPct === 0 ? 'none' : '3 4'}
                   strokeWidth={tierPct === 0 ? 1.5 : 1}
                 />
@@ -681,7 +681,7 @@ export default function AnalyzedMailsPriorityGraph({
                   x={padding.left - 8}
                   y={y + 3.5}
                   textAnchor="end"
-                  className="text-[9px] font-mono fill-black/40 select-none"
+                  className="text-[9px] font-mono fill-foreground/45 select-none"
                 >
                   {tierPct}%
                 </text>
@@ -713,9 +713,9 @@ export default function AnalyzedMailsPriorityGraph({
                     x={dimensions.width - padding.right - 6}
                     y={Math.max(peakY - 5, 14)}
                     textAnchor="end"
-                    fill={peakColor}
+                    fill="#ffffff"
                     fillOpacity={0.9}
-                    stroke="#ffffff"
+                    stroke="#014d28"
                     strokeWidth={2.5}
                     strokeLinejoin="round"
                     style={{ paintOrder: 'stroke fill' }}
@@ -745,15 +745,15 @@ export default function AnalyzedMailsPriorityGraph({
                           : Math.max(avgY - 5, 14)
                       }
                       textAnchor="end"
-                      fill={avgColor}
+                      fill="#ffffff"
                       fillOpacity={0.85}
-                      stroke="#ffffff"
+                      stroke="#014d28"
                       strokeWidth={2.5}
                       strokeLinejoin="round"
                       style={{ paintOrder: 'stroke fill' }}
                       className="text-[10px] font-mono font-medium"
                     >
-                      Avg: {avgPriority}%
+                      Average: {avgPriority}%
                     </text>
                   </g>
 
@@ -772,9 +772,9 @@ export default function AnalyzedMailsPriorityGraph({
                       x={dimensions.width - padding.right - 6}
                       y={Math.max(peakY - 5, 14)}
                       textAnchor="end"
-                      fill={peakColor}
+                      fill="#ffffff"
                       fillOpacity={0.9}
-                      stroke="#ffffff"
+                      stroke="#014d28"
                       strokeWidth={2.5}
                       strokeLinejoin="round"
                       style={{ paintOrder: 'stroke fill' }}
@@ -799,7 +799,7 @@ export default function AnalyzedMailsPriorityGraph({
                 y1={padding.top}
                 x2={pt.x}
                 y2={baselineY}
-                stroke="rgba(0,0,0,0.18)"
+                stroke="rgba(254,241,225,0.25)"
                 strokeDasharray="3 3"
                 strokeWidth={1}
               />
@@ -827,9 +827,9 @@ export default function AnalyzedMailsPriorityGraph({
                 key={`conf-line-${filterKey}`}
                 d={confidenceCurvePath}
                 fill="none"
-                stroke="#4F46E5"
+                stroke="#fef1e1"
                 strokeWidth={2}
-                strokeOpacity={0.4}
+                strokeOpacity={0.65}
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 initial={{ pathLength: 0, opacity: 0 }}
@@ -847,10 +847,10 @@ export default function AnalyzedMailsPriorityGraph({
               y1={confidencePoints[0].y}
               x2={dimensions.width - padding.right}
               y2={confidencePoints[0].y}
-              stroke="#4F46E5"
+              stroke="#fef1e1"
               strokeDasharray="4 4"
               strokeWidth={1.5}
-              strokeOpacity={0.4}
+              strokeOpacity={0.65}
               className="pointer-events-none select-none"
             />
           )}
@@ -868,20 +868,20 @@ export default function AnalyzedMailsPriorityGraph({
                   y1={pt.y}
                   x2={cp.x}
                   y2={cp.y}
-                  stroke="#4F46E5"
+                  stroke="#fef1e1"
                   strokeWidth={1.2}
                   strokeDasharray="2 3"
-                  strokeOpacity={isHovered || isSelected ? 0.75 : 0.25}
+                  strokeOpacity={isHovered || isSelected ? 0.85 : 0.3}
                   className="transition-all duration-150"
                 />
                 <circle
                   cx={cp.x}
                   cy={cp.y}
                   r={isSelected ? 4.5 : isHovered ? 4 : 2.5}
-                  fill="#4F46E5"
-                  stroke="#4F46E590"
+                  fill="#fef1e1"
+                  stroke="#fef1e1"
                   strokeWidth={isSelected || isHovered ? 2 : 1.5}
-                  strokeOpacity={isSelected || isHovered ? 0.95 : 0.45}
+                  strokeOpacity={isSelected || isHovered ? 0.95 : 0.5}
                   className="transition-all duration-150"
                 />
                 {(isHovered || isSelected) && (
@@ -889,8 +889,8 @@ export default function AnalyzedMailsPriorityGraph({
                     cx={cp.x}
                     cy={cp.y}
                     r={7.5}
-                    fill="#4F46E5"
-                    fillOpacity={0.15}
+                    fill="#fef1e1"
+                    fillOpacity={0.2}
                   />
                 )}
               </g>
@@ -938,7 +938,7 @@ export default function AnalyzedMailsPriorityGraph({
               stroke={getPriorityColorHex(points[0].pct)}
               strokeDasharray="4 4"
               strokeWidth={1.5}
-              opacity={0.5}
+              opacity={0.65}
             />
           )}
 
@@ -982,7 +982,7 @@ export default function AnalyzedMailsPriorityGraph({
                     cx={pt.x}
                     cy={pt.y}
                     r={isSelected ? 7.5 : isHovered ? 6.5 : 5}
-                    fill="#ffffff"
+                    fill="#014d28"
                     stroke={colorHex}
                     strokeWidth={isSelected ? 2.5 : 2}
                     initial={{ scale: 0 }}
@@ -1004,64 +1004,6 @@ export default function AnalyzedMailsPriorityGraph({
                     fill={colorHex}
                     className="pointer-events-none"
                   />
-
-                  {isHovered && !isSelected && (() => {
-                    const cp = confidencePoints[i];
-                    const tooltipWidth = cp ? 170 : 56;
-                    const tooltipHeight = 22;
-                    const tooltipX = Math.max(
-                      padding.left + tooltipWidth / 2,
-                      Math.min(pt.x, dimensions.width - padding.right - tooltipWidth / 2)
-                    );
-                    const minY = cp ? Math.min(pt.y, cp.y) : pt.y;
-                    const tooltipY = Math.max(minY - 30, 4);
-
-                    return (
-                      <motion.g
-                        key={`hover-pct-${pt.mail.id}`}
-                        initial={{ opacity: 0, y: 3, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 2, scale: 0.9 }}
-                        transition={{ duration: 0.12 }}
-                        className="pointer-events-none select-none"
-                      >
-                        <rect
-                          x={tooltipX - tooltipWidth / 2}
-                          y={tooltipY}
-                          width={tooltipWidth}
-                          height={tooltipHeight}
-                          rx={6}
-                          fill="#ffffff"
-                          stroke="#00000010"
-                          strokeWidth={1}
-                          className="drop-shadow-md"
-                        />
-                        <polygon
-                          points={`${pt.x - 4},${tooltipY + tooltipHeight} ${pt.x + 4},${tooltipY + tooltipHeight} ${pt.x},${tooltipY + tooltipHeight + 4}`}
-                          className="drop-shadow-md"
-                          fill="#ffffff"
-                        />
-                        <text
-                          x={tooltipX}
-                          y={tooltipY + 14.5}
-                          textAnchor="middle"
-                          className="text-[10px] font-mono select-none"
-                        >
-                          <tspan fill={colorHex} fontWeight="bold">
-                            {pt.pct.toFixed(0)}% Priority
-                          </tspan>
-                          {cp && (
-                            <>
-                              <tspan fill="#00000020"> | </tspan>
-                              <tspan fill="#4F46E5" fontWeight="bold">
-                                {cp.pct.toFixed(0)}% Confidence
-                              </tspan>
-                            </>
-                          )}
-                        </text>
-                      </motion.g>
-                    );
-                  })()}
                 </g>
               );
             })}
@@ -1073,7 +1015,7 @@ export default function AnalyzedMailsPriorityGraph({
                 x={points[0].x}
                 y={dimensions.height - 12}
                 textAnchor="start"
-                className="text-[9px] font-mono fill-black/45"
+                className="text-[9px] font-mono fill-foreground/50"
               >
                 {new Date(points[0].mail.createdAt).toLocaleDateString(undefined, {
                   month: 'short',
@@ -1086,7 +1028,7 @@ export default function AnalyzedMailsPriorityGraph({
                   x={points[Math.floor(points.length / 2)].x}
                   y={dimensions.height - 12}
                   textAnchor="middle"
-                  className="text-[9px] font-mono fill-black/35 hidden sm:inline"
+                  className="text-[9px] font-mono fill-foreground/40 hidden sm:inline"
                 >
                   {new Date(points[Math.floor(points.length / 2)].mail.createdAt).toLocaleDateString(
                     undefined,
@@ -1099,7 +1041,7 @@ export default function AnalyzedMailsPriorityGraph({
                 x={points[points.length - 1].x}
                 y={dimensions.height - 12}
                 textAnchor="end"
-                className="text-[9px] font-mono fill-black/45"
+                className="text-[9px] font-mono fill-foreground/50"
               >
                 {new Date(points[points.length - 1].mail.createdAt).toLocaleDateString(undefined, {
                   month: 'short',
@@ -1112,12 +1054,12 @@ export default function AnalyzedMailsPriorityGraph({
 
         {filteredMails.length === 0 && (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
-            <Sparkles className="size-6 text-black/30 mb-2" />
-            <p className="text-xs text-black/50">No analyzed emails match the selected filters</p>
+            <Sparkles className="size-6 text-foreground/30 mb-2" />
+            <p className="text-xs text-foreground/50">No analyzed emails match the selected filters</p>
             <button
               type="button"
               onClick={handleResetFilters}
-              className="mt-2 text-xs font-semibold text-[#4F46E5] hover:underline cursor-pointer"
+              className="mt-2 text-xs font-semibold text-emerald-300 hover:text-emerald-200 hover:underline cursor-pointer"
             >
               Reset Filters
             </button>
@@ -1129,61 +1071,50 @@ export default function AnalyzedMailsPriorityGraph({
             <motion.div
               key={selectedPoint.mail.id}
               data-point-modal
-              initial={{ opacity: 0, y: 6, scale: 0.95 }}
+              initial={{ opacity: 0, y: 4, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 4, scale: 0.95 }}
-              transition={{ duration: 0.15, ease: 'easeOut' }}
+              exit={{ opacity: 0, y: 3, scale: 0.96 }}
+              transition={{ duration: 0.14, ease: 'easeOut' }}
               style={{
                 left: Math.min(
-                  Math.max(selectedPoint.x, 135),
-                  dimensions.width - 135
+                  Math.max(selectedPoint.x, 115),
+                  dimensions.width - 115
                 ),
-                top: Math.max(selectedPoint.y - 125, 8),
+                top: Math.max(selectedPoint.y - 95, 8),
               }}
-              className="absolute -translate-x-1/2 z-30 pointer-events-auto bg-white/98 backdrop-blur-md rounded-xl p-3 shadow-xl border border-black/10 w-72 text-left"
+              className="absolute -translate-x-1/2 z-30 pointer-events-auto bg-background/95 backdrop-blur-xl rounded-xl p-2.5 shadow-xl border border-foreground/20 w-54 text-left space-y-1.5 select-none"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-start justify-between gap-2 pb-1.5 mb-1.5 border-b border-black/5">
-                <div className="min-w-0 pr-1">
-                  <span className="block text-[11px] font-bold text-black truncate max-w-44">
-                    {parseSenderName(selectedPoint.mail.sender)}
-                  </span>
-                  <span
-                    className={cn(
-                      'inline-block mt-0.5 text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded border',
-                      getPriorityBadgeClass(selectedPoint.pct)
-                    )}
-                  >
-                    {selectedPoint.pct.toFixed(0)}% • {getPriorityTierLabel(selectedPoint.pct)}
-                  </span>
-                </div>
+              <div className="flex items-center justify-between gap-1.5">
+                <span className="text-[11px] font-semibold text-foreground truncate max-w-40">
+                  {parseSenderName(selectedPoint.mail.sender)}
+                </span>
                 <button
                   type="button"
                   onClick={() => setSelectedPoint(null)}
-                  className="size-5 rounded-md flex items-center justify-center text-black/40 hover:text-black hover:bg-black/5 cursor-pointer shrink-0 transition-colors"
+                  className="size-4.5 rounded flex items-center justify-center text-foreground/45 hover:text-foreground hover:bg-foreground/10 cursor-pointer shrink-0 transition-colors"
                   aria-label="Close popup"
                 >
                   <X className="size-3" />
                 </button>
               </div>
 
-              <p className="text-xs text-black/85 font-medium line-clamp-2 mb-2">
+              <p className="text-[11px] text-foreground/75 font-medium line-clamp-1 leading-snug">
                 {selectedPoint.mail.subject || '(No Subject)'}
               </p>
 
-              <div className="flex items-center justify-between text-[9px] text-black/45 pt-1 border-t border-black/5">
-                <div className="flex items-center gap-1 truncate max-w-36">
+              <div className="flex items-center justify-between pt-1 border-t border-foreground/10 text-[10px]">
+                <div className="flex items-center gap-1.5 font-mono">
                   <span
                     className={cn(
-                      'px-1.5 py-0.2 rounded text-[8px] font-medium border truncate',
-                      getCategoryBadgeColor(selectedPoint.mail.category || 'Others')
+                      'px-1.5 py-0.2 rounded text-[8px] font-semibold text-foreground'
                     )}
                   >
-                    {selectedPoint.mail.category || 'Others'}
+                    {selectedPoint.pct.toFixed(0)}% priority
                   </span>
                   {selectedPoint.mail.confidence_score != null && (
-                    <span>
-                      Conf: {(Number(selectedPoint.mail.confidence_score) * 100).toFixed(0)}%
+                    <span className="text-foreground text-[9px]">
+                      {(Number(selectedPoint.mail.confidence_score) * 100).toFixed(0)}% confidence
                     </span>
                   )}
                 </div>
@@ -1193,9 +1124,9 @@ export default function AnalyzedMailsPriorityGraph({
                     if (onOpenDetail) onOpenDetail(selectedPoint.mail);
                     else setPreviewMail(selectedPoint.mail);
                   }}
-                  className="flex items-center gap-1 shrink-0 text-black/75 hover:text-black font-semibold text-[10px] cursor-pointer hover:underline"
+                  className="flex items-center gap-0.5 text-foreground/80 hover:text-foreground font-semibold text-[10px] cursor-pointer hover:underline"
                 >
-                  <span>View Mail</span>
+                  <span>View</span>
                   <ArrowUpRight className="size-2.5" />
                 </button>
               </div>
@@ -1204,42 +1135,42 @@ export default function AnalyzedMailsPriorityGraph({
         </AnimatePresence>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-black/50">
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-foreground/60">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="text-[10px] uppercase font-semibold tracking-wider text-black/40">
+          <span className="text-[10px] uppercase font-semibold tracking-wider text-foreground/45">
             Priority Bands:
           </span>
           <div className="flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-green-600" />
+            <span className="size-2 rounded-full bg-emerald-400" />
             <span className="text-[10px]">Low (&le; 20%)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-lime-500" />
+            <span className="size-2 rounded-full bg-lime-400" />
             <span className="text-[10px]">Routine (21-40%)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-yellow-500" />
+            <span className="size-2 rounded-full bg-amber-400" />
             <span className="text-[10px]">Normal (41-60%)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-orange-500" />
+            <span className="size-2 rounded-full bg-orange-400" />
             <span className="text-[10px]">High (61-80%)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-red-600" />
+            <span className="size-2 rounded-full bg-rose-500" />
             <span className="text-[10px]">Urgent (&gt; 80%)</span>
           </div>
-          <div className="h-3 w-px bg-black/15 mx-0.5 hidden sm:block" />
+          <div className="h-3 w-px bg-foreground/20 mx-0.5 hidden sm:block" />
           <div className="flex items-center gap-1.5">
-            <span className="w-3.5 h-0.5 bg-[#4F46E5]/60 rounded-full" />
+            <span className="w-3.5 h-0.5 bg-foreground/70 rounded-full" />
             <span className="text-[10px]">Confidence</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3.5 border-b-[1.5px] border-dashed border-red-500/70" />
+            <span className="w-3.5 border-b-[1.5px] border-dashed border-rose-400/80" />
             <span className="text-[10px]">Peak Priority</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3.5 border-b-[1.5px] border-dashed border-amber-600/70" />
+            <span className="w-3.5 border-b-[1.5px] border-dashed border-amber-400/80" />
             <span className="text-[10px]">Average Priority</span>
           </div>
         </div>
@@ -1248,45 +1179,45 @@ export default function AnalyzedMailsPriorityGraph({
       <AnimatePresence>
         {previewMail && (
           <Dialog open onOpenChange={(o) => !o && setPreviewMail(null)}>
-            <DialogContent className="sm:max-w-md w-full rounded-t-4xl sm:rounded-2xl p-5! bg-white border text-black shadow-2xl">
+            <DialogContent className="sm:max-w-md w-full rounded-t-4xl sm:rounded-2xl p-5! bg-background/95 backdrop-blur-2xl border border-foreground/20 text-foreground shadow-2xl">
               <DialogHeader>
-                <DialogTitle className="text-black line-clamp-1 pr-8">
+                <DialogTitle className="text-foreground line-clamp-1 pr-8">
                   {parseSenderName(previewMail.sender)}
                 </DialogTitle>
-                <DialogDescription className="text-left text-xs text-black/50 flex items-center gap-1">
+                <DialogDescription className="text-left text-xs text-foreground/50 flex items-center gap-1">
                   <Clock className="size-3" />
                   <span>{new Date(previewMail.createdAt).toLocaleString()}</span>
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-3 text-sm">
-                <div className="p-2 bg-black/3 rounded-lg space-y-1">
-                  <p className="text-[10px] font-semibold text-black/50 uppercase">Subject</p>
-                  <p className="text-xs font-medium text-black line-clamp-2">{previewMail.subject}</p>
+                <div className="p-2.5 bg-foreground/5 border border-foreground/10 rounded-xl space-y-1">
+                  <p className="text-[10px] font-semibold text-foreground/50 uppercase">Subject</p>
+                  <p className="text-xs font-medium text-foreground line-clamp-2">{previewMail.subject}</p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="p-2 bg-black/3 rounded-lg">
-                    <p className="text-[10px] font-semibold text-black/50 uppercase">Category</p>
-                    <p className="text-xs font-semibold text-black truncate">{previewMail.category || 'Others'}</p>
+                  <div className="p-2.5 bg-foreground/5 border border-foreground/10 rounded-xl">
+                    <p className="text-[10px] font-semibold text-foreground/50 uppercase">Category</p>
+                    <p className="text-xs font-semibold text-foreground truncate">{previewMail.category || 'Others'}</p>
                   </div>
-                  <div className="p-2 bg-black/3 rounded-lg">
-                    <p className="text-[10px] font-semibold text-black/50 uppercase">Priority</p>
-                    <p className="text-xs font-mono font-semibold text-black">
+                  <div className="p-2.5 bg-foreground/5 border border-foreground/10 rounded-xl">
+                    <p className="text-[10px] font-semibold text-foreground/50 uppercase">Priority</p>
+                    <p className="text-xs font-mono font-semibold text-foreground">
                       {getPriorityPercent(previewMail)}%
                     </p>
                   </div>
-                  <div className="p-2 bg-black/3 rounded-lg">
-                    <p className="text-[10px] font-semibold text-blue-600/70 uppercase">Confidence</p>
-                    <p className="text-xs font-mono font-semibold text-blue-600">
+                  <div className="p-2.5 bg-foreground/5 border border-foreground/10 rounded-xl">
+                    <p className="text-[10px] font-semibold text-foreground/50 uppercase">Confidence</p>
+                    <p className="text-xs font-mono font-semibold text-foreground">
                       {getConfidencePercent(previewMail)}%
                     </p>
                   </div>
                 </div>
 
-                <div className="p-2 bg-black/3 rounded-lg space-y-1">
-                  <p className="text-[10px] font-semibold text-black/50 uppercase">Preview</p>
-                  <p className="text-xs text-black/75 line-clamp-3 leading-relaxed">
+                <div className="p-2.5 bg-foreground/5 border border-foreground/10 rounded-xl space-y-1">
+                  <p className="text-[10px] font-semibold text-foreground/50 uppercase">Preview</p>
+                  <p className="text-xs text-foreground/75 line-clamp-3 leading-relaxed">
                     {formatEmailContent(previewMail.body).slice(0, 220)}
                     {(previewMail.body?.length ?? 0) > 220 ? '…' : ''}
                   </p>

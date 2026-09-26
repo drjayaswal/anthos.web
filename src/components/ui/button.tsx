@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         custom_button:
-          "bg-white text-black border border-dashed border-black/30 hover:border-transparent rounded-md! duration-150!  active:translate-y-0.5",
+          "bg-transparent! text-foreground border border-dashed border-foreground/50! hover:border-transparent rounded-xl! duration-150!  active:translate-y-0.5",
         custom:
           "bg-white text-black border border-dashed border-black/30 hover:border-transparent rounded-xl duration-200  hover:-translate-y-px active:translate-y-0.5 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]",
         light: "border border-gray-200/75 bg-white hover:-translate-y-px active:translate-y-0.5  text-black rounded-xl",

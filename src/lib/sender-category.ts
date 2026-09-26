@@ -16,15 +16,9 @@ export const SENDER_CATEGORY_RULES: Array<{
     description: 'Automated or transactional system replies',
   },
   {
-    regex: /(promotions?|promo|marketing|deals?|offers?|discount|campaign|newsletters?|bulletin|specials)/i,
-    label: 'Promotion',
-    className: 'bg-purple-600/10 text-purple-600',
-    description: 'Marketing campaigns, offers & newsletters',
-  },
-  {
     regex: /(notifications?|notify|alerts?|system|updates?|digest|service[-_.]?desk|bot@)/i,
     label: 'Notification',
-    className: 'bg-blue-600/10 text-blue-600',
+    className: 'bg-pink-600/10 text-pink-600',
     description: 'System alerts, digests & status updates',
   },
   {
@@ -38,6 +32,12 @@ export const SENDER_CATEGORY_RULES: Array<{
     label: 'Support',
     className: 'bg-sky-600/10 text-sky-600',
     description: 'Customer service & helpdesk inquiries',
+  },
+  {
+    regex: /(promotions?|promo|marketing|deals?|offers?|discount|campaign|newsletters?|bulletin|specials)/i,
+    label: 'Promotion',
+    className: 'bg-lime-600/10 text-lime-600!',
+    description: 'Marketing campaigns, offers & newsletters',
   },
 ];
 

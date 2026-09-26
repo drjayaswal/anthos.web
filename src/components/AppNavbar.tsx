@@ -166,7 +166,7 @@ export default function AppNavbar({
             'relative px-3 py-2 cursor-pointer flex items-center gap-1.5 group select-none',
           )}
         >
-          <div className="sm:inline hidden text-xs font-semibold tracking-tight text-black transition-colors">
+          <div className="sm:inline hidden text-xs font-semibold tracking-tight transition-colors">
             Menu
           </div>
           <div className='inline sm:hidden'>
@@ -174,7 +174,6 @@ export default function AppNavbar({
           </div>
         </button>
       </header>
-
       <AnimatePresence>
         {menuOpen && (
           <>
@@ -194,7 +193,7 @@ export default function AppNavbar({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-              className="fixed top-0 left-0 bottom-0 z-70 w-18 bg-white border-r flex flex-col overflow-visible"
+              className="fixed top-0 left-0 bottom-0 z-70 w-18 h-screen bg-foreground/7 backdrop-blur-md flex flex-col overflow-visible"
             >
               <motion.div
                 variants={containerVariants}
@@ -217,8 +216,8 @@ export default function AppNavbar({
                     >
                       <div
                         className={cn(
-                          'relative z-10 flex items-center border-b-2 justify-center transition-all duration-200 p-1 bg-white',
-                          active ? 'border-green-600' : "border-transparent"
+                          'relative z-10 flex items-center border-b-2 border-transparent justify-center transition-all duration-200 px-1 rounded-4xl py-2.25',
+                          active && 'bg-background'
                         )}
                       >
                         <Link
@@ -229,10 +228,7 @@ export default function AppNavbar({
                         >
                           <Icon
                             className={cn(
-                              'w-5 h-5 transition-colors',
-                              active
-                                ? 'text-black'
-                                : 'text-black/60 hover:text-black'
+                              'w-5.5 h-5.5 transition-colors text-foreground'
                             )}
                           />
                         </Link>

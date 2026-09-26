@@ -9,7 +9,7 @@ import { AppleLogo, DribbleLogo, FacebookLogo, FigmaLogo, FigmaLogoOutlined, Goo
 
 export const styles = sortCx({
     common: {
-        root: "group disabled:stroke-fg-disabled disabled:text-fg-disabled disabled:*:text-fg-disabled relative inline-flex h-max cursor-pointer items-center justify-center font-semibold whitespace-nowrap outline-focus-ring transition duration-100 ease-linear before:absolute focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed",
+        root: "group overflow-hidden disabled:stroke-fg-disabled disabled:text-fg-disabled disabled:*:text-fg-disabled relative inline-flex h-max cursor-pointer items-center justify-center font-semibold whitespace-nowrap outline-focus-ring transition duration-100 ease-linear before:absolute focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed after:pointer-events-none after:absolute not-disabled:after:inset-0 after:-translate-x-full after:skew-x-[-20deg] after:bg-gradient-to-r after:from-transparent after:via-white/15 after:to-transparent after:transition-transform after:duration-500 after:ease-out hover:after:translate-x-full",
         icon: "pointer-events-none shrink-0 transition-inherit-all",
     },
 
@@ -117,7 +117,7 @@ export const SocialButton = ({ size = "lg", theme = "brand", social, className, 
             className={cx(styles.common.root, styles.sizes[size].root, colorStyles.root, className)}
         >
             {isLoading ? (
-                <Loader2Icon className={cx("animate-spin text-black/20 shrink-0", styles.sizes[size].icon)} />
+                <Loader2Icon className={cx("animate-spin text-white/40 shrink-0", styles.sizes[size].icon)} />
             ) : (
                 <Logo
                     className={cx(

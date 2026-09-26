@@ -7,7 +7,6 @@ import {
   Key,
   Eye,
   EyeOff,
-  X,
   Loader2,
   SettingsIcon,
   PlusIcon,
@@ -102,7 +101,7 @@ function ModelCard({
         onClick={(e) => { e.stopPropagation(); onDelete?.(model); }}
         disabled={isDeleting}
         title="Delete model"
-        className="text-red-600"
+        className="text-red-500 hover:text-white hover:bg-red-600! hover:border-red-600!"
       >
         {isDeleting ? (
           <Loader2 className="h-3 w-3 animate-spin" />
@@ -116,8 +115,8 @@ function ModelCard({
 
   return (
     <div
-      className={`overflow-hidden sm:pb-0 pb-1 ${isReadOnly ? "cursor-not-allowed" : "rounded-3xl bg-white border border-dashed border-black/30"
-        } text-black`}
+      className={`overflow-hidden sm:pb-0 pb-1 ${isReadOnly ? "cursor-not-allowed" : "rounded-3xl border border-dashed border-foreground/30 hover:border-foreground/45 transition-colors"
+        } text-foreground`}
       onMouseEnter={() => !isReadOnly && setIsModelHovered(true)}
       onMouseLeave={() => !isReadOnly && setIsModelHovered(false)}
       onClick={() => !isReadOnly && setIsExpanded((p) => !p)}
@@ -135,17 +134,17 @@ function ModelCard({
         </div>
 
         <div className="flex items-center gap-1.5 min-w-0 shrink-0">
-          <span className="text-xs font-semibold truncate max-w-28 text-black">{model.provider}</span>
-          <span className="inline-flex items-center rounded-sm bg-green-600/10 px-1 py-px text-[9px] font-mono text-green-600 truncate">
+          <span className="text-xs font-semibold truncate max-w-28 text-foreground">{model.provider}</span>
+          <span className="inline-flex items-center rounded-sm bg-green-500/15 px-1 py-px text-[9px] font-mono text-green-400 truncate">
             {model.name}
           </span>
         </div>
 
         <div className="hidden sm:flex items-center gap-2 min-w-0 flex-1">
-          <div className="w-px h-3.5 bg-black/15 shrink-0" />
+          <div className="w-px h-3.5 bg-foreground/15 shrink-0" />
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
-            {isReadOnly || <Key className="h-3 w-3 shrink-0 text-black/50" />}
-            <span className="font-mono text-[10px] text-black/60 truncate">
+            {isReadOnly || <Key className="h-3 w-3 shrink-0 text-foreground/50" />}
+            <span className="font-mono text-[10px] text-foreground/60 truncate">
               {isReadOnly ? model.apiKey : isKeyVisible ? model.apiKey : maskApiKey?.(model.apiKey)}
             </span>
           </div>
@@ -164,10 +163,10 @@ function ModelCard({
         <div className={`sm:hidden grid transition-all duration-250 ease-in-out ${isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
           }`}>
           <div className="overflow-hidden">
-            <div className="flex items-center justify-between gap-2 mx-3 mb-2 rounded-xl bg-black/5 px-2.5 py-1.5">
+            <div className="flex items-center justify-between gap-2 mx-3 mb-2 rounded-xl bg-foreground/5 px-2.5 py-1.5">
               <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                <Key className="h-3 w-3 shrink-0 text-black/50" />
-                <span className="font-mono text-[10px] text-black/60 truncate">
+                <Key className="h-3 w-3 shrink-0 text-foreground/50" />
+                <span className="font-mono text-[10px] text-foreground/60 truncate">
                   {isKeyVisible ? model.apiKey : maskApiKey?.(model.apiKey)}
                 </span>
               </div>
@@ -373,19 +372,19 @@ export default function Settings({ settings: initialSettings }: { settings: User
   };
 
   return (
-    <div className="min-h-0 text-black">
+    <div className="min-h-0 text-foreground">
       <main className="sm:mx-auto mx-2 max-w-4xl sm:mt-0 mt-10 px-3 sm:px-6 py-4 sm:py-10 space-y-4 sm:space-y-6">
-        <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 border-b border-dashed border-black/30 pb-4 sm:pb-5">
+        <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 border-b border-dashed border-foreground/30 pb-4 sm:pb-5">
           <div className="space-y-0.5 min-w-0">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center text-black shrink-0">
+              <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center text-foreground shrink-0">
                 <SettingsIcon className="h-5 w-5 sm:h-6 sm:w-6" />
               </div>
-              <h1 className="text-lg font-semibold tracking-tight text-black sm:text-2xl truncate">
+              <h1 className="text-lg font-semibold tracking-tight text-foreground sm:text-2xl truncate">
                 Settings
               </h1>
             </div>
-            <p className="text-[11px] text-black/50 sm:text-sm truncate">
+            <p className="text-[11px] text-foreground/50 sm:text-sm truncate">
               Configure your AI processing models and BYOK keys across supported providers.
             </p>
           </div>
@@ -409,10 +408,10 @@ export default function Settings({ settings: initialSettings }: { settings: User
 
         <section className="space-y-3 sm:space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm sm:text-base font-semibold tracking-tight text-black flex items-center gap-2">
+            <h2 className="text-sm sm:text-base font-semibold tracking-tight text-foreground flex items-center gap-2">
               AI Model Parameters &amp; Keys
             </h2>
-            <span className="text-[11px] sm:text-xs text-black/50 font-mono">
+            <span className="text-[11px] sm:text-xs text-foreground/50 font-mono">
               {settings.models.length} + 1 {settings.models.length === 0 ? "Model" : "Models"}
             </span>
           </div>
@@ -458,7 +457,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
                 setIsProvidersListOpen(false);
                 openAddModal(provider.name);
               }}
-              className="flex items-center justify-between p-2.5 cursor-pointer hover:bg-black/5 rounded-xl transition"
+              className="flex items-center justify-between p-2.5 cursor-pointer hover:bg-foreground/10 rounded-xl transition"
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
@@ -472,10 +471,10 @@ export default function Settings({ settings: initialSettings }: { settings: User
                   />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-xs font-semibold text-black truncate">
+                  <div className="text-xs font-semibold text-foreground truncate">
                     {provider.name}
                   </div>
-                  <div className="text-[10px] text-black/50 font-mono truncate">
+                  <div className="text-[10px] text-foreground/50 font-mono truncate">
                     {provider.description || ""}
                   </div>
                 </div>
@@ -499,11 +498,11 @@ export default function Settings({ settings: initialSettings }: { settings: User
                 id="confirm-model"
                 checked={confirmed}
                 onCheckedChange={(c) => setConfirmed(c === true)}
-                className="data-checked:bg-blue-600 data-checked:border-blue-600 cursor-pointer"
+                className="border-foreground/40 data-checked:bg-background data-checked:border-background cursor-pointer"
               />
               <Label
                 htmlFor="confirm-model"
-                className="cursor-pointer text-xs font-medium text-black select-none"
+                className="cursor-pointer text-xs font-medium text-foreground select-none"
               >
                 Confirm
               </Label>
@@ -527,19 +526,16 @@ export default function Settings({ settings: initialSettings }: { settings: User
                 }
               }}
               className={cn(
-                'flex disabled:cursor-not-allowed items-center justify-center gap-2 px-3.5 py-2 cursor-pointer rounded-lg text-xs font-medium transition-all duration-200 border select-none outline-none',
-                (!confirmed || isSubmitting) && 'text-black/30'
+                'flex disabled:cursor-not-allowed items-center justify-center gap-2 px-3.5 py-2 cursor-pointer rounded-lg text-xs font-medium transition-all duration-200 border border-dashed select-none outline-none text-foreground border-foreground/40',
+                (!confirmed || isSubmitting) && 'opacity-30'
               )}
             >
               <span>{editingModel ? 'Update' : 'Connect'}</span>
               {isSubmitting ? (
-                <Loader2 className="w-3.5 h-3.5 text-blue-600 animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 text-foreground animate-spin" />
               ) : (
                 <Check
-                  className={cn(
-                    'w-3.5 h-3.5 transition-colors',
-                    confirmed ? 'text-blue-600' : 'text-black/30'
-                  )}
+                  className="w-3.5 h-3.5 text-foreground transition-colors"
                 />
               )}
             </button>
@@ -549,7 +545,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
         <form id="model-form" onSubmit={handleSaveModel} className="space-y-3">
           <div className="space-y-1.5" ref={providerDropdownRef}>
             <div className="sm:hidden flex items-center justify-between">
-              <label className="block text-[10px] font-medium text-black/60 uppercase tracking-wide">
+              <label className="block text-[10px] font-medium text-foreground/60 uppercase tracking-wide">
                 AI Provider <span className="text-red-400">*</span>
               </label>
               <button
@@ -558,7 +554,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
                   setIsModalOpen(false);
                   setIsProvidersListOpen(true);
                 }}
-                className="text-[10px] text-accent hover:underline cursor-pointer"
+                className="text-[10px] text-foreground/80 hover:underline cursor-pointer"
               >
                 10 Supported
               </button>
@@ -568,7 +564,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
               <button
                 type="button"
                 onClick={() => setProviderDropdownOpen((prev) => !prev)}
-                className={`w-full flex items-center justify-between p-2.5 ${providerDropdownOpen && 'rounded-b-none border-b-0'} rounded-2xl bg-white border transition cursor-pointer text-left`}
+                className={`w-full flex items-center justify-between p-2.5 ${providerDropdownOpen && 'rounded-b-none border-b-0'} rounded-2xl bg-foreground/10 border border-foreground/20 transition cursor-pointer text-left`}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
@@ -582,16 +578,16 @@ export default function Settings({ settings: initialSettings }: { settings: User
                     />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold text-black truncate">
+                    <p className="text-xs font-semibold text-foreground truncate">
                       {selectedProviderName}
                     </p>
-                    <p className="text-[9px] text-black/50 truncate font-normal">
+                    <p className="text-[9px] text-foreground/50 truncate font-normal">
                       {getProviderByName(selectedProviderName)?.description || selectedProviderName}
                     </p>
                   </div>
                 </div>
                 <ChevronDown
-                  className={`w-4 h-4 text-black/50 transition-transform duration-200 shrink-0 ml-1 ${providerDropdownOpen ? "rotate-180" : ""
+                  className={`w-4 h-4 text-foreground/50 transition-transform duration-200 shrink-0 ml-1 ${providerDropdownOpen ? "rotate-180" : ""
                     }`}
                 />
               </button>
@@ -605,7 +601,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
                     transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                     className="overflow-hidden"
                   >
-                    <div className="rounded-b-2xl border border-t-0 p-2 scrollbar-none max-h-48 overflow-y-auto overscroll-contain space-y-1.5">
+                    <div className="rounded-b-2xl border border-foreground/20 border-t-0 p-2 scrollbar-none max-h-48 overflow-y-auto overscroll-contain space-y-1.5 bg-background/20 backdrop-blur-md">
                       {PROVIDERS.map((provider) => {
                         const isSelected = selectedProviderName === provider.name;
                         return (
@@ -614,10 +610,10 @@ export default function Settings({ settings: initialSettings }: { settings: User
                             type="button"
                             whileTap={{ scale: 0.98 }}
                             onClick={() => handleProviderSelect(provider.name)}
-                            className={`w-full flex px-3 py-2 items-center gap-2.5 transition-all duration-200 text-left text-black ${
+                            className={`w-full flex px-3 py-2 items-center gap-2.5 transition-all duration-200 text-left text-foreground ${
                               isSelected
-                                ? "border border-dashed border-black/30 bg-white rounded-xl cursor-pointer"
-                                : "hover:bg-black/5 rounded-xl cursor-pointer"
+                                ? "border border-dashed border-foreground/30 bg-foreground/10 rounded-xl cursor-pointer"
+                                : "hover:bg-foreground/10 rounded-xl cursor-pointer"
                             }`}
                           >
                             <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
@@ -631,15 +627,15 @@ export default function Settings({ settings: initialSettings }: { settings: User
                               />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <div className="text-xs font-semibold text-black truncate">
+                              <div className="text-xs font-semibold text-foreground truncate">
                                 {provider.name}
                               </div>
-                              <div className="text-[9px] truncate text-black/50 font-normal">
+                              <div className="text-[9px] truncate text-foreground/50 font-normal">
                                 {provider.description || provider.name}
                               </div>
                             </div>
                             {isSelected && (
-                              <Check className="size-3.5 text-green-600 shrink-0" strokeWidth={2.5} />
+                              <Check className="size-3.5 text-green-400 shrink-0" strokeWidth={2.5} />
                             )}
                           </motion.button>
                         );
@@ -659,7 +655,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
               title="Model Identifier"
               value={name}
               onChange={(e) => setname(e.target.value)}
-              className="w-full rounded-lg border px-2.5 py-2 font-mono text-xs text-black placeholder:text-black/40 outline-none"
+              className="w-full rounded-lg border border-foreground/20 bg-foreground/5 px-2.5 py-2 font-mono text-xs text-foreground placeholder:text-foreground/40 outline-none focus:border-foreground/40"
             />
           </div>
 
@@ -671,13 +667,13 @@ export default function Settings({ settings: initialSettings }: { settings: User
               title="API Key"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              className="w-full rounded-lg border pl-2.5 pr-8 py-2 font-mono text-xs text-black placeholder:text-black/40 outline-none"
+              className="w-full rounded-lg border border-foreground/20 bg-foreground/5 pl-2.5 pr-8 py-2 font-mono text-xs text-foreground placeholder:text-foreground/40 outline-none focus:border-foreground/40"
             />
             <button
               type="button"
               onClick={() => setShowApiKey(!showApiKey)}
               title={showApiKey ? "Hide API key" : "Show API key"}
-              className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-black/50 hover:text-black"
+              className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-foreground/50 hover:text-foreground"
             >
               {showApiKey ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
             </button>
@@ -690,7 +686,7 @@ export default function Settings({ settings: initialSettings }: { settings: User
               title="Logo URL (optional)"
               value={logo}
               onChange={(e) => setLogo(e.target.value)}
-              className="w-full rounded-lg border px-2.5 py-2 text-xs text-black placeholder:text-black/40 outline-none"
+              className="w-full rounded-lg border border-foreground/20 bg-foreground/5 px-2.5 py-2 text-xs text-foreground placeholder:text-foreground/40 outline-none focus:border-foreground/40"
             />
           </div>
         </form>

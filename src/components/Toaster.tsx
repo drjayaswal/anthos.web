@@ -43,15 +43,15 @@ export const Toaster = () => {
                 damping: 30,
                 mass: 1
               }}
-              className="pointer-events-auto flex items-center gap-3 overflow-hidden bg-white border-black/30 border pl-4 pr-3 py-2.5 border-dashed rounded-2xl min-w-70"
+              className="pointer-events-auto flex items-center gap-3 overflow-hidden bg-transparent border-foreground/30 border pl-4 pr-3 py-2.5 border-dashed rounded-2xl min-w-70"
             >
-              <p className="text-black text-sm tracking-tight z-10 flex-1">
+              <p className="text-foreground text-sm tracking-tight z-10 flex-1">
                 {t.message}
               </p>
 
               <button
                 onClick={() => toast.remove(t.id)}
-                className="ml-auto text-black hover:text-red-600 opacity-50 hover:opacity-100 mr-1 transition-colors cursor-pointer z-10"
+                className="ml-auto text-foreground hover:text-white hover:bg-red-600 transition-all duration-200 rounded-full p-1! opacity-50 hover:opacity-100 mr-1 transition-colors cursor-pointer z-10"
               >
                 <XIcon className='w-4 h-4' />
               </button>

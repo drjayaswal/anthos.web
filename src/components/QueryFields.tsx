@@ -67,7 +67,7 @@ function FlagRow({
     <div
       ref={rowRef}
       className={cn(
-        'rounded-lg border bg-white transition-all duration-200 overflow-hidden'
+        'rounded-lg bg-foreground/10 transition-all duration-200 overflow-hidden'
       )}
     >
       <div
@@ -84,7 +84,7 @@ function FlagRow({
           <Label
             htmlFor={id}
             onClick={(e) => e.stopPropagation()}
-            className="cursor-pointer text-xs font-medium text-black select-none"
+            className="cursor-pointer text-xs font-medium text-foreground select-none"
           >
             {label}
           </Label>
@@ -96,7 +96,7 @@ function FlagRow({
               e.stopPropagation();
               setIsOpen((prev) => !prev);
             }}
-            className="p-1 -m-1 rounded-full cursor-pointer flex items-center justify-center transition-colors outline-none text-black/40 hover:text-black/80"
+            className="p-1 -m-1 rounded-full cursor-pointer flex items-center justify-center transition-colors outline-none text-foreground/40 hover:text-foreground/80"
             title={isOpen ? 'Hide info' : 'Show info'}
             aria-label={`Info about ${label}`}
             aria-expanded={isOpen}
@@ -104,7 +104,7 @@ function FlagRow({
             <ChevronDown
               className={cn(
                 'h-3 w-3 transition-transform duration-200 shrink-0',
-                isOpen ? 'rotate-180 text-black' : 'text-black/40'
+                isOpen ? 'rotate-180 text-foreground' : 'text-foreground/40'
               )}
             />
           </button>
@@ -123,7 +123,7 @@ function FlagRow({
             >
               <div
                 onClick={(e) => e.stopPropagation()}
-                className="px-2.5 py-2 text-[10px] text-black/50 leading-relaxed font-normal select-none"
+                className="px-2.5 py-2 text-[10px] text-foreground/50 leading-relaxed font-normal select-none"
               >
                 <p>{tip}</p>
               </div>
@@ -203,7 +203,7 @@ function Counter({
     <div className="flex items-center gap-2">
       <button
         type="button"
-        className={`h-6 w-6 rounded-lg bg-white ${value <= min || "border"} text-black flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none`}
+        className={`h-6 w-6 rounded-lg ${value <= min ? "text-background" : "text-foreground"} flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none`}
         onMouseDown={handleMinusStart}
         onTouchStart={handleMinusStart}
         onMouseUp={handleMinusEnd}
@@ -213,10 +213,10 @@ function Counter({
       >
         <Minus className="h-3 w-3" />
       </button>
-      <span className="w-5 text-center font-mono text-xs font-semibold text-black select-none">{value}</span>
+      <span className="w-5 text-center font-mono text-xs font-semibold text-foreground select-none">{value}</span>
       <button
         type="button"
-        className={`h-6 w-6 rounded-lg bg-white ${value >= max || "border"} text-black flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none`}
+        className={`h-6 w-6 rounded-lg ${value >= max ? "text-background" : "text-foreground"} flex items-center justify-center cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none select-none`}
         onMouseDown={handlePlusStart}
         onTouchStart={handlePlusStart}
         onMouseUp={handlePlusEnd}
@@ -256,14 +256,14 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
     <div className="space-y-3">
       {p.setProvider && (
         <div className="space-y-1.5" ref={providerDropdownRef}>
-          <label className="sm:hidden block text-[10px] font-medium text-black/60 uppercase tracking-wide">
+          <label className="sm:hidden block text-[10px] font-medium text-foreground/60 uppercase tracking-wide">
             Service Provider
           </label>
           <div className="relative">
             <button
               type="button"
               onClick={() => setProviderDropdownOpen((prev) => !prev)}
-              className={`w-full flex items-center justify-between p-2.5 ${providerDropdownOpen && 'rounded-b-none border-b-0'} rounded-2xl bg-white border transition cursor-pointer text-left`}
+              className={`w-full flex items-center justify-between p-2.5 ${providerDropdownOpen && 'rounded-b-none'} transition cursor-pointer text-left`}
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
@@ -277,16 +277,16 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
                   />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-black truncate">
+                  <p className="text-xs font-semibold text-foreground truncate">
                     {currentProvider.name}
                   </p>
-                  <p className="text-[9px] text-black/50 truncate font-normal">
+                  <p className="text-[9px] text-foreground/50 truncate font-normal">
                     {currentProvider.description}
                   </p>
                 </div>
               </div>
               <ChevronDown
-                className={`w-4 h-4 text-black/50 transition-transform duration-200 shrink-0 ml-1 ${
+                className={`w-4 h-4 text-foreground/50 transition-transform duration-200 shrink-0 ml-1 ${
                   providerDropdownOpen ? 'rotate-180' : ''
                 }`}
               />
@@ -301,7 +301,7 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   className="overflow-hidden"
                 >
-                  <div className="rounded-b-2xl border border-t-0 p-2 scrollbar-none max-h-48 overflow-y-auto overscroll-contain space-y-1.5">
+                  <div className="rounded-2xl bg-foreground/10 p-2 scrollbar-none max-h-48 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] overflow-y-auto overscroll-contain space-y-1.5">
                     {EMAIL_PROVIDERS.map((prov) => {
                       const isSelected = currentProviderId === prov.id;
                       const isGoogle = prov.id === 'google';
@@ -318,12 +318,12 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
                               setProviderDropdownOpen(false);
                             }
                           }}
-                          className={`w-full flex px-3 py-2 items-center gap-2.5 transition-all duration-200 text-left text-black ${
+                          className={`w-full flex px-3 py-2 items-center gap-2.5 transition-all duration-200 text-left text-foreground ${
                             !isGoogle
                               ? 'opacity-40 cursor-not-allowed rounded-xl'
                               : isSelected
-                                ? 'border border-dashed border-black/30 bg-white rounded-xl cursor-pointer'
-                                : 'hover:bg-black/5 rounded-xl cursor-pointer'
+                                ? 'bg-foreground/15 rounded-xl cursor-pointer'
+                                : 'hover:bg-foreground/10 rounded-xl cursor-pointer'
                           }`}
                         >
                           <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
@@ -337,17 +337,17 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
                             />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="text-xs font-semibold text-black truncate">
+                            <div className="text-xs font-semibold text-foreground truncate">
                               {prov.name}
                             </div>
-                            <div className="text-[9px] truncate text-black/50 font-normal">
+                            <div className="text-[9px] truncate text-foreground/50 font-normal">
                               {prov.description}
                             </div>
                           </div>
                           {isGoogle ? (
-                            <Check className="size-3.5 text-green-600 shrink-0" strokeWidth={2.5} />
+                            <Check className="size-3.5 text-foreground shrink-0" strokeWidth={2.5} />
                           ) : (
-                            <Ban className="size-3.5 text-red-600 shrink-0" strokeWidth={2} />
+                            <Ban className="size-3.5 text-foreground shrink-0" strokeWidth={2} />
                           )}
                         </motion.button>
                       );
@@ -361,18 +361,18 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
       )}
 
       <div className="space-y-2">
-        <div className="px-3 py-2 flex items-center justify-between rounded-xl border">
-          <Label className="text-xs font-medium text-black/80">Emails Count</Label>
+        <div className="px-3 py-2 flex items-center justify-between">
+          <Label className="text-xs font-medium text-foreground/80">Emails Count</Label>
           <Counter value={p.count} min={1} max={10} onChange={p.setCount} />
         </div>
-        <div className="px-3 py-2 flex items-center justify-between rounded-xl border">
-          <Label className="text-xs font-medium text-black/80">Lookback Days</Label>
+        <div className="px-3 py-2 flex items-center justify-between">
+          <Label className="text-xs font-medium text-foreground/80">Lookback Days</Label>
           <Counter value={p.days} min={1} max={7} onChange={p.setDays} />
         </div>
       </div>
 
       <div className="space-y-1.5 pt-1">
-        <label className="sm:hidden block text-[10px] font-medium text-black/60 uppercase tracking-wide">
+        <label className="sm:hidden block text-[10px] font-medium text-foreground/60 uppercase tracking-wide">
           Status &amp; Flags
         </label>
         <div className="grid grid-cols-2 gap-2 items-start">
@@ -413,8 +413,8 @@ export function CloudQueryFields(p: CloudQueryFieldsProps) {
 export function DatabaseQueryFields(p: DatabaseQueryFieldsProps) {
   return (
     <div className="space-y-3">
-      <div className="px-3 py-2 flex items-center justify-between border rounded-xl">
-        <Label className="text-xs font-medium text-black/80">Emails Count</Label>
+      <div className="px-3 py-2 flex items-center justify-between rounded-xl">
+        <Label className="text-xs font-medium text-foreground/80">Emails Count</Label>
         <Counter value={p.count} min={1} max={10} onChange={p.setCount} />
       </div>
     </div>

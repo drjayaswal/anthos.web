@@ -3,10 +3,10 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Sparkles,
   CloudDownload,
   DatabaseBackup,
   Inbox,
+  SearchXIcon,
 } from 'lucide-react';
 import {
   Table,
@@ -26,18 +26,18 @@ import type { MailInboxTab } from './MailInboxTabs';
 const HOLD_MS = 450;
 
 const CATEGORY_BADGE_COLORS = [
-  'bg-purple-600/10 text-purple-700',
-  'bg-indigo-600/10 text-indigo-700',
-  'bg-blue-600/10 text-blue-700',
-  'bg-emerald-600/10 text-emerald-700',
-  'bg-rose-600/10 text-rose-700',
-  'bg-amber-600/10 text-amber-700',
-  'bg-cyan-600/10 text-cyan-700',
-  'bg-teal-600/10 text-teal-700',
-  'bg-fuchsia-600/10 text-fuchsia-700',
-  'bg-violet-600/10 text-violet-700',
-  'bg-orange-600/10 text-orange-700',
-  'bg-pink-600/10 text-pink-700',
+  'bg-purple-600/10 text-purple-600',
+  'bg-indigo-600/10 text-indigo-600',
+  'bg-blue-600/10 text-blue-600',
+  'bg-emerald-600/10 text-emerald-600',
+  'bg-rose-600/10 text-rose-600',
+  'bg-amber-600/10 text-amber-600',
+  'bg-cyan-600/10 text-cyan-600',
+  'bg-teal-600/10 text-teal-600',
+  'bg-fuchsia-600/10 text-fuchsia-600',
+  'bg-violet-600/10 text-violet-600',
+  'bg-orange-600/10 text-orange-600',
+  'bg-pink-600/10 text-pink-600',
 ];
 
 const categoryColorRegistry = new Map<string, string>();
@@ -111,6 +111,7 @@ export default function MailTable({
 }: MailTableProps) {
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdFired = useRef(false);
+  const legendRef = useRef<HTMLDivElement>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; mail: Mail } | null>(null);
   const allSelected =
     selectable &&
@@ -183,17 +184,17 @@ export default function MailTable({
   if (!loading && mails.length === 0) {
     return (
       <div data-tour="empty-state-card" className="w-full flex flex-col items-center justify-center py-12 sm:py-16 px-4 text-center">
-        <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center mb-4">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center text-foreground justify-center mb-4">
           {activeTab === 'encrypted' ? (
-            <DatabaseBackup className="w-6 h-6 sm:w-10 sm:h-10 text-pink-500" />
+            <svg className="w-6 h-6 sm:w-10 sm:h-10" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m17 17 5 5" /><path d="M19.323 13.744A9 3 0 0 0 21 12" /><path d="M21 13.127V5" /><path d="m22 17-5 5" /><path d="M3 12A9 3 0 0 0 13.563 14.954" /><path d="M3 5V19A9 3 0 0 0 13 21.981" /><ellipse cx="12" cy="5" rx="9" ry="3" /></svg>
           ) : activeTab === 'analyzed' ? (
-            <Sparkles className="w-6 h-6 sm:w-10 sm:h-10 text-sky-500" />
+            <SearchXIcon className="w-6 h-6 sm:w-10 sm:h-10" />
           ) : (
-            <Inbox className="w-6 h-6 sm:w-10 sm:h-10 text-green-600" />
+            <Inbox className="w-6 h-6 sm:w-10 sm:h-10" />
           )}
         </div>
 
-        <h3 className="text-base sm:text-lg font-bold text-black tracking-tight mb-1.5">
+        <h3 className="text-base sm:text-lg font-bold text-foreground tracking-tight mb-1.5">
           {activeTab === 'encrypted'
             ? 'No Encrypted Mails Loaded'
             : activeTab === 'analyzed'
@@ -201,7 +202,7 @@ export default function MailTable({
               : 'Your Inbox is Ready'}
         </h3>
 
-        <p className="text-xs sm:text-sm text-black/60 max-w-md leading-relaxed mb-5">
+        <p className="text-xs sm:text-sm text-foreground/60 max-w-md leading-relaxed mb-5">
           {activeTab === 'encrypted'
             ? 'Load your securely stored emails from database with AES-256 client-side decryption.'
             : activeTab === 'analyzed'
@@ -233,179 +234,188 @@ export default function MailTable({
   }
 
   return (
-    <div className="w-full sm:m-0 mt-5 space-y-3 overflow-x-auto no-scrollbar">
-      {mails.length > 0 && !loading && (
-        <div className="flex items-center gap-2 overflow-x-auto py-1 px-1 no-scrollbar select-none">
-          {SENDER_CATEGORY_RULES.map((rule) => (
-            <div
-              key={rule.label}
-              title={`${rule.label}: ${rule.description}`}
-              className="flex items-center gap-1.5 shrink-0 text-[10px] cursor-help"
-            >
-              <span className={cn('px-1.5 py-0.2 rounded font-semibold text-[9px]', rule.className)}>
-                {rule.label}
-              </span>
-              <span className="text-black/50 text-[10px] truncate max-w-36 font-mono">
-                {rule.description}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="w-full sm:m-0 mt-5 space-y-3">
+      <AnimatePresence>
+        <motion.div
+          data-legend-panel
+          initial={{ opacity: 0, y: -6, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -6, scale: 0.98 }}
+          transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full bg-background p-2 select-none"
+        >
+          <div className="flex flex-wrap gap-2">
+            {SENDER_CATEGORY_RULES.map((rule) => (
+              <div
+                key={rule.label}
+                className="flex items-center gap-1"
+              >
+                <span className={cn('shrink-0 px-1.5 py-0.5 rounded font-bold text-[9px] tracking-wide', rule.className)}>
+                  {rule.label}
+                </span>
+                <span className="text-[10px] text-foreground font-mono leading-tight">
+                  {rule.description}
+                </span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </AnimatePresence>
+      <div className="w-full overflow-x-auto no-scrollbar">
+        {loading || <Table className="w-full min-w-125 sm:min-w-full table-fixed text-left!">
+          <TableHeader>
+            <TableRow className="border-b hover:bg-transparent">
+              {selectable ? (
+                <TableHead className="w-10 sm:w-12 px-2 sm:px-3 text-center">
+                  <div className="flex items-center justify-center">
+                    <Checkbox checked={allSelected}
+                      onCheckedChange={() => onToggleAll?.()} aria-label="Select all" />
+                  </div>
+                </TableHead>
+              ) : null}
+              {mails.length !== 0 &&
+                <>
+                  <TableHead className={cn(colWidths.origin, "px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-foreground font-semibold")}>Origin</TableHead>
+                  <TableHead className={cn(colWidths.subject, "px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-foreground font-semibold")}>Subject</TableHead>
+                  <TableHead className={cn(colWidths.description, "px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-foreground font-semibold")}>Description</TableHead>
+                  <TableHead className={cn(colWidths.time, "px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-foreground font-semibold")}>Time</TableHead>
+                </>
+              }
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <AnimatePresence mode="popLayout">
+              {loading ? (
+                null
+              ) : (
+                mails.map((mail) => {
+                  const selected = selectedIds?.has(mail.id) ?? false;
+                  const isAnyMailSelected = (selectedIds?.size ?? 0) > 0;
+                  const category = getSenderCategory(mail.sender);
 
-      {loading || <Table className="w-full min-w-125 sm:min-w-full table-fixed text-left!">
-        <TableHeader>
-          <TableRow className="border-b hover:bg-transparent">
-            {selectable ? (
-              <TableHead className="w-10 sm:w-12 px-2 sm:px-3 text-center">
-                <div className="flex items-center justify-center">
-                  <Checkbox checked={allSelected}
-                    onCheckedChange={() => onToggleAll?.()} aria-label="Select all" />
-                </div>
-              </TableHead>
-            ) : null}
-            {mails.length !== 0 &&
-              <>
-                <TableHead className={cn(colWidths.origin, "px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold")}>Origin</TableHead>
-                <TableHead className={cn(colWidths.subject, "px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold")}>Subject</TableHead>
-                <TableHead className={cn(colWidths.description, "px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold")}>Description</TableHead>
-                <TableHead className={cn(colWidths.time, "px-2 text-[10px] sm:text-[12px] uppercase tracking-wider sm:tracking-widest text-black font-semibold")}>Time</TableHead>
-              </>
-            }
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <AnimatePresence mode="popLayout">
-            {loading ? (
-              null
-            ) : (
-              mails.map((mail) => {
-                const selected = selectedIds?.has(mail.id) ?? false;
-                const isAnyMailSelected = (selectedIds?.size ?? 0) > 0;
-                const category = getSenderCategory(mail.sender);
+                  return (
+                    <motion.tr
+                      layout
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      key={mail.id}
+                      className={cn(
+                        'group cursor-pointer rounded-xl transition-colors text-foreground hover:bg-black/5'
+                      )}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const x = Math.min(e.clientX, window.innerWidth - 240);
+                        const y = Math.min(e.clientY, window.innerHeight - 180);
+                        setContextMenu({ x, y, mail });
+                      }}
+                      onPointerDown={() => startHold(mail)}
+                      onPointerUp={() => clearHold()}
+                      onPointerLeave={() => clearHold()}
+                      onPointerCancel={() => clearHold()}
+                      onClick={() => {
+                        if (holdFired.current) {
+                          holdFired.current = false;
+                          return;
+                        }
 
-                return (
-                  <motion.tr
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    key={mail.id}
-                    className={cn(
-                      'group cursor-pointer rounded-xl transition-colors text-black hover:bg-black/5'
-                    )}
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      const x = Math.min(e.clientX, window.innerWidth - 240);
-                      const y = Math.min(e.clientY, window.innerHeight - 180);
-                      setContextMenu({ x, y, mail });
-                    }}
-                    onPointerDown={() => startHold(mail)}
-                    onPointerUp={() => clearHold()}
-                    onPointerLeave={() => clearHold()}
-                    onPointerCancel={() => clearHold()}
-                    onClick={() => {
-                      if (holdFired.current) {
-                        holdFired.current = false;
-                        return;
-                      }
-
-                      if (isAnyMailSelected) {
-                        onToggleSelect?.(mail.id);
-                      } else {
-                        onMailClick(mail);
-                      }
-                    }}
-                  >
-                    {selectable && !loading ? (
-                      <TableCell className="w-10 sm:w-12 px-2 sm:px-3 py-2.5 sm:py-3.5" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-center">
-                          <Checkbox
-                            checked={selected}
-                            onCheckedChange={() => onToggleSelect?.(mail.id)}
-                            aria-label={`Select ${mail.subject}`}
-                          />
-                        </div>
-                      </TableCell>
-                    ) : null}
-                    <TableCell className={cn(colWidths.origin, "px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden")}>
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <span className={cn("inline-flex shrink-0 rounded-2xl items-center p-1 leading-none", mail.status === "unread" ? "bg-red-600 text-white" : "bg-green-600 text-white")}/>
-                        <span className="truncate font-semibold text-black/75" title={mail.sender}>
-                          {mail.sender.split('<')[0].trim() || mail.sender}
-                        </span>
-                        {category && (!mail.category || category.label.toLowerCase() !== mail.category.toLowerCase()) && (
-                          <span
-                            className={cn(
-                              'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-medium leading-none',
-                              category.className
-                            )}
-                          >
-                            {category.label}
+                        if (isAnyMailSelected) {
+                          onToggleSelect?.(mail.id);
+                        } else {
+                          onMailClick(mail);
+                        }
+                      }}
+                    >
+                      {selectable && !loading ? (
+                        <TableCell className="w-10 sm:w-12 px-2 sm:px-3 py-2.5 sm:py-3.5" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex items-center justify-center">
+                            <Checkbox
+                              checked={selected}
+                              onCheckedChange={() => onToggleSelect?.(mail.id)}
+                              aria-label={`Select ${mail.subject}`}
+                            />
+                          </div>
+                        </TableCell>
+                      ) : null}
+                      <TableCell className={cn(colWidths.origin, "px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden")}>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className={cn("inline-flex shrink-0 rounded-2xl items-center p-1 leading-none", mail.status === "unread" ? "bg-red-600 text-white" : "bg-green-600 text-white")} />
+                          <span className="truncate font-semibold text-foreground" title={mail.sender}>
+                            {mail.sender.split('<')[0].trim() || mail.sender}
                           </span>
-                        )}
-                        {mail.category && (
-                          <span
-                            className={cn(
-                              'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-medium leading-none',
-                              getCategoryBadgeColor(mail.category)
-                            )}
-                          >
-                            {mail.category}
-                          </span>
-                        )}
-                        {mail.priority_score !== undefined && mail.priority_score !== null && (() => {
-                          const pct = (mail.priority_score * 100) / 10;
-                          return (
+                          {category && (!mail.category || category.label.toLowerCase() !== mail.category.toLowerCase()) && (
                             <span
-                              title={`Priority: ${pct.toFixed(0)}%`}
                               className={cn(
-                                'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-mono font-medium leading-none',
-                                getPriorityBadgeColor(pct)
+                                'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-medium leading-none',
+                                category.className
                               )}
                             >
-                              {pct % 1 === 0 ? `${pct.toFixed(0)}%` : `${pct.toFixed(1)}%`}
+                              {category.label}
                             </span>
-                          );
-                        })()}
-                      </div>
-                    </TableCell>
-                    <TableCell className={cn(colWidths.subject, "px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden")}>
-                      <span className="block truncate font-semibold text-black/75">{mail.subject}</span>
-                      <div className="block md:hidden mt-0.5 text-[11px] text-black/55 truncate">
-                        {generatingDescriptions && !mail.description && !mail.summary ? (
-                          <div className="h-3 w-3/4 animate-pulse rounded bg-black/10 mt-1" />
-                        ) : (
-                          <span>{mail.summary || mail.description || formatEmailContent(mail.body)}</span>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className={cn(colWidths.description, "px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden")}>
-                      {generatingDescriptions && !mail.description && !mail.summary ? (
-                        <div className="flex items-center">
-                          <div className="h-3.5 w-4/5 animate-pulse rounded-md bg-black/10" />
+                          )}
+                          {mail.category && (
+                            <span
+                              className={cn(
+                                'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-medium leading-none',
+                                getCategoryBadgeColor(mail.category)
+                              )}
+                            >
+                              {mail.category}
+                            </span>
+                          )}
+                          {mail.priority_score !== undefined && mail.priority_score !== null && (() => {
+                            const pct = (mail.priority_score * 100) / 10;
+                            return (
+                              <span
+                                title={`Priority: ${pct.toFixed(0)}%`}
+                                className={cn(
+                                  'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-mono font-medium leading-none',
+                                  getPriorityBadgeColor(pct)
+                                )}
+                              >
+                                {pct % 1 === 0 ? `${pct.toFixed(0)}%` : `${pct.toFixed(1)}%`}
+                              </span>
+                            );
+                          })()}
                         </div>
-                      ) : (
-                        <span
-                          className="block truncate font-normal text-black/50"
-                          title={mail.summary || mail.description || mail.body}
-                        >
-                          {mail.summary || mail.description || formatEmailContent(mail.body)}
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className={cn(colWidths.time, "px-2 py-2.5 text-[10px] text-black/75 sm:py-3.5 sm:text-xs")}>
-                      {new Date(mail.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                    </TableCell>
-                  </motion.tr>
-                );
-              })
-            )}
-          </AnimatePresence>
-        </TableBody>
-      </Table>
-      }
+                      </TableCell>
+                      <TableCell className={cn(colWidths.subject, "px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden")}>
+                        <span className="block truncate font-semibold text-foreground">{mail.subject}</span>
+                        <div className="block md:hidden mt-0.5 text-[11px] text-foreground truncate">
+                          {generatingDescriptions && !mail.description && !mail.summary ? (
+                            <div className="h-3 w-3/4 animate-pulse rounded bg-foreground/10 mt-1" />
+                          ) : (
+                            <span>{mail.summary || mail.description || formatEmailContent(mail.body)}</span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className={cn(colWidths.description, "px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden")}>
+                        {generatingDescriptions && !mail.description && !mail.summary ? (
+                          <div className="flex items-center">
+                            <div className="h-3.5 w-4/5 animate-pulse rounded-md bg-foreground/10" />
+                          </div>
+                        ) : (
+                          <span
+                            className="block truncate font-normal text-foreground"
+                            title={mail.summary || mail.description || mail.body}
+                          >
+                            {mail.summary || mail.description || formatEmailContent(mail.body)}
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className={cn(colWidths.time, "px-2 py-2.5 text-[10px] text-foreground sm:py-3.5 sm:text-xs")}>
+                        {new Date(mail.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      </TableCell>
+                    </motion.tr>
+                  );
+                })
+              )}
+            </AnimatePresence>
+          </TableBody>
+        </Table>
+        }
+      </div>
 
       <AnimatePresence>
         {contextMenu && (
@@ -415,7 +425,7 @@ export default function MailTable({
             exit={{ opacity: 0, scale: 0.95, y: -4 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
             style={{ left: contextMenu.x, top: contextMenu.y }}
-            className="fixed z-70 w-40 rounded-lg rounded-tl-none bg-white backdrop-blur-2xl border border-gray-200/80 shadow-md p-1.5 ring-1 ring-black/5 flex flex-col gap-0.5 text-zinc-800"
+            className="fixed z-70 w-40 rounded-lg rounded-tl-none bg-background backdrop-blur-2xl border border-foreground/30 shadow-md p-1.5 ring-1 ring-black/5 flex flex-col gap-0.5 text-zinc-800"
             onClick={(e) => e.stopPropagation()}
           >
             {hasCategories && (
@@ -427,10 +437,10 @@ export default function MailTable({
                     setContextMenu(null);
                     onInsightMail?.(targetMail);
                   }}
-                  className="group flex w-full items-center justify-between px-3 py-2 rounded-md text-xs font-medium hover:bg-black/5 cursor-pointer"
+                  className="group flex w-full items-center justify-between px-3 py-2 rounded-md text-xs font-medium hover:bg-foreground/5 cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="text-black">Insight</span>
+                    <span className="text-foreground">Insight</span>
                   </div>
                 </button>
                 <button
@@ -440,10 +450,10 @@ export default function MailTable({
                     setContextMenu(null);
                     onAnalyzeMail?.(targetMail);
                   }}
-                  className="group flex w-full items-center justify-between px-3 py-2 rounded-md text-xs font-medium hover:bg-black/5 cursor-pointer"
+                  className="group flex w-full items-center justify-between px-3 py-2 rounded-md text-xs font-medium hover:bg-foreground/5 cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="text-black">Analysis</span>
+                    <span className="text-foreground">Analysis</span>
                   </div>
                 </button>
               </>
@@ -456,9 +466,9 @@ export default function MailTable({
                 setContextMenu(null);
                 onStoreEncryptedMail?.(targetMail);
               }}
-              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium hover:bg-black/5 cursor-pointer"
+              className="group flex w-full items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium hover:bg-foreground/5 cursor-pointer"
             >
-              <span className="text-black">Store</span>
+              <span className="text-foreground">Store</span>
             </button>
           </motion.div>
         )}

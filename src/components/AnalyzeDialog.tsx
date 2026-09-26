@@ -127,12 +127,12 @@ export default function AnalyzeDialog({
             <Checkbox
               id="confirm-analyze"
               checked={confirmed}
-              className="data-checked:bg-sky-600 data-checked:border-sky-600"
+              className="border-foreground/40 data-checked:bg-background data-checked:border-background"
               onCheckedChange={(c) => setConfirmed(c === true)}
             />
             <Label
               htmlFor="confirm-analyze"
-              className="cursor-pointer text-xs font-medium text-black select-none"
+              className="cursor-pointer text-xs font-medium text-foreground select-none"
             >
               Confirm
             </Label>
@@ -143,22 +143,17 @@ export default function AnalyzeDialog({
             form="analyze-form"
             disabled={!confirmed || isSubmitDisabled || loadingModels}
             className={cn(
-              'flex disabled:cursor-not-allowed items-center justify-center gap-2 px-3.5 py-2 cursor-pointer rounded-lg text-xs font-medium transition-all duration-200 border select-none outline-none',
-              (!confirmed || isSubmitDisabled || loadingModels) && 'text-black/30'
+              'flex disabled:cursor-not-allowed items-center justify-center gap-2 px-3.5 py-2 cursor-pointer rounded-lg text-xs font-medium transition-all duration-200 border border-dashed select-none outline-none text-foreground border-foreground/40',
+              (!confirmed || isSubmitDisabled || loadingModels) && 'opacity-30'
             )}
           >
             <span>
               Analyze {selectedCount > 1 ? "Mails" : "Mail"}
             </span>
             {loadingModels ? (
-              <Loader2 className="w-3.5 h-3.5 text-sky-600 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 text-foreground animate-spin" />
             ) : (
-              <Check
-                className={cn(
-                  'w-3.5 h-3.5 transition-colors',
-                  confirmed ? 'text-sky-600' : 'text-black/30'
-                )}
-              />
+              <Check className="w-3.5 h-3.5 text-foreground transition-colors" />
             )}
           </button>
         </div>
@@ -166,17 +161,14 @@ export default function AnalyzeDialog({
     >
       <form id="analyze-form" onSubmit={handleSubmit} className="space-y-3">
         <div className="space-y-1.5" ref={dropdownRef}>
-          <div className="flex items-center justify-between">
-            <Label className="text-[11px] font-semibold text-black/90 flex items-center gap-1.5">
-              <span>Select AI Model</span>
-            </Label>
-          </div>
-
+          <label className="sm:hidden block text-[10px] font-medium text-foreground/60 uppercase tracking-wide">
+            AI Model
+          </label>
           <div className="relative">
             <button
               type="button"
               onClick={() => setDropdownOpen((prev) => !prev)}
-              className={`w-full flex items-center justify-between p-2.5 ${dropdownOpen && 'rounded-b-none border-b-0'} rounded-2xl bg-white border transition cursor-pointer text-left`}
+              className={`w-full flex items-center justify-between p-2.5 ${dropdownOpen && 'rounded-b-none'} transition cursor-pointer text-left`}
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
@@ -190,34 +182,34 @@ export default function AnalyzeDialog({
                       className="w-full h-full object-contain"
                     />
                   ) : (
-                    <Bot className="w-4 h-4 text-black/70" />
+                    <Bot className="w-4 h-4 text-foreground/70" />
                   )}
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <p className="text-xs font-semibold text-black truncate">
+                    <p className="text-xs font-semibold text-foreground truncate">
                       {selectedModel.provider}
                     </p>
                     {selectedModel.default ? (
-                      <span className="text-[8px] px-1.5 py-0.5 rounded bg-emerald-600/15 text-emerald-700 font-medium shrink-0">
+                      <span className="text-[8px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium shrink-0">
                         Default
                       </span>
                     ) : (
-                      <span className="text-[8px] px-1.5 py-0.5 rounded bg-blue-600/15 text-blue-700 font-medium shrink-0">
+                      <span className="text-[8px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-medium shrink-0">
                         Custom
                       </span>
                     )}
                   </div>
-                  <p className="text-[9px] text-black/50 truncate font-normal">
+                  <p className="text-[9px] text-foreground/50 truncate font-normal">
                     {selectedModel.name}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 shrink-0 ml-1">
                 {loadingModels && (
-                  <Loader2 className="w-3.5 h-3.5 text-blue-600 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 text-foreground animate-spin" />
                 )}
-                <ChevronDown className={`w-4 h-4 text-black/50 transition-transform duration-200 shrink-0 ${dropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-4 h-4 text-foreground/50 transition-transform duration-200 shrink-0 ${dropdownOpen ? 'rotate-180' : ''}`} />
               </div>
             </button>
 
@@ -231,8 +223,9 @@ export default function AnalyzeDialog({
                   className="overflow-hidden"
                 >
                   <div
-                    className="rounded-b-2xl border border-t-0 p-2 scrollbar-none max-h-48 overflow-y-auto overscroll-contain space-y-1.5"
+                    className="rounded-2xl bg-foreground/10 p-2 scrollbar-none max-h-48 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] overflow-y-auto overscroll-contain space-y-1.5"
                   >
+
                     {availableModels.map((model) => {
                       const isSelected = model.id === selectedModelId;
                       const isDefault = model.default === true;
@@ -245,9 +238,9 @@ export default function AnalyzeDialog({
                           onClick={() => {
                             handleSelectModel(model);
                           }}
-                          className={`w-full flex px-3 py-2 items-center gap-2.5 transition-all duration-200 text-left text-black ${isSelected
-                              ? 'border border-dashed border-black/30 bg-white rounded-xl cursor-pointer'
-                              : 'hover:bg-black/5 rounded-xl cursor-pointer'
+                          className={`w-full flex px-3 py-2 items-center gap-2.5 transition-all duration-200 text-left text-foreground ${isSelected
+                              ? 'bg-foreground/15 rounded-xl cursor-pointer'
+                              : 'hover:bg-foreground/10 rounded-xl cursor-pointer'
                             }`}
                         >
                           <div className="w-7 h-7 flex rounded-4xl items-center justify-center shrink-0 overflow-hidden">
@@ -261,30 +254,30 @@ export default function AnalyzeDialog({
                                 className="w-full h-full object-contain"
                               />
                             ) : (
-                              <Bot className="w-3.5 h-3.5 text-black/70" />
+                              <Bot className="w-3.5 h-3.5 text-foreground/70" />
                             )}
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-semibold text-black block truncate">
+                              <span className="text-xs font-semibold text-foreground block truncate">
                                 {model.provider}
                               </span>
                               {isDefault ? (
-                                <span className="text-[8px] px-1.5 py-0.5 rounded bg-emerald-600/15 text-emerald-700 font-medium shrink-0">
+                                <span className="text-[8px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium shrink-0">
                                   Default
                                 </span>
                               ) : (
-                                <span className="text-[8px] px-1.5 py-0.5 rounded bg-blue-600/15 text-blue-700 font-medium shrink-0">
+                                <span className="text-[8px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-medium shrink-0">
                                   Custom
                                 </span>
                               )}
                             </div>
-                            <span className="text-[9px] text-black/50 block truncate font-normal">
+                            <span className="text-[9px] text-foreground/50 block truncate font-normal">
                               {model.name}
                             </span>
                           </div>
                           {isSelected && (
-                            <Check className="size-3.5 text-blue-600 shrink-0" strokeWidth={2.5} />
+                            <Check className="size-3.5 text-foreground shrink-0" strokeWidth={2.5} />
                           )}
                         </motion.button>
                       );

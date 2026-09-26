@@ -37,22 +37,21 @@ export default function MailInboxTabs({
             type="button"
             onClick={() => onChange(tab.id)}
             className={cn(
-              'relative flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold transition-colors duration-200 cursor-pointer outline-none select-none text-black'
+              'relative flex items-center gap-2 px-3.5 py-2 text-xs font-semibold transition-colors duration-200 cursor-pointer outline-none select-none'
             )}
           >
             {isActive && (
               <motion.div
                 layoutId="active-mail-inbox-tab"
-                className={`absolute inset-0 border-b-2 ${tab.label === "Fetched" ? 'border-green-600' : tab.label === "Analyzed" ? 'border-sky-500' : 'border-pink-500'}`}
+                className="absolute inset-0 border border-dashed border-foreground/50 rounded-xl"
               />
             )}
-            <span className="relative z-10 text-black">{tab.label}</span>
+            <span className="relative z-10 transition-all duration-300 text-foreground">{tab.label}</span>
             {tab.count > 0 && (
               <span
                 className={cn(
-                  'absolute top-0 right-1 z-10 h-2 w-2 -mr-1 text-[10px] p-1 font-bold text-white rounded-full transition-colors duration-200',
-                tab.label === "Fetched" ? 'bg-green-600' : tab.label === "Analyzed" ? 'bg-sky-500' : 'bg-pink-500',
-                !isActive || 'bg-white!'
+                  'absolute -top-0.5 -right-0.5 z-10 h-1 w-1 -mr-1 text-[10px] p-0.75 font-bold text-white rounded-full transition-colors duration-200',
+                !isActive && 'bg-foreground animate-pulse'
                 )}/>
             )}
           </button>

@@ -46,11 +46,9 @@ export default function LoadDialog({
   const handleLoad = () => {
     if (!confirmed || loading) return;
     setLoading(true);
-    timeoutRef.current = setTimeout(() => {
-      onLoadFromDatabase(buildDatabaseQueryOptions(fields, sessionUserId!));
-      onOpenChange(false);
-      setLoading(false);
-    }, 1000);
+    onLoadFromDatabase(buildDatabaseQueryOptions(fields, sessionUserId!));
+    onOpenChange(false);
+    setLoading(false);
   };
 
   return (
@@ -65,12 +63,12 @@ export default function LoadDialog({
             <Checkbox
               id="confirm-load"
               checked={confirmed}
-              className="data-checked:bg-pink-600 data-checked:border-pink-600"
+              className="data-checked:bg-background data-checked:border-background"
               onCheckedChange={(c) => setConfirmed(c === true)}
             />
             <Label
               htmlFor="confirm-load"
-              className="cursor-pointer text-xs font-medium text-black select-none"
+              className="cursor-pointer text-xs font-medium text-foreground select-none"
             >
               Confirm
             </Label>
@@ -81,18 +79,17 @@ export default function LoadDialog({
             onClick={handleLoad}
             disabled={!confirmed || loading}
             className={cn(
-              'flex disabled:cursor-not-allowed items-center justify-center gap-2 px-3.5 py-2 cursor-pointer rounded-lg text-xs font-medium transition-all duration-200 border select-none outline-none',
-              (!confirmed || loading) && 'text-black/30'
+              'flex disabled:cursor-not-allowed items-center justify-center gap-2 px-3.5 py-2 cursor-pointer rounded-lg text-xs font-medium transition-all duration-200 border border-dashed border-foreground/50 select-none outline-none',
+              (!confirmed || loading) && 'text-foreground/30'
             )}
           >
             <span>Continue</span>
             {loading ? (
-              <Loader2 className="w-3.5 h-3.5 text-pink-600 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 text-foreground animate-spin" />
             ) : (
               <CheckIcon
                 className={cn(
-                  'w-3.5 h-3.5 transition-colors',
-                  confirmed ? 'text-pink-600' : 'text-black/30'
+                  'w-3.5 h-3.5 transition-colors text-foreground'
                 )}
               />
             )}

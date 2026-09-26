@@ -43,17 +43,17 @@ export default function Auth() {
   return (
     <div className="min-h-[94.28vh] flex flex-col items-center justify-center">
       <div className="flex items-center">
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col gap-5 items-center justify-center">
           <Image
             src="/anthos.svg"
             alt="anthos"
             width={100}
             height={100}
             quality={90}
-            style={{ width: '240px', height: 'auto' }}
+            style={{ width: '100px', height: 'auto' }}
             priority
           />
-          <h1 className="text-3xl mb-3 sm:text-4xl md:text-5xl font-bold tracking-tight text-black text-center">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-center">
             Anthos
           </h1>
           <SocialButton
@@ -61,9 +61,9 @@ export default function Auth() {
             theme="brand"
             isLoading={loading}
             onClick={handleGoogleSignIn}
-            className={`bg-white ring-0 ${loading ? 'text-black/40' : 'text-black'}`}
+            className={`ring-0 rounded-4xl bg-transparent ${loading ? 'text-white/40' : 'active:scale-100 shadow-none hover:shadow-md hover:scale-101 hover:bg-white/5 text-white'}`}
           >
-            {loading ? 'Signing in…' : 'Sign in with Google'}
+            {loading ? 'Loading...' : 'Continue with Google'}
           </SocialButton>
         </div>
       </div>

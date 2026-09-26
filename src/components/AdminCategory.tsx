@@ -158,35 +158,35 @@ export default function AdminCategories() {
   };
 
   return (
-    <div className="mx-auto sm:mt-0 mt-10 max-w-3xl px-4 sm:px-6 py-4 sm:py-0 space-y-4 sm:space-y-8">
+    <div className="mx-auto sm:mt-0 mt-10 max-w-3xl px-4 sm:px-6 py-4 sm:py-0 space-y-4 sm:space-y-8 text-foreground">
       <div className="space-y-0.5 sm:space-y-1">
-        <h1 className="text-lg font-semibold tracking-tight text-black sm:text-2xl">Categories</h1>
-        <p className="text-xs text-black/50 sm:text-sm">
+        <h1 className="text-lg font-semibold tracking-tight text-foreground sm:text-2xl">Categories</h1>
+        <p className="text-xs text-foreground/50 sm:text-sm">
           Manage labels used to classify encrypted mail. Changes apply for all users.
         </p>
       </div>
 
-      <section className="p-5 sm:p-5">
-        <h2 className="text-xs font-medium text-black sm:text-sm">
+      <section className="p-5 sm:p-5 rounded-3xl border border-dashed border-foreground/30">
+        <h2 className="text-xs font-medium text-foreground sm:text-sm">
           {editingId ? "Edit category" : "Add category"}
         </h2>
 
         <form onSubmit={handleSubmit} className="mt-3 space-y-3 sm:mt-4 sm:space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2 sm:col-span-1">
-              <Label htmlFor="category-name" className="text-black/70">Name</Label>
+              <Label htmlFor="category-name" className="text-foreground/70">Name</Label>
               <Input
                 id="category-name"
                 required
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 placeholder="Category Name"
-                className="h-9 px-2.5 text-sm text-black bg-transparent! border-0 placeholder:text-black/50 focus:ring-0 sm:h-10 sm:px-3"
+                className="h-9 px-2.5 text-sm text-foreground border border-foreground/20 rounded-xl placeholder:text-foreground/40 focus:ring-0 focus:border-foreground/40 sm:h-10 sm:px-3"
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="category-description" className="text-black/70">
-                Description <span className="font-normal text-black/50">(optional)</span>
+              <Label htmlFor="category-description" className="text-foreground/70">
+                Description <span className="font-normal text-foreground/50">(optional)</span>
               </Label>
               <textarea
                 id="category-description"
@@ -194,7 +194,7 @@ export default function AdminCategories() {
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="What belongs in this category?"
                 rows={2}
-                className="w-full resize-none rounded-xl bg-transparent! border-0 px-2.5 py-1.5 text-xs text-black placeholder:text-black/50 outline-0 sm:px-3 sm:py-2 sm:text-sm"
+                className="w-full resize-none rounded-xl border border-foreground/20 px-2.5 py-1.5 text-xs text-foreground placeholder:text-foreground/40 outline-0 focus:border-foreground/40 sm:px-3 sm:py-2 sm:text-sm"
               />
             </div>
           </div>
@@ -218,7 +218,7 @@ export default function AdminCategories() {
                 type="button"
                 onClick={resetForm}
                 disabled={saving}
-                className="text-red-600!"
+                className="text-red-500 hover:text-white hover:bg-red-600! hover:border-red-600!"
               >
                 <XIcon className="h-4 w-4 sm:block hidden" />
                 <span>Cancel</span>
@@ -229,17 +229,17 @@ export default function AdminCategories() {
       </section>
 
       <section className="space-y-3 sm:space-y-4">
-        <h2 className="text-sm sm:text-base font-semibold tracking-tight text-black">
+        <h2 className="text-sm sm:text-base font-semibold tracking-tight text-foreground">
           All {items.length > 2 ? "Categories" : "Category"} ({items.length > 0 && items.length})
         </h2>
 
         {loading ? (
-          <div className="flex items-center justify-center gap-2 py-8 text-xs text-black sm:py-12 sm:text-sm">
+          <div className="flex items-center justify-center gap-2 py-8 text-xs text-foreground/60 sm:py-12 sm:text-sm">
             <Loader2Icon className="h-4 w-4 animate-spin" />
             Loading…
           </div>
         ) : items.length === 0 ? (
-          <div className="rounded-3xl bg-white border shadow-[inset_0_-3px_6px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] p-6 text-center text-xs text-black sm:text-sm">
+          <div className="rounded-3xl bg-foreground/10 border border-dashed border-foreground/30 p-6 text-center text-xs text-foreground/60 sm:text-sm">
             No categories yet.
           </div>
         ) : (
@@ -250,21 +250,21 @@ export default function AdminCategories() {
                 return (
                   <div
                     key={cat.id}
-                    className={`overflow-hidden relative rounded-3xl bg-white border  p-3.5 sm:px-5 sm:py-3 flex items-center justify-between gap-3 text-black ${
-                      editingId === cat.id ? "border-transparent opacity-50 bg-black/5 shadow-none" : ""
+                    className={`overflow-hidden relative rounded-3xl border border-dashed border-foreground/30 p-3.5 sm:px-5 sm:py-3 flex items-center justify-between gap-3 text-foreground transition-colors hover:border-foreground/45 ${
+                      editingId === cat.id ? "hover:border-transparent border-transparent opacity-50" : ""
                     }`}
                   >
-                    <div className="text-xs sm:text-sm font-semibold text-black/50">
+                    <div className="text-xs sm:text-sm font-semibold text-foreground/50">
                       {itemNumber}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs sm:text-sm font-semibold text-black truncate">
+                        <span className="text-xs sm:text-sm font-semibold text-foreground truncate">
                           {cat.name}
                         </span>
                       </div>
                       {cat.description && (
-                        <p className="text-[11px] sm:text-xs text-black/50 truncate mt-0.5">
+                        <p className="text-[11px] sm:text-xs text-foreground/50 truncate mt-0.5">
                           {cat.description}
                         </p>
                       )}
@@ -285,7 +285,7 @@ export default function AdminCategories() {
                           disabled={deletingId === cat.id}
                           onClick={() => handleDelete(cat.id, cat.name)}
                           aria-label={`Delete ${cat.name}`}
-                          className="text-red-600"
+                          className="text-red-500 hover:text-white hover:bg-red-600! hover:border-red-600!"
                         >
                           {deletingId === cat.id ? (
                             <Loader2Icon className="h-3 w-3 animate-spin" />
@@ -303,7 +303,7 @@ export default function AdminCategories() {
 
             {totalPages > 1 && (
               <div className="flex items-center justify-between pt-1">
-                <span className="text-[11px] sm:text-xs text-black/50 font-mono">
+                <span className="text-[11px] sm:text-xs text-foreground/50 font-mono">
                   Page {safeCurrentPage} of {totalPages}
                 </span>
                 <div className="flex items-center gap-1.5">
@@ -313,7 +313,7 @@ export default function AdminCategories() {
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     title="Previous page"
                     className="border-0"
-                    >
+                  >
                     <ChevronLeft className="h-3.5 w-3.5" />
                     <span>Prev</span>
                   </CustomButton>
@@ -323,7 +323,7 @@ export default function AdminCategories() {
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     title="Next page"
                     className="border-0"
-                    >
+                  >
                     <span>Next</span>
                     <ChevronRight className="h-3.5 w-3.5" />
                   </CustomButton>

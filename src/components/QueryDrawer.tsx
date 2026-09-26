@@ -134,11 +134,7 @@ export default function QueryDrawer({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className={
-              isDesktop
-                ? 'fixed inset-0 z-60'
-                : 'fixed inset-0 z-60 bg-black/20 backdrop-blur-xs'
-            }
+            className="fixed inset-0 z-60 bg-black/25 backdrop-blur-sm"
             onClick={() => onOpenChange(false)}
           />
 
@@ -149,12 +145,12 @@ export default function QueryDrawer({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 32, stiffness: 300, mass: 0.8 }}
-              className="fixed top-0 right-0 bottom-0 z-70 w-80 h-screen bg-white border-l flex flex-col overflow-hidden text-black select-text"
+              className="fixed top-0 right-0 bottom-0 z-70 w-80 h-screen bg-foreground/12 backdrop-blur-md flex flex-col overflow-hidden text-foreground select-text"
             >
-              <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b shrink-0">
+              <div className="flex items-center justify-between px-4 pt-4 pb-3 shrink-0">
                 <div>
-                  <h2 className="text-sm font-semibold text-black">{title}</h2>
-                  <p className="text-[10px] text-black/50">{description}</p>
+                  <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+                  <p className="text-[10px] text-foreground/50">{description}</p>
                 </div>
                 <button
                   type="button"
@@ -170,7 +166,7 @@ export default function QueryDrawer({
               </div>
 
               {footerAction && (
-                <div className="flex items-center justify-end gap-2 px-4 py-3 border-t shrink-0 bg-white">
+                <div className="flex items-center justify-end gap-2 px-4 py-3 shrink-0">
                   {footerAction}
                 </div>
               )}
@@ -186,16 +182,16 @@ export default function QueryDrawer({
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
-              className="fixed bottom-0 left-0 right-0 z-70 w-full max-h-[85vh] rounded-t-4xl bg-white border-t border-border flex flex-col overflow-hidden text-black select-text shadow-2xl"
+              className="fixed bottom-0 left-0 right-0 z-70 w-full max-h-[85vh] rounded-t-4xl bg-foreground/5 backdrop-blur-md border-t border-foreground/15 flex flex-col overflow-hidden text-foreground select-text shadow-2xl"
             >
               <div className="flex shrink-0 justify-center -mt-1 pb-1 cursor-grab active:cursor-grabbing select-none touch-none">
-                <div className="mt-3 h-1.5 w-12 rounded-full bg-black/25" />
+                <div className="mt-3 h-1.5 w-12 rounded-full bg-foreground/30" />
               </div>
 
-              <div className="flex items-center justify-between px-4 pt-2 pb-3 border-b shrink-0">
+              <div className="flex items-center justify-between px-4 pt-2 pb-3 border-b border-foreground/15 shrink-0">
                 <div>
-                  <h2 className="text-sm font-semibold text-black">{title}</h2>
-                  <p className="text-[10px] text-black/50">{description}</p>
+                  <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+                  <p className="text-[10px] text-foreground">{description}</p>
                 </div>
                 <button
                   type="button"
@@ -211,7 +207,7 @@ export default function QueryDrawer({
               </div>
 
               {footerAction && (
-                <div className="flex items-center justify-end gap-2 px-4 py-3 border-t shrink-0 bg-white">
+                <div className="flex items-center justify-end gap-2 px-4 py-3 shrink-0">
                   {footerAction}
                 </div>
               )}

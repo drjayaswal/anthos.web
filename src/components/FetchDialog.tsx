@@ -49,11 +49,9 @@ export default function FetchDialog({
   const handleFetch = () => {
     if (!confirmed || loading) return;
     setLoading(true);
-    timeoutRef.current = setTimeout(() => {
-      onFetchFromCloud(buildCloudQueryOptions(fields));
-      onOpenChange(false);
-      setLoading(false);
-    }, 1000);
+    onFetchFromCloud(buildCloudQueryOptions(fields));
+    onOpenChange(false);
+    setLoading(false);
   };
 
   return (
@@ -68,12 +66,12 @@ export default function FetchDialog({
             <Checkbox
               id="confirm-fetch"
               checked={confirmed}
-              className='data-checked:bg-green-600 data-checked:border-green-600'
+              className='border-foreground/40 data-checked:bg-background data-checked:border-background'
               onCheckedChange={(c) => setConfirmed(c === true)}
             />
             <Label
               htmlFor="confirm-fetch"
-              className="cursor-pointer text-xs font-medium text-black select-none"
+              className="cursor-pointer text-xs font-medium text-foreground select-none"
             >
               Confirm
             </Label>
@@ -84,20 +82,15 @@ export default function FetchDialog({
             onClick={handleFetch}
             disabled={!confirmed || loading}
             className={cn(
-              'flex disabled:cursor-not-allowed items-center justify-center gap-2 px-3.5 py-2 cursor-pointer rounded-lg text-xs font-medium transition-all duration-200 border select-none outline-none',
-              (!confirmed || loading) && "text-black/30"
+              'flex disabled:cursor-not-allowed items-center justify-center gap-2 px-3.5 py-2 cursor-pointer rounded-lg text-xs font-medium transition-all duration-200 border border-dashed select-none outline-none text-foreground border-foreground/40',
+              (!confirmed || loading) && 'opacity-30'
             )}
           >
             <span>Continue</span>
             {loading ? (
-              <Loader2 className="w-3.5 h-3.5 text-green-600 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 text-foreground animate-spin" />
             ) : (
-              <CheckIcon
-                className={cn(
-                  'w-3.5 h-3.5 transition-colors',
-                  confirmed ? 'text-green-600' : 'text-black/30'
-                )}
-              />
+              <CheckIcon className="w-3.5 h-3.5 text-foreground" />
             )}
           </button>
         </div>

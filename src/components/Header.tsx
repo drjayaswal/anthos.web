@@ -7,9 +7,8 @@ import {
   SearchIcon,
   CheckIcon,
   LoaderCircleIcon,
-  MailIcon,
-  Database,
-  DatabaseBackup,
+  MailSearchIcon,
+  DatabaseSearch,
   CircleAlertIcon,
   SettingsIcon,
 } from 'lucide-react';
@@ -38,6 +37,32 @@ interface HeaderProps {
   activeTab?: MailInboxTab;
   selectedAnalyzedCount?: number;
   onStoreAnalyzed?: () => void;
+}
+
+type IconComponent = React.ComponentType<{ className?: string }>;
+
+function DatabaseArrowDownIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="m16 19 3 3 3-3" />
+      <path d="M19 16v6" />
+      <path d="M21 12.536V5" />
+      <path d="M3 12A9 3 0 0 0 15.182 14.806" />
+      <path d="M3 5V19A9 3 0 0 0 13.318 21.968" />
+      <ellipse cx="12" cy="5" rx="9" ry="3" />
+    </svg>
+  );
 }
 
 function useIsDesktop() {
@@ -104,8 +129,20 @@ export default function Header({
 
   const hasSelectedMails = selectedCount > 0;
 
-  const options = useMemo(() => {
-    const list = [];
+  type OptionItem = {
+    id: string;
+    label: string;
+    description: string;
+    show: boolean;
+    active?: boolean;
+    disabled: boolean;
+    icon: IconComponent;
+    iconClassName?: string;
+    onClick: () => void;
+  };
+
+  const options = useMemo<OptionItem[]>(() => {
+    const list: OptionItem[] = [];
 
     if (hasAnalysisProgress) {
       list.push({
@@ -125,10 +162,10 @@ export default function Header({
             ? CheckIcon
             : CircleAlertIcon,
         iconClassName: isAnalysisStreaming
-          ? 'text-green-600 animate-spin'
+          ? 'text-foreground animate-spin'
           : isAnalysisDone
-            ? 'text-green-600'
-            : 'text-red-500',
+            ? 'text-foreground'
+            : 'text-foreground',
         onClick: () => {
           onToggleProgressDrawer?.();
           closeOptions();
@@ -155,11 +192,11 @@ export default function Header({
     if (activeTab === 'analyzed' && selectedAnalyzedCount > 0 && onStoreAnalyzed) {
       list.push({
         id: 'store-analyzed',
-        label: loading ? 'Storing…' : 'Store',
+        label: loading ? 'Storing\u2026' : 'Store',
         description: `Encrypt & save ${selectedAnalyzedCount} selected mail(s)`,
         show: true,
         disabled: loading,
-        icon: DatabaseBackup,
+        icon: DatabaseArrowDownIcon,
         iconClassName: loading ? 'animate-spin text-emerald-600' : undefined,
         onClick: () => {
           onStoreAnalyzed();
@@ -174,7 +211,7 @@ export default function Header({
       description: 'Fetch new messages from Gmail',
       show: true,
       disabled: isFetching || loading,
-      icon: MailIcon,
+      icon: MailSearchIcon,
       iconClassName: isFetching ? 'animate-spin text-blue-600' : undefined,
       onClick: () => {
         onFetch();
@@ -188,7 +225,7 @@ export default function Header({
       description: 'Load encrypted vault from database',
       show: true,
       disabled: loading,
-      icon: Database,
+      icon: DatabaseSearch,
       iconClassName: undefined,
       onClick: () => {
         onLoadDataFromDatabase();
@@ -269,9 +306,9 @@ export default function Header({
                 'relative pr-3 py-2 cursor-pointer flex items-center gap-1.5 group select-none',
               )}
             >
-              <div className="text-xs font-semibold tracking-tight text-black transition-colors flex items-center gap-1.5">
+              <div className="text-xs font-semibold tracking-tight text-foreground transition-colors flex items-center gap-1.5">
                 <span className='sm:inline hidden'>Options</span>
-                <span className='inline sm:hidden'><SettingsIcon className='w-4 h-4'/></span>
+                <span className='inline sm:hidden'><SettingsIcon className='w-4 h-4' /></span>
               </div>
             </button>
           )}
@@ -297,7 +334,7 @@ export default function Header({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-              className="fixed top-0 right-0 bottom-0 z-70 w-18 h-screen bg-white border-l flex flex-col overflow-visible"
+              className="fixed top-0 right-0 bottom-0 z-70 w-18 h-screen bg-foreground/12 backdrop-blur-md flex flex-col overflow-visible"
             >
               <motion.div
                 variants={containerVariants}
@@ -316,8 +353,8 @@ export default function Header({
                     >
                       <div
                         className={cn(
-                          'relative z-10 flex items-center border-b-2 justify-center transition-all duration-200 p-1 bg-white',
-                          item.active ? 'border-green-600' : 'border-transparent'
+                          'relative z-10 flex items-center rounded-4xl justify-center transition-all duration-200 px-1 py-2.25',
+                          item.active && 'bg-background/10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]'
                         )}
                       >
                         <button
@@ -331,12 +368,10 @@ export default function Header({
                         >
                           <Icon
                             className={cn(
-                              'w-5 h-5 transition-colors',
+                              'w-5.5 h-5.5 transition-colors text-foreground',
                               item.iconClassName
                                 ? item.iconClassName
                                 : item.active
-                                  ? 'text-black'
-                                  : 'text-black/60 hover:text-black'
                             )}
                           />
                         </button>

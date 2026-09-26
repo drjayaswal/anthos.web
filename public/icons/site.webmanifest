@@ -1,5 +1,5 @@
 {
-  "name": "Anthos",
+  "name": "",
   "short_name": "Anthos",
   "icons": [
     {
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#538264",
+  "background_color": "#014d28",
   "display": "standalone"
 }

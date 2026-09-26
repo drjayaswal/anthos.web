@@ -7,7 +7,7 @@ import { CustomButton } from "@/components/ui/button";
 
 export default function ThankYou() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:p-6 text-black">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:p-6 text-foreground">
       <motion.div
         initial={{ opacity: 0, y: 16, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -26,15 +26,15 @@ export default function ThankYou() {
             height={64}
             width={64}
             priority
-            className="object-contain invert"
+            className="object-contain"
           />
         </motion.div>
 
         <div className="space-y-1.5 sm:space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-black">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Thank You!
           </h1>
-          <p className="text-xs sm:text-sm text-black/60 leading-relaxed max-w-xs mx-auto">
+          <p className="text-xs sm:text-sm text-foreground/60 leading-relaxed max-w-xs mx-auto">
             Your intelligence workspace is ready. You can now securely query, analyze, and manage your emails anytime.
           </p>
         </div>

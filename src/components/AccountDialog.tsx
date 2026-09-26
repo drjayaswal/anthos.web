@@ -80,24 +80,24 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
         <div className="w-full select-none">
           <div
             ref={containerRef}
-            className="relative w-full h-10 rounded-full overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] bg-black/5 flex items-center select-none"
+            className="relative w-full h-10 rounded-full overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] bg-foreground/5 flex items-center select-none"
           >
             <motion.div
               style={{ opacity: labelOpacity }}
               className="absolute inset-0 flex items-center justify-center pointer-events-none pl-6"
             >
-              <span className="text-black/60 text-[11px] font-medium tracking-tight">
+              <span className="text-foreground/60 text-[11px] font-medium tracking-tight">
                 Slide to Disconnect
               </span>
             </motion.div>
 
             <motion.div
               style={{ width: fillWidth }}
-              className="absolute h-10 left-0 top-0 rounded-full bg-linear-to-b from-blue-600 via-blue-700 to-blue-800 border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.25),0_2px_4px_rgba(0,0,0,0.1)] pointer-events-none flex items-center justify-center overflow-hidden"
+              className="absolute h-10 left-0 top-0 rounded-full bg-foreground border border-foreground pointer-events-none flex items-center justify-center overflow-hidden"
             >
               <motion.span
                 style={{ opacity: activeLabelOpacity }}
-                className="text-white text-[10px] font-bold uppercase tracking-wider pr-6 truncate select-none"
+                className="text-background text-[10px] font-bold uppercase tracking-wider pr-6 truncate select-none"
               >
                 Disconnecting
               </motion.span>
@@ -110,9 +110,9 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
               dragElastic={0}
               onDragEnd={handleDragEnd}
               style={{ x }}
-              className="relative z-10 w-10 h-10 rounded-full bg-white flex items-center justify-center cursor-grab active:cursor-grabbing select-none shrink-0"
+              className="relative z-10 w-10 h-10 border-0 rounded-full shadow-[inset_0_-2px_4px_rgba(0,0,0,0.25),0_2px_4px_rgba(0,0,0,0.1)] bg-foreground flex items-center justify-center cursor-grab active:cursor-grabbing select-none shrink-0"
             >
-              <ChevronsRightIcon size={24} strokeWidth={3} className="text-blue-600" />
+              <ChevronsRightIcon size={24} strokeWidth={3} className="text-background" />
             </motion.div>
           </div>
         </div>
@@ -121,35 +121,35 @@ export default function AccountDialog({ open, onOpenChange, onSignOut }: Account
       <div className="space-y-2">
         {data ? (
           <div className="space-y-2">
-            <div className="rounded-2xl p-2.5 border flex items-center gap-3">
-              <UserIcon size={15} className="text-black/50 shrink-0" />
+            <div className="rounded-2xl p-2.5 flex items-center gap-3">
+              <UserIcon size={15} className="text-foreground/50 shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="text-[9px] font-medium text-black/50 uppercase tracking-wide">Email</p>
-                <p className="text-xs font-medium text-black truncate">{data.email}</p>
+                <p className="text-[9px] font-medium text-foreground/50 uppercase tracking-wide">Email</p>
+                <p className="text-xs font-medium text-foreground truncate">{data.email}</p>
               </div>
             </div>
 
-            <div className="rounded-2xl p-2.5 border flex items-center gap-3">
-              <MailIcon size={15} className="text-black/50 shrink-0" />
+            <div className="rounded-2xl p-2.5 flex items-center gap-3">
+              <MailIcon size={15} className="text-foreground/50 shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="text-[9px] font-medium text-black/50 uppercase tracking-wide">Encrypted Mails</p>
-                <p className="text-xs font-medium text-black">{data.totalEncryptedMails} Stored</p>
+                <p className="text-[9px] font-medium text-foreground/50 uppercase tracking-wide">Encrypted Mails</p>
+                <p className="text-xs font-medium text-foreground">{data.totalEncryptedMails} Stored</p>
               </div>
             </div>
 
-            <div className="rounded-2xl p-2.5 border flex items-center gap-3">
-              <CalendarIcon size={15} className="text-black/50 shrink-0" />
+            <div className="rounded-2xl p-2.5 flex items-center gap-3">
+              <CalendarIcon size={15} className="text-foreground/50 shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="text-[9px] font-medium text-black/50 uppercase tracking-wide">Joined</p>
-                <p className="text-xs font-medium text-black">{data.createdAt ? new Date(data.createdAt).toLocaleDateString() : ''}</p>
+                <p className="text-[9px] font-medium text-foreground/50 uppercase tracking-wide">Joined</p>
+                <p className="text-xs font-medium text-foreground">{data.createdAt ? new Date(data.createdAt).toLocaleDateString() : ''}</p>
               </div>
             </div>
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="h-12 animate-pulse rounded-lg bg-black/5 border border-transparent" />
-            <div className="h-12 animate-pulse rounded-lg bg-black/5 border border-transparent" />
-            <div className="h-12 animate-pulse rounded-lg bg-black/5 border border-transparent" />
+            <div className="h-12 animate-pulse rounded-lg bg-white/5 border border-transparent" />
+            <div className="h-12 animate-pulse rounded-lg bg-white/5 border border-transparent" />
+            <div className="h-12 animate-pulse rounded-lg bg-white/5 border border-transparent" />
           </div>
         )}
       </div>

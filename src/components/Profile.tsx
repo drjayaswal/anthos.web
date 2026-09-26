@@ -39,11 +39,11 @@ function Field({
 }) {
   return (
     <div className="space-y-0.5 py-2.5 border-0 sm:py-3 flex flex-col w-full">
-      <dt className="text-[10px] font-medium uppercase tracking-wider text-black/50 sm:text-xs">
+      <dt className="text-[10px] font-medium uppercase tracking-wider text-foreground/50 sm:text-xs">
         {label}
       </dt>
       <dd
-        className={`text-xs text-black/70 sm:text-sm ${mono ? "break-all font-mono text-[11px] sm:text-xs" : "wrap-break-word"}`}
+        className={`text-xs text-foreground/70 sm:text-sm ${mono ? "break-all font-mono text-[11px] sm:text-xs" : "wrap-break-word"}`}
       >
         {value}
       </dd>
@@ -57,22 +57,22 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
     : [];
 
   return (
-    <div className="min-h-0 text-black sm:mt-0 mt-10 mx-2">
+    <div className="min-h-0 text-foreground sm:mt-0 mt-10 mx-2">
       <main className="mx-auto max-w-2xl px-3 py-4 sm:p-6">
         <div className="mb-4 space-y-1 sm:mb-6">
-          <h1 className="text-lg font-semibold tracking-tight sm:text-xl text-black">
+          <h1 className="text-lg font-semibold tracking-tight sm:text-xl text-foreground">
             Your profile
           </h1>
-          <p className="text-xs text-black/50 sm:text-sm">
+          <p className="text-xs text-foreground/50 sm:text-sm">
             Account details from your sign-in. This is read-only information and cannot be edited.
           </p>
         </div>
 
-        <section className="overflow-hidden rounded-4xl bg-white border border-dashed border-black/30">
-          <div className="flex items-center gap-3 border-b p-3 sm:gap-4 sm:p-4">
-            <div className={profile.emailVerified ? "p-0.5 rounded-full border-2 border-dashed border-green-600 shrink-0" : "shrink-0"}>
+        <section className="overflow-hidden rounded-4xl bg-foreground/10 border border-dashed border-foreground/30">
+          <div className="flex items-center gap-3 border-b border-foreground/15 p-3 sm:gap-4 sm:p-4">
+            <div className={profile.emailVerified ? "p-0.5 rounded-full border-2 border-dashed border-green-500 shrink-0" : "shrink-0"}>
               <Image
-                src={profile.image || "/anthos.png"}
+                src={profile.image || "/anthos.svg"}
                 alt=""
                 width={48}
                 height={48}
@@ -80,16 +80,16 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
               />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium sm:text-base text-black">
+              <p className="truncate text-sm font-medium sm:text-base text-foreground">
                 {profile.name}
               </p>
-              <p className="truncate text-xs text-black/50 sm:text-sm">
+              <p className="truncate text-xs text-foreground/50 sm:text-sm">
                 {profile.email}
               </p>
             </div>
           </div>
 
-          <dl className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:gap-x-4 px-3 sm:px-4 pb-2">
+          <dl className="grid grid-cols-1 sm:grid-cols-2 divide-y divide-foreground/10 sm:divide-y-0 sm:gap-x-4 px-3 sm:px-4 pb-2">
             <Field label="Display name" value={profile.name} />
             <Field label="Email" value={profile.email} />
             <Field label="User ID" value={profile.id.slice(0, profile.id.length / 2).concat("XXXXXXX")} mono />
@@ -110,14 +110,14 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
           </dl>
         </section>
 
-        <section className="mt-3 overflow-hidden rounded-2xl bg-white border border-dashed border-black/30 sm:mt-4">
-          <div className="border-b px-3 py-2 sm:px-4 sm:py-2.5">
-            <h2 className="flex items-center gap-1.5 text-xs font-medium sm:text-sm text-black">
-              <ShieldIcon className="h-3.5 w-3.5 text-black/50" />
+        <section className="mt-3 overflow-hidden rounded-2xl bg-foreground/10 border border-dashed border-foreground/30 sm:mt-4">
+          <div className="border-b border-foreground/15 px-3 py-2 sm:px-4 sm:py-2.5">
+            <h2 className="flex items-center gap-1.5 text-xs font-medium sm:text-sm text-foreground">
+              <ShieldIcon className="h-3.5 w-3.5 text-foreground/50" />
               Sign-in &amp; access
             </h2>
           </div>
-          <dl className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:gap-x-4 px-3 sm:px-4 pb-2">
+          <dl className="grid grid-cols-1 sm:grid-cols-3 divide-y divide-foreground/10 sm:divide-y-0 sm:gap-x-4 px-3 sm:px-4 pb-2">
             <Field
               label="Provider"
               value={
@@ -145,8 +145,8 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
                 mono
               />
             )}
-            <div className="col-span-1 sm:col-span-2 space-y-1.5 border-b py-2.5 last:border-0 sm:py-3">
-              <dt className="text-[10px] font-medium uppercase tracking-wider text-black/50 sm:text-xs">
+            <div className="col-span-1 sm:col-span-2 space-y-1.5 border-b border-foreground/10 py-2.5 last:border-0 sm:py-3">
+              <dt className="text-[10px] font-medium uppercase tracking-wider text-foreground/50 sm:text-xs">
                 Permissions
               </dt>
               <dd className="flex flex-wrap gap-1">
@@ -157,27 +157,27 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
                       href={`https://www.google.com/search?q=${scope}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-block max-w-full truncate rounded-md bg-black/5 px-1.5 py-0.5 font-mono text-[9px] text-black/70 hover:text-black transition-colors sm:text-[10px]"
+                      className="inline-block max-w-full truncate rounded-md bg-foreground/10 px-1.5 py-0.5 font-mono text-[9px] text-foreground/70 hover:text-foreground transition-colors sm:text-[10px]"
                     >
                       {scope}
                     </a>
                   ))
                 ) : (
-                  <span className="text-xs text-black/50 sm:text-sm">—</span>
+                  <span className="text-xs text-foreground/50 sm:text-sm">—</span>
                 )}
               </dd>
             </div>
           </dl>
         </section>
 
-        <section className="mt-3 overflow-hidden rounded-2xl bg-white border border-dashed border-black/30 sm:mt-4">
-          <div className="flex items-center gap-2 border-b px-3 py-2 sm:px-4 sm:py-2.5">
-              <LaptopIcon className="h-3.5 w-3.5 text-black/50" />
-            <h2 className="text-xs font-medium sm:text-sm text-black">Active Sessions</h2>
+        <section className="mt-3 overflow-hidden rounded-2xl bg-foreground/10 border border-dashed border-foreground/30 sm:mt-4">
+          <div className="flex items-center gap-2 border-b border-foreground/15 px-3 py-2 sm:px-4 sm:py-2.5">
+            <LaptopIcon className="h-3.5 w-3.5 text-foreground/50" />
+            <h2 className="text-xs font-medium sm:text-sm text-foreground">Active Sessions</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[10px] sm:text-xs">
-              <thead className="border-b uppercase text-black/50">
+              <thead className="border-b border-foreground/10 uppercase text-foreground/50">
                 <tr>
                   <th className="px-3 py-2 font-medium">Session ID</th>
                   <th className="px-3 py-2 font-medium">IP Address</th>
@@ -185,17 +185,17 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
                   <th className="px-3 py-2 font-medium">Expires</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-black/10">
+              <tbody className="divide-y divide-foreground/10">
                 {profile.sessions.map((sess) => (
-                  <tr key={sess.id} className="hover:bg-black/5 transition-colors">
+                  <tr key={sess.id} className="hover:bg-foreground/5 transition-colors">
                     <td
-                      className="px-3 py-2 font-mono text-black/60 cursor-pointer hover:text-black transition-colors"
+                      className="px-3 py-2 font-mono text-foreground/60 cursor-pointer hover:text-foreground transition-colors"
                       onClick={() => navigator.clipboard.writeText(sess.id)}
                     >
                       {sess.id.slice(0, 8)}...{sess.id.slice(-4)}
                     </td>
                     <td
-                      className="px-3 py-2 font-mono text-black/60 cursor-pointer hover:text-black transition-colors"
+                      className="px-3 py-2 font-mono text-foreground/60 cursor-pointer hover:text-foreground transition-colors"
                       onClick={() =>
                         sess.ipAddress &&
                         navigator.clipboard.writeText(sess.ipAddress)
@@ -203,10 +203,10 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
                     >
                       {sess.ipAddress ? `${sess.ipAddress.slice(0, 8)}...${sess.ipAddress.slice(-4)}` : "—"}
                     </td>
-                    <td className="px-3 py-2 text-black/50">
+                    <td className="px-3 py-2 text-foreground/50">
                       {parseUserAgent(sess.userAgent || "").split(" ")[0] || "—"}
                     </td>
-                    <td className="px-3 py-2 text-black/50">
+                    <td className="px-3 py-2 text-foreground/50">
                       {new Date(sess.expiresAt).toLocaleDateString()}
                     </td>
                   </tr>
@@ -216,7 +216,7 @@ export default function Profile({ profile }: { profile: ExtendedUserProfile }) {
           </div>
         </section>
 
-        <p className="mt-4 flex items-start gap-2 text-[10px] leading-relaxed text-black/50 sm:text-xs">
+        <p className="mt-4 flex items-start gap-2 text-[10px] leading-relaxed text-foreground/50 sm:text-xs">
           Profile data is tied to your Anthos account and Anthos records.
         </p>
       </main>

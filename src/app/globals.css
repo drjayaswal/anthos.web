@@ -55,8 +55,8 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #000000;
+  --background: #014d28;
+  --foreground: #ffffff;
   --card: #ffffff;
   --card-foreground: #111111;
   --popover: #ffffff;
@@ -108,15 +108,17 @@
     @apply bg-background text-foreground;
     font-family: "Garet", sans-serif;
     font-weight: 700;
-    background-color: #ffffff;
-    color: #000000;
+    background-color: #014d28;
+    color: #ffffff;
+
   }
 
   html {
     font-family: "Garet", sans-serif;
     font-weight: 700;
-    background-color: #ffffff;
-    color: #000000;
+    background-color: #014d28;
+    color: #ffffff;
+    ;
   }
 }
 

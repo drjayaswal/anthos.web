@@ -21,14 +21,14 @@ const TAG_STYLES: Record<string, string> = {
   REGEX: 'bg-teal-500',
   REVIEW: 'bg-amber-500',
   LLM: 'bg-purple-600',
-  APPROVED: 'bg-emerald-600',
+  APPROVED: 'bg-green-600',
   RETRY: 'bg-orange-500',
   DONE: 'bg-green-600',
   ERROR: 'bg-red-600',
   INFO: 'bg-blue-600',
   START: 'bg-indigo-500',
   CONNECT: 'bg-sky-600',
-  TIME: 'bg-fuchsia-700',
+  TIME: 'bg-lime-700',
 };
 
 const TAG_BORDERS: Record<string, string> = {
@@ -36,14 +36,14 @@ const TAG_BORDERS: Record<string, string> = {
   REGEX: 'border-teal-500',
   REVIEW: 'border-amber-500',
   LLM: 'border-purple-600',
-  APPROVED: 'border-emerald-600',
+  APPROVED: 'border-green-600',
   RETRY: 'border-orange-500',
   DONE: 'border-green-600',
   ERROR: 'border-red-600',
   INFO: 'border-blue-600',
   START: 'border-indigo-500',
   CONNECT: 'border-sky-600',
-  TIME: 'border-fuchsia-700',
+  TIME: 'border-lime-700',
 };
 
 interface AnalysisProgressDrawerProps {
@@ -576,11 +576,11 @@ export default function AnalysisProgressDrawer({
               width: { duration: 0.28, ease: [0.32, 0.72, 0, 1] },
             }}
             className={cn(
-              "fixed top-0 right-0 z-10000 h-full bg-white border-l flex flex-col overflow-hidden text-black select-text transition-[width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+              "fixed top-0 right-0 z-10000 h-full backdrop-blur-md border-l border-foreground/15 flex flex-col overflow-hidden text-foreground select-text transition-[width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
               showMessages ? "w-full sm:w-85" : "w-full sm:w-37"
             )}
           >
-            <div className="py-3 px-4 sm:px-3 border-b border-black/10 flex items-center justify-between gap-2 shrink-0 bg-white/95 backdrop-blur-xs">
+            <div className="py-3 px-4 sm:px-3 border-b border-foreground/15 flex items-center justify-between gap-2 shrink-0">
               <div className="flex items-center shrink-0">
                 <button
                   type="button"
@@ -606,8 +606,8 @@ export default function AnalysisProgressDrawer({
                   className={cn(
                     "flex items-center justify-center gap-1 px-2 py-1.5 transition-all rounded-md duration-200 text-xs cursor-pointer select-none",
                     showMessages
-                      ? "text-indigo-600 bg-indigo-600/10"
-                      : "text-black"
+                      ? "text-foreground bg-foreground/10"
+                      : "text-foreground"
                   )}
                 >
                   <span className="hidden sm:inline text-xs">{showMessages ? "Hide" : "Show"}</span>
@@ -620,7 +620,7 @@ export default function AnalysisProgressDrawer({
                     disabled={logs.length === 0 || isDrawerActive}
                     title="Delete logs from local storage"
                     aria-label="Delete logs from local storage"
-                    className="flex items-center justify-center gap-1 sm:px-2 sm:py-1.5 not-disabled:hover:text-red-600 transition-all duration-200 rounded-md disabled:opacity-20 disabled:cursor-not-allowed text-xs cursor-pointer"
+                    className="flex items-center justify-center gap-1 sm:px-2 sm:py-1.5 not-disabled:hover:bg-red-600 transition-all duration-200 rounded-md disabled:opacity-20 disabled:cursor-not-allowed text-xs cursor-pointer"
                   >
                     <span className="hidden sm:inline text-xs">Clear</span>
                     <Trash2 className="size-3.5 sm:hidden" />
@@ -629,7 +629,7 @@ export default function AnalysisProgressDrawer({
               </div>
             </div>
 
-            <div className="relative flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
+            <div className="relative flex-1 min-h-0 overflow-hidden flex flex-col">
               <div
                 ref={terminalContainerRef}
                 onScroll={handleScroll}
@@ -654,7 +654,6 @@ export default function AnalysisProgressDrawer({
                 ) : (
                   logs.map((log) => {
                     const tagBg = TAG_STYLES[log.tag] ?? 'bg-black';
-                    const tagBorder = TAG_BORDERS[log.tag] ?? 'border-black';
 
                     return (
                       <motion.div
@@ -663,11 +662,11 @@ export default function AnalysisProgressDrawer({
                         animate={{ opacity: 1, x: 0 }}
                         className="flex items-center gap-2 leading-relaxed py-0.5"
                       >
-                        <span className="w-10 text-black/40 text-[10px] shrink-0 select-none">
+                        <span className="w-10 text-foreground/40 text-[10px] shrink-0 select-none">
                           {log.time}
                         </span>
 
-                        <div className={cn("pt-0 px-0.5 pb-0.5 border border-dashed rounded-md border-black shrink-0", tagBorder)}>
+                        <div className={cn("pt-0 px-0.5 pb-0.5 border border-dashed rounded-md border-black shrink-0 border border-foreground/50")}>
                           <span
                             className={cn(
                               'inline-flex items-center justify-center w-16 h-4 text-[8.5px] rounded-sm text-white font-bold shrink-0 tracking-wide',
@@ -679,7 +678,7 @@ export default function AnalysisProgressDrawer({
                         </div>
 
                         {showMessages && log.message && (
-                          <span className="text-black/40 text-[11px] font-sans font-medium truncate min-w-0 flex-1 select-text">
+                          <span className="text-foreground/60 text-[11px] font-sans font-medium truncate min-w-0 flex-1 select-text">
                             {log.message}
                           </span>
                         )}
@@ -697,16 +696,16 @@ export default function AnalysisProgressDrawer({
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute inset-0 z-20 flex items-center justify-center p-4 bg-white/40 backdrop-blur-xs select-none"
+                    className="absolute inset-0 z-20 flex items-center justify-center p-4 bg-transparent! backdrop-blur-md select-none"
                   >
-                    <div className="w-full max-w-65 bg-white border border-dashed border-black/30 rounded-xl p-4 flex flex-col items-center text-center space-y-3">
-                      <div className="p-2 rounded-full bg-red-600/10 text-red-600">
+                    <div className="w-full max-w-65 bg-foreground/15 backdrop-blur-md border border-dashed border-foreground/30 rounded-xl p-4 flex flex-col items-center text-center space-y-3">
+                      <div className="p-2 rounded-full bg-red-600 text-foreground">
                         <AlertTriangle className="size-4" />
                       </div>
 
                       <div className="space-y-1">
-                        <h4 className="text-xs font-semibold text-black tracking-tight">Clear all logs?</h4>
-                        <p className="text-[11px] text-black/60 leading-normal">
+                        <h4 className="text-xs font-semibold text-foreground tracking-tight">Clear all logs?</h4>
+                        <p className="text-[11px] text-foreground/60 leading-normal">
                           This will remove all recorded session logs from storage.
                         </p>
                       </div>
@@ -715,14 +714,14 @@ export default function AnalysisProgressDrawer({
                         <button
                           type="button"
                           onClick={cancelClearLogs}
-                          className="flex-1 px-3 py-1.5 text-black text-xs font-medium transition-colors cursor-pointer"
+                          className="flex-1 px-3 py-1.5 text-foreground text-xs font-medium transition-colors cursor-pointer"
                         >
                           No
                         </button>
                         <button
                           type="button"
                           onClick={confirmClearLogs}
-                          className="flex-1 px-3 py-1.5 rounded-lg border border-dashed border-red-600 text-red-600 hover:text-white hover:bg-red-600 text-xs font-medium transition-colors shadow-xs cursor-pointer"
+                          className="flex-1 px-3 py-1.5 rounded-lg border border-dashed hover:border-red-600 border-foreground text-foreground hover:text-white hover:bg-red-600 text-xs font-medium transition-all duration-200 shadow-xs cursor-pointer"
                         >
                           Yes, clear
                         </button>
