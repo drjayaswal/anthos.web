@@ -20,10 +20,11 @@ Anthos Web connects respectfully to your Gmail with read-only permissions, safeg
 6. [Environment Configuration](#environment-configuration)
 7. [Installation & Setup](#installation--setup)
 8. [Running the Application](#running-the-application)
-9. [AI Integration & Real-Time Streaming](#ai-integration--real-time-streaming)
-10. [Security & Privacy Commitments](#security--privacy-commitments)
-11. [Companion CLI Integration](#companion-cli-integration)
-12. [License & Acknowledgments](#license--acknowledgments)
+9. [Admin Root Portal](#admin-root-portal)
+10. [AI Integration & Real-Time Streaming](#ai-integration--real-time-streaming)
+11. [Security & Privacy Commitments](#security--privacy-commitments)
+12. [Companion CLI Integration](#companion-cli-integration)
+13. [License & Acknowledgments](#license--acknowledgments)
 
 ---
 
@@ -47,6 +48,7 @@ Anthos Web was designed to bring clarity, calm, and intelligence to email manage
 - **Single-Mail Insights**: Deep-dive into individual emails on demand to generate instant key takeaways and action points.
 - **Encrypted Local Vault**: Encrypts and caches emails locally in the browser with AES-GCM encryption, keeping data accessible across visits while staying protected.
 - **Optional Cloud Vault**: Persist analyzed records securely in a PostgreSQL database using server-side AES-256-GCM encryption for unified cross-device access.
+- **Admin Root Portal**: A password-protected backdoor at `/root` for administrators to inspect sample data, test fetch/load workflows, and analyze emails without requiring OAuth sign-in.
 
 ---
 
@@ -79,7 +81,8 @@ Anthos Web acts as the intuitive visual client within the Anthos open-source eco
                  (Priority Graph · Categorized)
 ```
 
-### Workflow Highlights:
+### Workflow Highlights
+
 1. **Authentication**: Users sign in securely through Google OAuth managed by Better Auth.
 2. **Retrieve**: Desired emails are fetched on demand directly from Gmail via the official Google APIs.
 3. **Analyze**: When analysis is requested, the payload is transmitted to the Anthos AI server via a persistent WebSocket connection.
@@ -94,12 +97,19 @@ Anthos Web acts as the intuitive visual client within the Anthos open-source eco
 anthos.web/
 ├── src/
 │   ├── app/
-│   │   ├── (auth)/             # Authentication entry points
+│   │   ├── (app)/              # Authenticated app routes (analyze, admin, settings, etc.)
+│   │   ├── root/               # Admin backdoor route (/root) — password protected
+│   │   │   └── page.tsx        # Root backdoor login & sample Analyze workspace
+│   │   ├── api/
+│   │   │   ├── admin/verify/   # POST endpoint for admin password verification
+│   │   │   ├── mail/           # Mail fetch, load, sync, analyze, insight APIs
+│   │   │   ├── category/       # Category CRUD APIs
+│   │   │   └── auth/           # Better Auth handler routes
 │   │   ├── actions.ts          # Type-safe server actions (Fetch, Analyze, Insights)
-│   │   ├── api/                # Better Auth and background API route handlers
 │   │   └── db/                 # Drizzle ORM schema definitions and database connection
 │   ├── components/
 │   │   ├── ui/                 # Reusable accessible interface primitives
+│   │   ├── RootLogin.tsx       # Split-screen admin login (password + Unsplash image)
 │   │   ├── Header.tsx          # Dynamic navigation bar with active progress indicator
 │   │   ├── Analyze.tsx         # Primary inbox coordinator and view controller
 │   │   ├── MailTable.tsx       # Responsive table with batch selection and quick actions
@@ -113,6 +123,7 @@ anthos.web/
 │   └── types/                  # Shared TypeScript interfaces and domain schemas
 ├── public/                     # Static media and brand assets
 ├── drizzle.config.ts           # Drizzle Kit migration configuration
+├── env.sample                  # Environment variable template
 ├── package.json                # Project dependencies and script definitions
 └── README.md                   # Project documentation
 ```
@@ -132,33 +143,39 @@ Before running Anthos Web locally, ensure you have:
 
 ## Environment Configuration
 
-Create a `.env.local` file in the project root based on the configuration below:
+Create a `.env` file in the project root. Refer to [`env.sample`](./env.sample) for the full list of variables:
+
+| Variable | Description | Required |
+|---|---|---|
+| `BETTER_AUTH_URL` | Application base URL (e.g., `http://localhost:3000`) | ✅ |
+| `BETTER_AUTH_SECRET` | Authentication security secret (min 32 random chars) | ✅ |
+| `DATABASE_URL` | PostgreSQL connection string | ✅ |
+| `AUTH_GOOGLE_ID` | Google Cloud OAuth 2.0 Client ID | ✅ |
+| `AUTH_GOOGLE_SECRET` | Google Cloud OAuth 2.0 Client Secret | ✅ |
+| `AI_SERVER_URL` | Anthos AI backend URL (e.g., `http://localhost:8000`) | ✅ |
+| `ADMIN_EMAIL` | Administrator email for the `/admin` route | Optional |
+| `ADMIN_PASSWORD` | Administrator password for the `/root` backdoor portal | Optional |
+| `AUTH_SECRET` | Additional auth secret | Optional |
+| `BETTER_AUTH_API_KEY` | Better Auth API key | Optional |
+| `GROQ_API_KEY` | Groq API key for LLM provider support | Optional |
+
+### Example `.env`
 
 ```env
-# Application Base URL
-BETTER_AUTH_URL="http://localhost:3000"
-
-# Authentication Security Secret (Minimum 32 random characters)
-BETTER_AUTH_SECRET="your-secure-random-secret"
-
-# PostgreSQL Database Connection
-DATABASE_URL="postgresql://user:password@localhost:5432/anthos"
-
-# Google Cloud OAuth 2.0 Credentials
+ADMIN_EMAIL="admin@example.com"
+ADMIN_PASSWORD="your-secure-admin-password"
+AI_SERVER_URL="http://localhost:8000"
 AUTH_GOOGLE_ID="your-google-client-id.apps.googleusercontent.com"
 AUTH_GOOGLE_SECRET="your-google-client-secret"
-
-# Server-Side Vault Encryption (32-byte hex string for AES-256-GCM)
-ENCRYPTION_KEY="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
-
-# Anthos AI Backend URL
-AI_SERVER_URL="http://localhost:8000"
-
-# Optional Administrator Email
-ADMIN_EMAIL="admin@example.com"
+AUTH_SECRET="your-auth-secret"
+BETTER_AUTH_API_KEY="your-better-auth-api-key"
+BETTER_AUTH_SECRET="your-secure-random-secret"
+BETTER_AUTH_URL="http://localhost:3000"
+GROQ_API_KEY="your-groq-api-key"
+DATABASE_URL="postgresql://user:password@localhost:5432/anthos"
 ```
 
-> **Google OAuth Configuration Tip**: Ensure your Google Cloud Console Authorized Redirect URI includes:  
+> **Google OAuth Redirect URI**: Ensure your Google Cloud Console Authorized Redirect URI includes:
 > `http://localhost:3000/api/auth/callback/google`
 
 ---
@@ -173,11 +190,16 @@ cd anthos.web
 # 2. Install dependencies (Bun recommended)
 bun install
 
-# 3. Synchronize database schema
+# 3. Copy env template and configure
+cp env.sample .env
+# Edit .env with your actual values
+
+# 4. Synchronize database schema
 bun run db:push
 ```
 
 If you prefer using `npm` or `pnpm`:
+
 ```bash
 npm install
 npm run db:push
@@ -213,6 +235,74 @@ Anthos Web uses Drizzle ORM for schema management. You can launch Drizzle Studio
 ```bash
 bun run db:studio
 ```
+
+---
+
+## Admin Root Portal
+
+Anthos provides a hidden administrator backdoor at **`/root`** for quick access and testing without requiring Google OAuth sign-in. Once authenticated, the root user is treated as a normal user with access to the full **Analyze** interface, populated with mock datasets for both cloud fetch and database load without contacting backend services or databases.
+
+### How It Works
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    /root Route                          │
+│                                                         │
+│  ┌──────────────────┐    ┌────────────────────────────┐ │
+│  │   Left Panel     │    │     Right Panel            │ │
+│  │                  │    │                            │ │
+│  │  🔒 Password     │    │  🌿 Unsplash Nature Image  │ │
+│  │     Input        │    │     (priority loaded)      │ │
+│  │                  │    │                            │ │
+│  │  [Authenticate]  │    │                            │ │
+│  │  (ADMIN_PASSWORD)│    │                            │ │
+│  └──────────────────┘    └────────────────────────────┘ │
+│                                                         │
+│              ▼ On Successful Verification               │
+│                                                         │
+│  ┌─────────────────────────────────────────────────────┐ │
+│  │            Analyze Inbox Workspace                  │ │
+│  │                                                     │ │
+│  │  [Fetch Mails] (Cloud Simulation — 5 Mock Emails)   │ │
+│  │  [Load Data]   (DB Simulation — 4 Scored Emails)    │ │
+│  │  [Analyze]     (AI Analysis & Classification)       │ │
+│  │  [Store]       (Simulated Encrypted Storage)        │ │
+│  │                                                     │ │
+│  │  * Zero database queries or external API calls      │ │
+│  └─────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Configuration
+
+1. Set the `ADMIN_PASSWORD` environment variable in your `.env` file:
+
+   ```env
+   ADMIN_PASSWORD="your-secure-admin-password"
+   ```
+
+2. Navigate to `http://localhost:3000/root`
+
+3. Enter the password to access the Analyze workspace
+
+### Features
+
+| Feature | Description |
+|---|---|
+| **Password Gate** | Compares input against `ADMIN_PASSWORD` env variable via `/api/admin/verify` |
+| **Split-Screen Login** | Left panel with password input, right panel with Unsplash nature image (loaded with `priority`) |
+| **Standard Analyze Workspace** | Full access to the production Analyze inbox UI, tables, sheets, and filters |
+| **Simulated Fetch** | Loads 5 sample emails simulating a Gmail cloud fetch without backend calls |
+| **Simulated Load** | Loads 4 pre-analyzed sample emails simulating encrypted DB load with priority & confidence scores |
+| **Isolated Execution** | All fetch, load, and store operations for root users operate purely in-memory with zero DB writes |
+| **Session Persistence** | Authentication state is stored in `sessionStorage` (`anthos_root_auth`) — survives refreshes, clears on logout |
+
+### Security Notes
+
+> ⚠️ The `/root` route is an **admin-only backdoor** intended for development and testing. In production:
+> - Use a strong, unique `ADMIN_PASSWORD`
+> - Consider adding rate limiting to `/api/admin/verify`
+> - Authentication is session-scoped (not persisted across browser sessions)
 
 ---
 

@@ -41,9 +41,11 @@ export function toggleInSet(prev: Set<string>, id: string): Set<string> {
 export default function Analyze({
   sessionUserEmail,
   sessionUserId,
+  isRootUser = false,
 }: {
   sessionUserEmail?: string | null;
   sessionUserId?: string | null;
+  isRootUser?: boolean;
 }) {
   const [appLoading, setAppLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
@@ -77,7 +79,6 @@ export default function Analyze({
   const [encryptedMails, setEncryptedMails] = useState<Mail[]>([]);
   const router = useRouter();
 
-  // Restore mails from sessionStorage after hydration (safe — runs client-only)
   useEffect(() => {
     try {
       const tab = sessionStorage.getItem('anthos_active_tab') as MailInboxTab | null;
@@ -89,7 +90,6 @@ export default function Analyze({
     } catch { }
   }, []);
 
-  // Persist back to sessionStorage on any change
   useEffect(() => {
     try { sessionStorage.setItem('anthos_fetched_mails', JSON.stringify(fetchedMails)); } catch { }
   }, [fetchedMails]);
@@ -103,6 +103,16 @@ export default function Analyze({
   }, [activeTab]);
 
   useEffect(() => {
+    if (isRootUser) {
+      setCategories([
+        { name: 'Work' },
+        { name: 'Finance' },
+        { name: 'Security' },
+        { name: 'Updates' },
+        { name: 'Personal' },
+      ]);
+      return;
+    }
     (async () => {
       const res = await getCategoriesAction();
       if (res.ok && res.categories && res.categories.length > 0) {
@@ -119,7 +129,8 @@ export default function Analyze({
         }
       }
     } catch { }
-  }, []);
+  }, [isRootUser]);
+
 
   const hasCategories = categories.length > 0;
 
@@ -129,6 +140,19 @@ export default function Analyze({
       setIsFetching(true);
       setActiveTab('fetched');
       try {
+        if (isRootUser) {
+          await new Promise((r) => setTimeout(r, 900));
+          const mails: Mail[] = [
+            { id: 'rf-1', threadId: 'rt-1', subject: 'Q3 Revenue Report — Action Required', sender: 'cfo@acme-corp.com', recipient: 'root@anthos.dev', body: 'Please review the attached Q3 revenue report and provide feedback by Friday. Numbers look solid — 23% increase in SaaS subscriptions. Board deck due Monday.', status: 'unread', labels: ['INBOX', 'IMPORTANT'], createdAt: new Date(Date.now() - 2 * 3600000).toISOString(), description: 'Quarterly revenue report requiring review and feedback' },
+            { id: 'rf-2', threadId: 'rt-2', subject: 'Security Alert: Unusual Login Detected', sender: 'security@google.com', recipient: 'root@anthos.dev', body: 'We detected a sign-in to your Google Account from a new device. If this was you, you can ignore this email. If not, please review your account activity immediately.', status: 'unread', labels: ['INBOX', 'IMPORTANT', 'CATEGORY_UPDATES'], createdAt: new Date(Date.now() - 5 * 3600000).toISOString(), description: 'Critical security notification about suspicious account activity' },
+            { id: 'rf-3', threadId: 'rt-3', subject: 'Team Standup Notes — Sprint 42', sender: 'pm@anthos.dev', recipient: 'root@anthos.dev', body: 'Sprint 42 standup summary:\n- Auth module refactor complete\n- WebSocket streaming 80% done\n- Priority scoring algorithm deployed\nBlockers: None. Velocity on track.', status: 'read', labels: ['INBOX'], createdAt: new Date(Date.now() - 8 * 3600000).toISOString(), description: 'Agile sprint standup summary with progress updates' },
+            { id: 'rf-4', threadId: 'rt-4', subject: 'Invoice #INV-2024-0847 Due', sender: 'billing@cloudprovider.io', recipient: 'root@anthos.dev', body: 'Your invoice for September 2024 is ready. Total: $342.50 for cloud infrastructure. Payment due within 15 days. Auto-pay is enabled.', status: 'unread', labels: ['INBOX', 'CATEGORY_PROMOTIONS'], createdAt: new Date(Date.now() - 24 * 3600000).toISOString(), description: 'Monthly cloud infrastructure billing notification' },
+            { id: 'rf-5', threadId: 'rt-5', subject: 'Open Source Contribution — PR Merged', sender: 'notifications@github.com', recipient: 'root@anthos.dev', body: 'Your pull request "feat: root admin portal" has been merged into main by @maintainer. 12 files changed, 847 additions. CI/CD passed all checks.', status: 'read', labels: ['INBOX', 'CATEGORY_UPDATES'], createdAt: new Date(Date.now() - 48 * 3600000).toISOString(), description: 'GitHub notification for successfully merged pull request' },
+          ];
+          setFetchedMails(mails);
+          toast.success(`${mails.length} Messages Fetched`);
+          return;
+        }
         const result = await fetchMailsAction(opts);
         if (!result.ok || !result.mails) {
           toast.error(result.error ?? 'Fetch failed');
@@ -169,6 +193,11 @@ export default function Analyze({
   };
 
   const handleSignOut = async () => {
+    if (isRootUser) {
+      sessionStorage.removeItem('anthos_root_auth');
+      window.location.href = '/root';
+      return;
+    }
     setLoading(true);
     setAnalyzing(true);
     await new Promise((r) => setTimeout(r, 400));
@@ -176,7 +205,7 @@ export default function Analyze({
     setLoading(false);
     setAccountDialogOpen(false);
     setAnalyzing(false);
-    router.push("/thank-you");
+    router.push('/thank-you');
   };
 
   const selectedFetchedMails = useMemo(
@@ -246,6 +275,18 @@ export default function Analyze({
       setLoading(true);
       setActiveTab('encrypted');
       try {
+        if (isRootUser) {
+          await new Promise((r) => setTimeout(r, 800));
+          const mails: Mail[] = [
+            { id: 'rl-1', threadId: 'rlt-1', subject: 'Database Migration Complete', sender: 'devops@anthos.dev', recipient: 'root@anthos.dev', body: 'PostgreSQL migration from v14 to v16 completed. All 2.3M rows migrated. Zero downtime. New connection pooling active.', status: 'read', labels: ['INBOX'], createdAt: new Date(Date.now() - 72 * 3600000).toISOString(), category: 'Work', priority: ['78'], priority_score: 78, confidence_score: 92, summary: 'Database migration v14→v16 completed with zero downtime and 2.3M rows migrated successfully.' },
+            { id: 'rl-2', threadId: 'rlt-2', subject: 'Weekly Analytics Digest', sender: 'analytics@anthos.dev', recipient: 'root@anthos.dev', body: 'Weekly platform stats: 14,200 active users (+8%), 892 new signups, 99.97% uptime. Top feature: AI email analysis (67% of actives). Churn: 2.1% (↓ from 3.4%).', status: 'read', labels: ['INBOX', 'STARRED'], createdAt: new Date(Date.now() - 96 * 3600000).toISOString(), category: 'Updates', priority: ['65'], priority_score: 65, confidence_score: 88, summary: 'Platform growth showing positive trends with 8% user increase and reduced churn rate.' },
+            { id: 'rl-3', threadId: 'rlt-3', subject: 'Compliance Review — GDPR Audit', sender: 'legal@anthos.dev', recipient: 'root@anthos.dev', body: 'Annual GDPR compliance audit scheduled October 15th. Ensure all data processing records are current. DPA with cloud providers needs renewal. Encryption key rotation due next month.', status: 'unread', labels: ['INBOX', 'IMPORTANT'], createdAt: new Date(Date.now() - 120 * 3600000).toISOString(), category: 'Work', priority: ['91'], priority_score: 91, confidence_score: 95, summary: 'GDPR audit scheduled, DPA renewals and encryption key rotation required urgently.' },
+            { id: 'rl-4', threadId: 'rlt-4', subject: 'Customer Feedback — Enterprise Tier', sender: 'success@anthos.dev', recipient: 'root@anthos.dev', body: 'Enterprise client Acme Corp: "Anthos reduced our email triage time by 73%. Priority scoring is remarkably accurate." Interested in API access for custom integrations.', status: 'read', labels: ['INBOX', 'STARRED'], createdAt: new Date(Date.now() - 144 * 3600000).toISOString(), category: 'Personal', priority: ['55'], priority_score: 55, confidence_score: 82, summary: 'Positive enterprise feedback with 73% triage improvement, API access interest noted.' },
+          ];
+          setEncryptedMails(mails);
+          toast.success(`${mails.length} Messages Loaded`);
+          return;
+        }
         const result = await loadMailsFromDatabaseAction(opts);
         if (!result.ok || !result.mails) {
           toast.error(result.error ?? 'Load failed');
@@ -413,6 +454,11 @@ export default function Analyze({
       toast.error('Select analyzed mails to store');
       return;
     }
+    if (isRootUser) {
+      toast.success(`${selection.length} mail(s) stored encrypted in database`);
+      setSelectedAnalyzedIds(new Set());
+      return;
+    }
     void (async () => {
       setLoading(true);
       try {
@@ -432,6 +478,10 @@ export default function Analyze({
   };
 
   const handleStoreSingleEncrypted = (mail: Mail) => {
+    if (isRootUser) {
+      toast.success('Mail stored encrypted in database');
+      return;
+    }
     void (async () => {
       setLoading(true);
       try {

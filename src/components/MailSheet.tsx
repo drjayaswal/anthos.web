@@ -82,7 +82,6 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
 
   const contentMarkup = (
     <div className="space-y-2.5">
-      {/* Sender row */}
       <div className="flex items-center gap-2.5 pb-2">
         <div className="shrink-0 h-9 w-9 rounded-full bg-background border border-foreground/50 border-dashed flex items-center justify-center">
           <span className="text-xs font-bold text-foreground">{initials}</span>
@@ -116,7 +115,6 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
         </div>
       </div>
 
-      {/* Subject */}
       <div className="p-2.5 space-y-1">
         <span className="text-[9px] font-bold uppercase tracking-wider text-foreground block">Subject</span>
         <h2 className="text-xs font-semibold text-foreground leading-snug wrap-break-word">
@@ -124,7 +122,6 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
         </h2>
       </div>
 
-      {/* Description */}
       {mail.description && (
         <div className="p-2.5 space-y-1">
           <span className="text-[9px] font-bold uppercase tracking-wider text-foreground block">Description</span>
@@ -132,7 +129,6 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
         </div>
       )}
 
-      {/* Summary */}
       {mail.summary && (
         <div className="p-2.5 space-y-1">
           <span className="text-[9px] font-bold uppercase tracking-wider text-foreground block">Summary</span>
@@ -140,7 +136,6 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
         </div>
       )}
 
-      {/* AI Classification */}
       {(mail.category || mail.priority_score !== undefined || mail.confidence_score !== undefined || mail.versions || mail.retry_count !== undefined) && (
         <div className="p-2.5 space-y-1.5">
           <span className="text-[9px] font-bold uppercase tracking-wider text-foreground block">
@@ -177,7 +172,6 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
         </div>
       )}
 
-      {/* Body preview + open link */}
       <div className="relative rounded-xl p-3 min-h-50 sm:h-67 overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 p-3 overflow-hidden select-none pointer-events-none blur-xs opacity-30 text-xs leading-relaxed text-foreground/75 whitespace-pre-wrap wrap-break-word font-normal">
           {formatEmailContent(mail.body) || 'No message content available.'}
@@ -197,7 +191,6 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
     </div>
   );
 
-  // Desktop: already uses QueryDrawer
   if (isDesktop) {
     return (
       <QueryDrawer
@@ -211,14 +204,12 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
     );
   }
 
-  // Mobile: same glass sheet style as QueryDrawer mobile
   if (!mounted) return null;
 
   return createPortal(
     <AnimatePresence>
       {mail && (
         <>
-          {/* Blurred backdrop — matches QueryDrawer */}
           <motion.div
             key="mail-sheet-backdrop"
             initial={{ opacity: 0 }}
@@ -229,7 +220,6 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
             onClick={onClose}
           />
 
-          {/* Bottom sheet panel — matches QueryDrawer mobile */}
           <motion.div
             key="mail-sheet-panel"
             initial={{ y: '100%' }}
@@ -238,12 +228,10 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
             transition={{ type: 'spring', damping: 32, stiffness: 300, mass: 0.8 }}
             className="fixed bottom-0 left-0 right-0 z-70 w-full max-h-[85vh] rounded-t-4xl bg-foreground/5 backdrop-blur-md border-t border-foreground/15 flex flex-col overflow-hidden text-foreground select-text shadow-2xl"
           >
-            {/* Drag handle */}
             <div className="flex shrink-0 justify-center -mt-1 pb-1 select-none touch-none">
               <div className="mt-3 h-1.5 w-12 rounded-full bg-foreground/30" />
             </div>
 
-            {/* Header */}
             <div className="flex items-center justify-between px-4 pt-2 pb-3 border-b border-foreground/15 shrink-0">
               <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
                 <div className="shrink-0 h-8 w-8 rounded-full bg-linear-to-br from-red-600 via-red-500 to-rose-400 flex items-center justify-center">
@@ -263,7 +251,6 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
               </button>
             </div>
 
-            {/* Content */}
             <div className="px-4 py-3 space-y-2.5 overflow-y-auto overscroll-contain flex-1">
               {contentMarkup}
             </div>
