@@ -25,52 +25,6 @@ import type { MailInboxTab } from './MailInboxTabs';
 
 const HOLD_MS = 450;
 
-const CATEGORY_BADGE_COLORS = [
-  'bg-purple-600/10 text-purple-600',
-  'bg-indigo-600/10 text-indigo-600',
-  'bg-blue-600/10 text-blue-600',
-  'bg-emerald-600/10 text-emerald-600',
-  'bg-rose-600/10 text-rose-600',
-  'bg-amber-600/10 text-amber-600',
-  'bg-cyan-600/10 text-cyan-600',
-  'bg-teal-600/10 text-teal-600',
-  'bg-fuchsia-600/10 text-fuchsia-600',
-  'bg-violet-600/10 text-violet-600',
-  'bg-orange-600/10 text-orange-600',
-  'bg-pink-600/10 text-pink-600',
-];
-
-const categoryColorRegistry = new Map<string, string>();
-let nextCategoryColorIdx = 0;
-
-export function getCategoryBadgeColor(category: string): string {
-  const key = category.trim().toLowerCase();
-  if (!categoryColorRegistry.has(key)) {
-    categoryColorRegistry.set(
-      key,
-      CATEGORY_BADGE_COLORS[nextCategoryColorIdx % CATEGORY_BADGE_COLORS.length]
-    );
-    nextCategoryColorIdx++;
-  }
-  return categoryColorRegistry.get(key)!;
-}
-
-export function getPriorityBadgeColor(pct: number): string {
-  if (pct <= 80) {
-    return 'bg-green-600/10 text-green-700';
-  }
-  if (pct <= 60) {
-    return 'bg-yellow-600/10 text-yellow-700';
-  }
-  if (pct <= 40) {
-    return 'bg-amber-600/10 text-amber-700';
-  }
-  if (pct <= 20) {
-    return 'bg-orange-600/10 text-orange-700';
-  }
-  return 'bg-red-600/10 text-red-700';
-}
-
 interface MailTableProps {
   mails: Mail[];
   loading: boolean;
@@ -111,7 +65,6 @@ export default function MailTable({
 }: MailTableProps) {
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdFired = useRef(false);
-  const legendRef = useRef<HTMLDivElement>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; mail: Mail } | null>(null);
   const allSelected =
     selectable &&
@@ -250,7 +203,7 @@ export default function MailTable({
                 key={rule.label}
                 className="flex items-center gap-1"
               >
-                <span className={cn('shrink-0 px-1.5 py-0.5 rounded font-bold text-[9px] tracking-wide', rule.className)}>
+                <span className={cn('shrink-0 px-1.5 py-0.5 rounded font-bold text-[9px] tracking-wide bg-white/10 text-white')}>
                   {rule.label}
                 </span>
                 <span className="text-[10px] text-foreground font-mono leading-tight">
@@ -340,15 +293,14 @@ export default function MailTable({
                       ) : null}
                       <TableCell className={cn(colWidths.origin, "px-2 py-2.5 text-xs tracking-tight sm:py-3.5 sm:text-sm overflow-hidden")}>
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <span className={cn("inline-flex shrink-0 rounded-2xl items-center p-1 leading-none", mail.status === "unread" ? "bg-red-600 text-white" : "bg-green-600 text-white")} />
+                          <span className={cn("inline-flex shrink-0 rounded-2xl items-center p-1 leading-none", mail.status === "unread" && "bg-white")} />
                           <span className="truncate font-semibold text-foreground" title={mail.sender}>
                             {mail.sender.split('<')[0].trim() || mail.sender}
                           </span>
                           {category && (!mail.category || category.label.toLowerCase() !== mail.category.toLowerCase()) && (
                             <span
                               className={cn(
-                                'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-medium leading-none',
-                                category.className
+                                'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-medium leading-none bg-white/10 text-white'
                               )}
                             >
                               {category.label}
@@ -357,8 +309,7 @@ export default function MailTable({
                           {mail.category && (
                             <span
                               className={cn(
-                                'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-medium leading-none',
-                                getCategoryBadgeColor(mail.category)
+                                'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-medium leading-none bg-white/10 text-white',
                               )}
                             >
                               {mail.category}
@@ -370,8 +321,7 @@ export default function MailTable({
                               <span
                                 title={`Priority: ${pct.toFixed(0)}%`}
                                 className={cn(
-                                  'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-mono font-medium leading-none',
-                                  getPriorityBadgeColor(pct)
+                                  'inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-[9px] font-mono font-medium leading-none bg-white/10 text-white',
                                 )}
                               >
                                 {pct % 1 === 0 ? `${pct.toFixed(0)}%` : `${pct.toFixed(1)}%`}

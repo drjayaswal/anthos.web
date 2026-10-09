@@ -4,7 +4,6 @@ import { useMemo, useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Mail } from '@/types';
 import { cn, formatEmailContent } from '@/lib/utils';
-import { getCategoryBadgeColor } from './MailTable';
 import { Sparkles, Clock, ArrowUpRight, X, ChevronDown, Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { CustomButton } from '@/components/ui/button';

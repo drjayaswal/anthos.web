@@ -93,8 +93,8 @@ export default function MailSheet({ mail, onClose }: MailDetailSheetProps) {
               className={cn(
                 'text-[9px] font-semibold px-2 py-0.5 rounded capitalize shrink-0',
                 mail.status === 'unread'
-                  ? 'bg-red-600/10 text-red-600'
-                  : 'bg-green-600/10 text-green-600'
+                  ? 'bg-white/10 text-white'
+                  : 'bg-white/10 text-white'
               )}
             >
               {mail.status}
